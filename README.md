@@ -1,3 +1,5 @@
+# SimPrily
+
 Created by Ariella Gladstein, based on code from Consuelo Quinto Cortes and Krishna Veeramah.
 Also worked on by David Christy, Logan Gantner, and Mack Skodiak.  
 agladstein@email.arizona.edu
@@ -111,11 +113,6 @@ The second line is the summary statistics values.
 
 -------------------------
 
-## To-Do
-* Include option flags instead of list arguments
-* Allow for different prior distributions
-* Full genome simulation pipeline (option for multi or sequential processing?)
-* Provide option for additional simulators
 
 ## Known Issues
 * Seed with macsswig is unstable. 
