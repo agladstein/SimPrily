@@ -1,0 +1,12 @@
+-macs, ./bin/macs,
+-length, 1000000, 
+-t, 2.5e-8,
+-s, 1231414, 
+-r, 1e-8, 
+-h, 1e5,
+-R, genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs,  
+-I, 2, 10, 10, 
+-ej, (10:1000), 1, 2
+-discovery, 1
+-sample, 2
+-daf, 0.05

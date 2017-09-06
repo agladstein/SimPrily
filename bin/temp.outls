@@ -1,0 +1,29 @@
+COMMAND:	macs 20 10000 -t 0.001 -r 0.0004 -s 100000 -h 1e5 -I 2 10 10 -ej 0.0025 1 2 -l
+Usage: <samplesize> <region in base pairs> [options]
+Options: 
+-s <random seed>
+-d enable debugging messages
+-i <iterations>
+-h <history> number of previous base pairs to retain
+-t <mu> (mutation rate per site per 4N generations)
+-F <inputfilename> [0|1] (Tab delimited frequency distribution file where first column indicate range of SNP allele frequencies from previous row to current row and last column is desired bin frequency. Second parameter is 1 if SNPs with derived allele freq > 1.0 should have alleles flipped, 0 otherwise.)
+-r <r> (recombination rate per site per 4N generations)
+-c <f> <lambda> (f = ratio of gene conversion rate to crossover rate. tracklen lambda is mean length of tract in base pairs.)
+-R <inputfilename> (Tab delimited file where first two columns indicate range of base pair positions scaled to the unit interval and last column is ratio with respect to base line recombination rate.)
+-T (Print each local tree in Newick format to standard out)
+-G <alpha> (Assign growth rate alpha across populations where alpha=-log(Np/Nr)
+-I <n> <n1> <n2> .. <mig_rate> (Assign all elements of the migration matrix for n populations.  Values in matrix set to mig_rate/(n-1).)
+-m <i> <j> <m>  (Assign i,j-th element of migration matrix to m.)
+-ma <m_11>..<m_12>..<m_nn> (Assign values to all elements of migration matrix for n populations.)
+-n <i> <size>   (Pop i has size set to size*N_0 
+-g <i> <alpha>  (If used must appear after -M option.)
+The following options modify parameters at time t.
+-eG <t> <alpha>  (Assign growth rate for all pops at time t.
+-eg <t> <i> <alpha>  (Assign growth rate alpha of pop i at time t.)
+-eM <t> <m> (Assign migrate rate m for all elements of migration matrix at time t.)
+-em <t> <i> <j> <m_ij> (Assign migration rate for i,j-th element of migration matrix at time t.)at time t )
+-ema <t> <n> <m_11>..<m_12>..<m_nn> (Assign migration rates  within the migration matrix for n populations at time t.)
+-eN <t> <size> (New pop sizes at time t for all pops where new sizes = size*N_0)
+-en <t> <i> <size_i> (New pop size of pop i will be set to (size_i*N_0) at time t.
+-es <t> <i> <p> (Split two populations.  At time t, a proportion p of chromosomes from pop i will migrate to a population i+1.
+-ej <t> <i> <j> (Join two populations.  At time t all chromosomes migrate from pop i to pop j.
