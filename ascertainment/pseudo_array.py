@@ -1,6 +1,8 @@
-from bisect import bisect_right
-from my_random import MY_RANDOM as random
 import sys
+from bisect import bisect_right
+
+from main_tools.my_random import MY_RANDOM as random
+
 
 def find2(a, x):
     """This function receives the array with available sites (sites that passed the frequency cut-off)"""

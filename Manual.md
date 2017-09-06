@@ -19,7 +19,7 @@ https://github.com/sgusev/GERMLINE
 ## Install
 cd to the directory you want to work in,
 ```bash
-git clone git@bitbucket.org:logangantner/macsswig_simslg.git
+git clone https://github.com/agladstein/SimPrily.git
 ```
 
 
@@ -40,13 +40,13 @@ sudo apt-get upgrade
 sudo apt-get install python-virtualenv git python-dev
 sudo easy_install -U distribute
 cd ~
-virtualenv macss_env
-source ~/macss_env/bin/activate
+virtualenv simprily_env
+source ~/simprily_env/bin/activate
 pip install --upgrade pip
 pip install pip-tools
 cd /vagrant
 pip-sync
-~/macss_env/bin/python simprily.py macsSwig 1 ill_650_test.bed 1000000 123456 prior 0
+~/simprily_env/bin/python simprily.py macs 1 array_template/ill_650_test.bed 1000000 123456 prior 0
 ```
 
 If not using Vagrant:
@@ -55,11 +55,11 @@ sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install python-virtualenv git python-dev
 sudo easy_install -U distribute
-virtualenv macss_env
+virtualenv simprily_env
 pip install --upgrade pip
 pip install pip-tools
 pip-sync
-macss_env/bin/python simprily.py macsswig_examples/eg2/param_file_eg2.txt macsswig_examples/eg2/model_file_eg2.csv macsSwig 1 ill_650_test.bed 0 True output_dir
+simprily_env/bin/python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
 ```
 
 If the above options do not work, the correct version of Python can also be installed locally:  
@@ -78,18 +78,18 @@ export PATH=$(pwd)/python/bin:$PATH
 wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py
 pip install -r /home/agladstein/simslg/macsswig_simslg/requirements.txt
-python simprily.py macsswig_examples/eg2/param_file_eg2.txt macsswig_examples/eg2/model_file_eg2.csv macsSwig 1 ill_650_test.bed 0 True output_dir
+python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv macsSwig 1 array_template/ill_650_test.bed 0 True output_dir
 ```
 
 ## Usage
 e.g. One Full simulation:  
 ```
-python simprily.py macsswig_examples/eg3/param_file_eg3.txt macsswig_examples/eg3/model_file_eg3.csv macsSwig 1 ftDNA_hg18_auto_all_uniqSNPS_rmbadsites_pruned_chr1.bed 0 True output_dir
+python simprily.py examples/eg3/param_file_eg3.txt examples/eg3/model_file_eg3.csv macsSwig 1 array_template/Axiom_LAT_chr1.bed 0 True output_dir
 ```
 
 e.g. One Test simulation:  
 ```
-python simprily.py macsswig_examples/eg3/param_file_eg3.txt macsswig_examples/eg3/model_file_eg3.csv macs 1 ill_650_test.bed 0 True out_edit2
+python simprily.py examples/eg3/param_file_eg3.txt examples/eg3/model_file_eg3.csv macs 1 array_template/ill_650_test.bed 0 True out_edit2
 ```
 
 #### Input  
@@ -113,7 +113,7 @@ python simprily.py param_file.txt model_file.csv sim_option jobID array_template
 #### Required arguments
 
 ##### param_file.txt
-Examples of param_file.txt can be found in macsswig_examples.
+Examples of param_file.txt can be found in examples.
 The param_file.txt must define the parameters of the demographic model and the minimum derived allele frequency to be used to create the pseudo array, if a pseudo array is to be created.
 
 All parameter values should be given in pre-coalescent scaled units. 
@@ -147,7 +147,7 @@ daf = (0.01:0.1)
 *currently only a range of values is supported for daf. Therefore if you want to hard code a value, use the same value as the min and max of the prior.*
 
 ##### model_file.csv
-Examples of param_file.txt can be found in macsswig_examples.
+Examples of param_file.txt can be found in examples.
 
 The demographic and SNP ascertainment models are defined in the model_file.csv.
 

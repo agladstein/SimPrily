@@ -1,5 +1,5 @@
-from my_random import MY_RANDOM as random
-import global_vars
+from main_tools import global_vars
+from main_tools.my_random import MY_RANDOM as random
 
 
 def prettyPrintDict(dic):

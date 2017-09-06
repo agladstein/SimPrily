@@ -1,5 +1,7 @@
 from bitarray import bitarray
-from my_random import MY_RANDOM as random
+
+from main_tools.my_random import MY_RANDOM as random
+
 
 class SeqInfo():
     def __init__(self, name, total, seq_type):

@@ -2,6 +2,7 @@
 *.pyc
 *.pyo
 macss_env/
+simprily_env/
 *.log
 macschr1*
 mprofile_*
@@ -28,3 +29,4 @@ out_edit2
 out_edit2/
 
 ./test/
+out_dir
