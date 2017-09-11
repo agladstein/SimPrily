@@ -1,0 +1,153 @@
+#!/usr/bin/env python
+
+from __future__ import division
+
+from Pegasus.DAX3 import *
+import sys
+import math
+import os
+import re
+import time
+import datetime
+import subprocess
+import ConfigParser
+
+
+
+def add_merge_job(chunk, level, job_number, final):
+    """
+    adds a merge job
+    """
+    j = Job(name="merge.sh")
+    out_file = File("merged-%d-%d.tar.gz" %(level, job_number))
+    if final:
+        out_file = File("merged-all.tar.gz")
+    j.uses(out_file, link=Link.OUTPUT, transfer=final)
+    j.addArguments(out_file)
+    for f in chunk:
+        j.uses(f, link=Link.INPUT)
+        j.addArguments(f)
+    # set a priority to the jobs run in the order the wf was submitted
+    j.addProfile(Profile(Namespace.CONDOR, "priority", base_priority + 10))
+    dax.addJob(j)
+    return out_file
+
+
+def merge_outputs(outputs, level):
+    """
+    creates a set of small jobs to merge the tarball
+    """
+    max_files = 25
+    new_outputs = []
+
+    output_chunks = [outputs[i:i + max_files] for i in xrange(0, len(outputs), max_files)]
+
+    job_count = 0
+    for chunk in output_chunks:
+        job_count = job_count + 1
+        f = add_merge_job(chunk, level, job_count, False)
+        new_outputs.append(f)
+
+    # end condition - only one chunk
+    if len(new_outputs) <= max_files:
+        return add_merge_job(new_outputs, level + 1, 1, True)
+
+    return merge_outputs(new_outputs, level + 1)
+        
+
+
+base_dir = os.getcwd()
+
+run_id = sys.argv[1]
+run_dir = sys.argv[2]
+job_num = sys.argv[3]
+param_file = sys.argv[4]
+model_file = sys.argv[5]
+array_file = sys.argv[6]
+map_file = sys.argv[7]
+
+
+# Give all jobs a priority based on the current time. We do this as we want
+# workflows to finish in the order we submitted them.
+end_date = datetime.datetime(year=2025, month=1, day=1)
+now_date = datetime.datetime.now()
+delta = end_date - now_date
+hours = delta.days * 24 + delta.seconds / 3600
+base_priority = int(round(hours))
+
+# Create a abstract dag
+dax = ADAG("simprily")
+
+# email notificiations for when the state of the workflow changes
+dax.invoke('all',  base_dir + "/tools/email-notify")
+
+# Add executables to the DAX-level replica catalog
+for exe_name in os.listdir("./wrappers/"):
+    exe = Executable(name=exe_name, arch="x86_64", installed=False)
+    exe.addPFN(PFN("file://" + base_dir + "/wrappers/" + exe_name, "local"))
+    dax.addExecutable(exe)
+
+# Tell Pegasus where the local files are
+input_param = File(param_file)
+input_param.addPFN(PFN("file://" + run_dir + "/" + param_file, "local"))
+dax.addFile(input_param)
+
+input_model = File(model_file)
+input_model.addPFN(PFN("file://" + run_dir + "/" + model_file, "local"))
+dax.addFile(input_model)
+
+input_array = File(array_file)
+input_array.addPFN(PFN("file://" + run_dir + "/" + array_file, "local"))
+dax.addFile(input_array)
+
+input_map = File(map_file)
+input_map.addPFN(PFN("file://" + run_dir + "/" + map_file, "local"))
+dax.addFile(input_map)
+
+current_outputs = []
+input_id = 0
+for job_id in range(job_num + 1):
+    # the real work
+    sim_job = Job(name="run-sim.sh")
+    sim_job.uses(param_file, link=Link.INPUT) #transfers file so they are available for the job
+    sim_job.uses(model_file, link=Link.INPUT)
+    sim_job.uses(array_file, link=Link.INPUT)
+    sim_job.uses(map_file, link=Link.INPUT)
+    sim_job.addArguments(str(job_id), param_file, model_file, array_file, map_file)
+
+    # output files
+    f1 = File("outputs-" + str(job_id) + ".tar.gz")
+    sim_job.uses(f1, link=Link.OUTPUT, transfer=False)
+
+    # set a priority to the jobs run in the order the wf was submitted
+    sim_job.addProfile(Profile(Namespace.CONDOR, "priority", base_priority))
+
+    dax.addJob(sim_job)
+
+    # keep a list of all the outputs - in the next step we will group them and process
+    # recursivly
+    current_outputs.append(f1)
+
+# recurisvly process the outputs - this is so that we can handle the large amount of files
+final_out_file = merge_outputs(current_outputs, 0)
+
+# generate the .txt summary files
+j = Job(name="summarize.sh")
+j.uses(final_out_file, link=Link.INPUT)
+j.addArguments(final_out_file)
+out1 = File("results_sims.txt")
+j.uses(out1, link=Link.OUTPUT, transfer=True)
+out2 = File("sim_values.txt")
+j.uses(out2, link=Link.OUTPUT, transfer=True)
+# set a priority to the jobs run in the order the wf was submitted
+j.addProfile(Profile(Namespace.CONDOR, "priority", base_priority + 10))
+dax.addJob(j)
+
+# Write the DAX to stdout
+f = open("dax.xml", "w")
+dax.writeXML(f)
+f.close()
+
+sys.exit(0)
+
+

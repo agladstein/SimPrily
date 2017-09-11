@@ -58,7 +58,7 @@ virtualenv simprily_env
 pip install --upgrade pip
 pip install pip-tools
 pip-sync
-simprily_env/bin/python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
+simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
 ```
 
 
@@ -110,6 +110,17 @@ The second line is the parameter values.
 The first line is a header with the summary statistics names.
 The second line is the summary statistics values.
 
+-------------------------
+
+## Open Science Grid
+
+Run interactively with the Singularity container on the OSG  
+```bash
+[agladstein@login02 SimPrily]$ singularity shell --home $PWD:/srv --pwd /srv /cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest
+Singularity: Invoking an interactive shell within container...
+
+$ python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
+```
 
 -------------------------
 

@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -e
+
+# make sure we are in the correct dir
+if [ ! -e sites.xml.template ]; then
+    echo "Please only run this script from within the workflow directory"
+    exit 1
+fi
+
+# did the user specify the number of jobs
+if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" -o "x$4" == "x" -o "x$5" == "x" ]; then
+    echo "Please specify parameter file, model file, array template, recombination map, number of jobs."
+    echo "Example: ./submit param_file.txt model_file.csv ill_650.bed genetic_map.macshs 1000"
+    exit 1
+fi
+PARAM_FILE=$1
+MODEL_FILE=$2
+ARRAY_FILE=$3
+REC_MAP=$4
+JOB_NUM=$5
+
+module load pegasus
+module load stashcp
+
+TOP_DIR=`pwd`
+
+export RUN_ID=simprily_`date +'%s'`
+
+export RUN_DIR=/local-scratch/$USER/workflows/$RUN_ID
+mkdir -p $RUN_DIR
+
+cp $PARAM_FILE $RUN_DIR/
+cp $MODEL_FILE $RUN_DIR/
+cp $ARRAY_FILE $RUN_DIR/
+cp $REC_MAP $RUN_DIR/
+
+# generate the site catalog
+SC=$RUN_DIR/sites.xml
+envsubst <sites.xml.template >$SC
+
+# generate the dax
+export PYTHONPATH=`pegasus-config --python`
+./tools/dax-generator $RUN_ID $RUN_DIR $JOB_NUM `basename $PARAM_FILE` `basename $MODEL_FILE` `basename $ARRAY_FILE` `basename $REC_MAP`
+mv dax.xml $RUN_DIR/
+
+echo
+echo "An outputs directory will be created within the base of the workflow directory."
+echo "Directory: $RUN_DIR/outputs"
+
+# plan and submit the  workflow
+echo
+pegasus-plan \
+    -Dpegasus.catalog.site.file=$SC \
+    --conf pegasus.conf \
+    --relative-dir $RUN_ID \
+    --sites condorpool \
+    --output-site local \
+    --cleanup leaf \
+    --dir $RUN_DIR/workflow \
+    --dax $RUN_DIR/dax.xml \
+    --submit
+

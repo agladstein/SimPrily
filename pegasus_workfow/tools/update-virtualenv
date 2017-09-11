@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+. /cvmfs/oasis.opensciencegrid.org/osg/sw/module-init.sh || true
+
+# python 2.7 or up is required for our version of numpy
+module load python/2.7
+
+virtualenv-2.7 macss_env
+. macss_env/bin/activate
+
+pip install --upgrade pip
+pip install --upgrade pip-tools
+
+cd macss_env
+pip-compile --output-file requirements.txt ../../requirements.in
+pip install -r requirements.txt
+cd ..
+
+deactivate
+
+tar czf macss_env.tar.gz macss_env
+
+
