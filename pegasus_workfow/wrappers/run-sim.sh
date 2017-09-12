@@ -14,7 +14,7 @@ export PATH=/usr/local/bin:/usr/bin:/bin
 ln -s /app/bin bin
 touch outputs-$JOB_ID.tar.gz
 
-CMD="python /app/simprily.py $PARAM_FILE $MODEL_FILE macs 1 $ARRAY_FILE 1 True ."
+CMD="python /app/simprily.py $PARAM_FILE $MODEL_FILE macs $JOB_ID $ARRAY_FILE 1 True ."
 echo
 echo "Running: $CMD"
 $CMD
