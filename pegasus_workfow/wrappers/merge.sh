@@ -11,6 +11,6 @@ for FILE in "$@"; do
 done
 
 echo "Creating merged tarball $OUT_FILE"
-tar czf $OUT_FILE results_sims_* sim_values_*
+tar czf $OUT_FILE results_sims sim_values
 
 

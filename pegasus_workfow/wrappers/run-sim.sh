@@ -20,5 +20,5 @@ echo "Running: $CMD"
 $CMD
 
 # output files need unique names in the top level dir
-tar czf outputs-$JOB_ID.tar.gz results_sims_* sim_values_*
+tar czf outputs-$JOB_ID.tar.gz results_sims* sim_values*
 
