@@ -122,6 +122,18 @@ Singularity: Invoking an interactive shell within container...
 $ python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
 ```
 
+Submit a Pegasus workflow
+```bash
+./submit param_file.txt model_file.csv array_template genetic_map.macshs number_of_jobs
+
+```
+
+e.g.  
+```bash
+./submit /home/agladstein/container-test/SimPrily/examples/eg2/Param_file_eg2.txt /home/agladstein/container-test/SimPrily/examples/eg2/model_file_eg2.csv /home/agladstein/container-test/SimPrily/array_template/ill_650_test.bed /home/agladstein/container-test/SimPrily/genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs 10
+
+```
+
 -------------------------
 
 
