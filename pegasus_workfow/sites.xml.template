@@ -28,7 +28,7 @@
         <profile namespace="condor" key="request_memory" >2500 MB</profile>
         <profile namespace="condor" key="request_disk" >3 GB</profile>
         <profile namespace="condor" key="+WantsComet" >${WANTS_COMET}</profile>
-        <profile namespace="condor" key="+SingularityImage" >/cvmfs/singularity.opensciencegrid.org/agladstein/simprily:latest</profile>
+        <profile namespace="condor" key="+SingularityImage" >"/cvmfs/singularity.opensciencegrid.org/agladstein/simprily:latest"</profile>
     </site>
     
 </sitecatalog>

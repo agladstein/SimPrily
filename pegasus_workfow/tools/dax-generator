@@ -60,7 +60,7 @@ base_dir = os.getcwd()
 
 run_id = sys.argv[1]
 run_dir = sys.argv[2]
-job_num = sys.argv[3]
+job_num = int(sys.argv[3])
 param_file = sys.argv[4]
 model_file = sys.argv[5]
 array_file = sys.argv[6]
