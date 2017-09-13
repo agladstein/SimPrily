@@ -401,6 +401,12 @@ All components of the Pegasus workflow are located in the directory
 Start the workfow by running `submit` on the command line from the `pegasus_workflow` directory.
 ```bash
 ./submit param_file.txt model_file.csv array_template genetic_map.macshs number_of_jobs
+
+```
+
+e.g.  
+```bash
+./submit ../examples/eg2/Param_file_eg2.txt ../examples/eg2/model_file_eg2.csv ../array_template/ill_650_test.bed ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs 10
 ```
 
 ### How the Pegasus workflow works
