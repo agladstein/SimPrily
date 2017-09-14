@@ -13,7 +13,7 @@ from ascertainment.asc_tools import set_asc_bits, make_ped_file, make_map_file, 
 from ascertainment.pseudo_array import pseudo_array_bits
 from main_tools import global_vars
 from main_tools.housekeeping import process_args, debugPrint, prettyPrintDict
-from main_tools.write_files import write_sim_file, write_results_file, create_sim_directories
+from main_tools.write_files import create_sim_directories, write_sim_results_file
 from processInput import processInputFiles
 from simulation import macsSwig
 from simulation.run_sim import run_macs
@@ -45,7 +45,7 @@ def main(args):
     sim_option = args['sim option']
 
     path = args['path']
-    [sim_data_dir, germline_out_dir, sim_values_dir, results_sims_dir] = create_sim_directories(path)
+    [sim_data_dir, germline_out_dir, sim_results_dir] = create_sim_directories(path)
 
 
     processedData =  processInputFiles(args['param file'], args['model file'])
@@ -206,9 +206,15 @@ def main(args):
 
 
     print processedData['param_dict']
+
+    #Previously used for separate files
+    '''
     write_results_file(results_sims_dir, job, res, head)
     write_sim_file(sim_values_dir, job, processedData['param_dict'])
-
+    '''
+    #Combined file
+    write_sim_results_file(sim_results_dir, job, processedData['param_dict'], res, head)
+    
 
     print ''
     print '######################################'

@@ -17,3 +17,5 @@ def get_sim_positions_old(alleles, n, length):
     return pos
 
 
+
+
