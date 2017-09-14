@@ -14,6 +14,8 @@ def get_sim_positions_old(alleles, n, length):
     for i in xrange(n):
         position = round(float(sim_position[i])*float(length) )
         pos.append(position)
-    return pos
+    return create_sim_directories
+
+
 
 
