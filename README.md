@@ -116,10 +116,12 @@ The second line is the summary statistics values.
 
 Run interactively with the Singularity container on the OSG  
 ```bash
-[agladstein@login02 SimPrily]$ singularity shell --home $PWD:/srv --pwd /srv /cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest
+[agladstein@login02 brassica]$ singularity shell --home $PWD:/srv --pwd /srv /cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest
 Singularity: Invoking an interactive shell within container...
 
-$ python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
+$ bash
+agladstein@login02:~$ export PATH=/usr/local/bin:/usr/bin:/bin
+agladstein@login02:~$ python /app/simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
 ```
 
 Submit a Pegasus workflow (must be in `pegasus_workflow`)
