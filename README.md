@@ -55,6 +55,7 @@ sudo apt-get upgrade
 sudo apt-get install python-virtualenv git python-dev
 sudo easy_install -U distribute
 virtualenv simprily_env
+source simprily_env/bin/activate
 pip install --upgrade pip
 pip install pip-tools
 pip-sync

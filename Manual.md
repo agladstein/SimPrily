@@ -58,7 +58,7 @@ pip install --upgrade pip
 pip install pip-tools
 cd /vagrant
 pip-sync
-~/simprily_env/bin/python simprily.py macs 1 array_template/ill_650_test.bed 1000000 123456 prior 0
+~/simprily_env/bin/python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
 ```
 
 If not using Vagrant:
@@ -96,15 +96,24 @@ python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.c
 ```
 
 ## Usage
-e.g. One Full simulation:  
+e.g. 
 ```
 python simprily.py examples/eg3/param_file_eg3.txt examples/eg3/model_file_eg3.csv macsSwig 1 array_template/Axiom_LAT_chr1.bed 0 True output_dir
 ```
 
-e.g. One Test simulation:  
+If using Vagrant (if you are on a Mac you should use Vagrant),  
+Start and enter vagrant, and go to working directory
+```bash
+vagrant up
+vagrant ssh
+cd /vagrant
 ```
-python simprily.py examples/eg3/param_file_eg3.txt examples/eg3/model_file_eg3.csv macs 1 array_template/ill_650_test.bed 0 True out_edit2
+
+Run SimPrily using the virtual environment
+```bash
+~/simprily_env/bin/python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
 ```
+
 
 #### Input  
 `simprily.py` takes 8 arguments.   
@@ -419,6 +428,41 @@ It also tells Pegasus where the local files are and transfers files (from submit
 It also defines how to handle output files.
 
 `wrappers/run-sim.sh` is the wrapper that runs in the container. It modifies the environment, and runs SimPrily.
+
+## Calculating summary statistics on real data
+
+### Data format
+Real data must be in PLINK .tped file with 0's and 1's.  
+Sites in rows, individuals in columns (first 4 columns chr, rsnumber, site_begin, site_end).
+The populations must be in the same order as specified in the model file for the simulations.
+
+Put the individuals in teh correct order  
+https://www.cog-genomics.org/plink2/data#indiv_sort
+
+```bash
+plink --bfile bfile --indiv-sort f sample_order.txt --make-bed --out bfile_ordered
+```
+
+To get in the .tped format from .bed .bim .fam with 0's and 1's refer to  
+https://www.cog-genomics.org/plink2/formats#tped  
+
+```bash
+plink --bfile bfile --recode transpose 01 --output-missing-genotype N --out tfile01
+```
+
+### Usage
+
+`real_data_ss.py` takes 5 arguments:  
+1. `model_file`
+2. `param_file`
+3. `output_dir`
+4. `genome_file`
+5. `array_file`
+
+e.g.  
+```bash
+python real_data_ss.py examples/eg1/model_file_eg1.csv examples/eg1/param_file_eg1.txt out_dir ~/data/HapMap_example/test_10_YRI_CEU_CHB.tped ~/data/HapMap_example/test_10_YRI_CEU_CHB_KHV_hg18_ill_650.tped
+```
 
 ## Common Errors
 Number of simulated segregating sites less than number of sites on template array. Increase size of simulated locus.
