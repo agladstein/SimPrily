@@ -7,7 +7,7 @@ import os
 
 from alleles_generator.bit_structure import set_seq_bits
 from alleles_generator.real_file import AllelesReal
-from alleles_generator.seqInfo import create_sequences
+from alleles_generator.seqInfo import create_real_sequences
 from main_tools import global_vars
 from main_tools.housekeeping import debugPrint, prettyPrintDict
 from main_tools.write_files import create_sim_directories, write_stats_file
@@ -30,9 +30,6 @@ def main(args):
                 global_vars.verbos = arg.count("v")
     debugPrint(1,"Debug on: Level " + str(global_vars.verbos))
 
-
-    chr_number = 1
-
     model_file = argv[1]
     param_file = argv[2]
     path = argv[3]
@@ -48,7 +45,7 @@ def main(args):
     debugPrint(3,"#"*22+"param_dict:\n{}".format(prettyPrintDict(processedData['param_dict']))+"#"*22)
 
     ### Create a list of Sequence class instances. These will contain the bulk of all sequence-based data
-    sequences = create_sequences(processedData, args)
+    sequences = create_real_sequences(processedData, args)
     names = [seq.name for seq in sequences]
 
     n_d = sum([1 for seq in sequences if seq.type == 'discovery'])
@@ -65,12 +62,12 @@ def main(args):
     ####################### Read Data from tped files ########################
     ##########################################################################
 
-    genome_file = argv[3]
+    genome_file = argv[4]
     job = genome_file
     seq_alleles_genome = AllelesReal(str(genome_file)+'.tped')
     set_seq_bits(sequences, seq_alleles_genome)
     if using_pseudo_array == True:
-        array_file = argv[4]
+        array_file = argv[5]
         job = str(job) + '_' + str(array_file)
         seq_alleles_array = AllelesReal(str(array_file) + '.tped')
         set_seq_bits(sequences, seq_alleles_array)
@@ -95,7 +92,7 @@ def main(args):
         out_file_name = '{0}/{1}'.format(germline_out_dir, job)
 
         ### Use Germline to find IBD on pseduo array ped and map files
-        do_i_run_germline = int(args['germline'])
+        do_i_run_germline = 1 #fix this later
 
         print 'run germline? ' + str(do_i_run_germline)
         if (do_i_run_germline == 0):
