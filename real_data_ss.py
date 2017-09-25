@@ -63,12 +63,12 @@ def main(args):
     ##########################################################################
 
     genome_file = argv[4]
-    job = genome_file
+    job = os.path.basename(genome_file)
     seq_alleles_genome = AllelesReal(str(genome_file)+'.tped')
     set_real_genome_bits(sequences, seq_alleles_genome)
     if using_pseudo_array == True:
         array_file = argv[5]
-        job = str(job) + '_' + str(array_file)
+        job = str(job) + '_' + str(os.path.basename(array_file))
         seq_alleles_array = AllelesReal(str(array_file) + '.tped')
         set_seq_bits(sequences, seq_alleles_array)
 
