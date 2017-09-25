@@ -5,7 +5,7 @@ from sys import argv
 import numpy as np
 import os
 
-from alleles_generator.bit_structure import set_seq_bits
+from alleles_generator.bit_structure import set_seq_bits, set_discovery_bits, set_real_genome_bits
 from alleles_generator.real_file import AllelesReal
 from alleles_generator.seqInfo import create_real_sequences
 from main_tools import global_vars
@@ -65,12 +65,12 @@ def main(args):
     genome_file = argv[4]
     job = genome_file
     seq_alleles_genome = AllelesReal(str(genome_file)+'.tped')
-    set_seq_bits(sequences, seq_alleles_genome)
-    if using_pseudo_array == True:
-        array_file = argv[5]
-        job = str(job) + '_' + str(array_file)
-        seq_alleles_array = AllelesReal(str(array_file) + '.tped')
-        set_seq_bits(sequences, seq_alleles_array)
+    set_real_genome_bits(sequences, seq_alleles_genome)
+    # if using_pseudo_array == True:
+    #     array_file = argv[5]
+    #     job = str(job) + '_' + str(array_file)
+    #     seq_alleles_array = AllelesReal(str(array_file) + '.tped')
+    #     set_seq_bits(sequences, seq_alleles_array)
 
     ##########################################################################
     ###################### Calculate summary statistics ######################

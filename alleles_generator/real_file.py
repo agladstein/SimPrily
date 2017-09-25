@@ -47,7 +47,7 @@ class AllelesReal(object):
         real_file = open(self.real_file_name, 'r')
         seq_bits = bitarray()
         for line in real_file:
-            columns = line.split(' ')
+            columns = line.strip().split(' ')
             for i in xrange(n_0+4, n_m+4):
                 if columns[i] not in ('0', '1'):
                     columns[i] = '0'

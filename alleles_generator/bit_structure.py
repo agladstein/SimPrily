@@ -7,16 +7,23 @@ def set_seq_bits(sequences, alleles):
         seq.bits = alleles.make_bitarray_seq(seq_loc, seq_loc + seq.tot)
         seq_loc += seq.tot
 
-def set_discovery_bits(seq_list):
-    for seq in seq_list:
+def set_discovery_bits(sequences):
+    for seq in sequences:
         if seq.type == 'discovery':
             for ind in xrange(0, len(seq.bits), seq.tot):
                 seq.CGI_bits.extend(seq.bits[ind : ind+seq.ignore])
 
-def set_panel_bits(n, seq_list):
+def set_panel_bits(n, sequences):
     panel_bits = bitarray()
     for site in xrange(n):
-        for seq in seq_list:
+        for seq in sequences:
             if seq.type == 'discovery':
                 panel_bits.extend( seq.bits[ site*seq.tot + seq.ignore : site*seq.tot + seq.tot ] )
     return panel_bits
+
+def set_real_genome_bits(sequences, alleles):
+    seq_loc = 0
+    for seq in sequences:
+        if seq.type == 'discovery':
+            seq.CGI_bits = alleles.make_bitarray_seq(seq_loc, seq_loc + seq.panel)
+            seq_loc += seq.tot
