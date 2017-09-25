@@ -61,6 +61,8 @@ def create_real_sequences(processedData, args):
         name = 'D' + str(i + 1)
         seq = SeqInfo(name, tot, seq_type='discovery')
 
+        seq.ignore = random.randint(4,seq.tot - 1)  # number of ignored cannot be less than 4 in order for Tajima's D to iterate
+
         seq.panel = seq.tot - seq.ignore
         sequences.append(seq)
 

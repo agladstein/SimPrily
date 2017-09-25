@@ -25,5 +25,5 @@ def set_real_genome_bits(sequences, alleles):
     seq_loc = 0
     for seq in sequences:
         if seq.type == 'discovery':
-            seq.CGI_bits = alleles.make_bitarray_seq(seq_loc, seq_loc + seq.panel)
+            seq.CGI_bits = alleles.make_bitarray_seq(seq_loc, seq_loc + seq.ignore)
             seq_loc += seq.tot
