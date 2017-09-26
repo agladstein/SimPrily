@@ -275,6 +275,14 @@ def processModelData(variables, modelData):
                     processedData["I"] = [int(s.strip()) for s in tempLine[1:] if s]
                     continue
                 
+                #----------------------- For Added Arguments from Model_CSV
+                if flag == "-germline":
+                    continue
+                if flag == "-array":
+                    continue
+                if flag == "-nonrandom_discovery":
+                    continue
+                
                 if flag == "-Ne":
                     tempLine[0] = getUnscaledValue(variables, tempLine[0])
                 if flag == "-em":
