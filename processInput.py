@@ -51,7 +51,6 @@ def readParamsFile(in_file):
         if "=" in line:
             info[line.split("=")[0].strip()] = line.split("=")[1].strip()
     return info
-
 def getUnscaledValue(variables, tempNum, tempLow=False):
     tempVar = ""
     if tempNum in variables.keys():
@@ -174,30 +173,31 @@ def populateFlags(variables, modelData):
         flag = lineSplit[0]
 
         if "_" in flag:
-            lineSplit[1] = lineSplit[1].strip()
-            if lineSplit[1] in variables:
-                lineSplit[1] = variables[lineSplit[1]]
-            print("Before:{} ".format(i+1)+",".join(lineSplit))
-            if int(flag.split("_")[1]) > 1:
-                lowTime = modelData[i-1].split(',')[1]
-            if lineSplit[1] not in times and "inst" not in lineSplit[1]:
-                if lowTime:
-                    lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
+            if len(lineSplit)>1:
+                lineSplit[1] = lineSplit[1].strip()
+                if lineSplit[1] in variables:
+                    lineSplit[1] = variables[lineSplit[1]]
+                print("Before:{} ".format(i+1)+",".join(lineSplit))
+                if int(flag.split("_")[1]) > 1:
+                    lowTime = modelData[i-1].split(',')[1]
+                if lineSplit[1] not in times and "inst" not in lineSplit[1]:
+                    if lowTime:
+                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
+                    else:
+                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
+                    # print("->{}".format(lineSplit[1]))
                 else:
-                    lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
-                # print("->{}".format(lineSplit[1]))
-            else:
-                Ne = findScaleValue(flags, variables)
-                lastTime = getUnscaledValue(variables, modelData[i-1].split(',')[1])
-                tempTime = str(float(lastTime) + 1)
-                while tempTime in times:
-                    tempTime += 1
-                print("Time '{}' has been used before: adding {} to time, changing to {}".format(lineSplit[1], str(0.00001*Ne),tempTime))
-                lineSplit[1] = tempTime
-            times.append(lineSplit[1])
-            flag = lineSplit[0].split("_")[0]
-            print("times: {}".format(times))
-            print("After:{} ".format(i+1)+",".join(lineSplit))
+                    Ne = findScaleValue(flags, variables)
+                    lastTime = getUnscaledValue(variables, modelData[i-1].split(',')[1])
+                    tempTime = str(float(lastTime) + 1)
+                    while tempTime in times:
+                        tempTime += 1
+                    print("Time '{}' has been used before: adding {} to time, changing to {}".format(lineSplit[1], str(0.00001*Ne),tempTime))
+                    lineSplit[1] = tempTime
+                times.append(lineSplit[1])
+                flag = lineSplit[0].split("_")[0]
+                print("times: {}".format(times))
+                print("After:{} ".format(i+1)+",".join(lineSplit))
 
 
 
