@@ -39,12 +39,12 @@ https://hub.docker.com/r/agladstein/simprily/
 The most reliable way to do this is with a virtual environment.
 
 
-If using Vagrant:
+If using Vagrant (this is recommended if running on non-Linux OS):
 
 ```bash
 vagrant up
 vagrant ssh
-```
+``` 
 
 ```bash
 sudo apt-get update
@@ -58,7 +58,7 @@ pip install --upgrade pip
 pip install pip-tools
 cd /vagrant
 pip-sync
-~/simprily_env/bin/python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
+~/simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
 ```
 
 If not using Vagrant:
@@ -68,11 +68,14 @@ sudo apt-get upgrade
 sudo apt-get install python-virtualenv git python-dev
 sudo easy_install -U distribute
 virtualenv simprily_env
+source simprily_env/bin/activate
+cd SimPrily
 pip install --upgrade pip
 pip install pip-tools
 pip-sync
-simprily_env/bin/python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
+simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
 ```
+If you an error during `pip-sync` try rebooting the system. 
 
 ### Local installation
 
@@ -96,9 +99,9 @@ python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.c
 ```
 
 ## Usage
-e.g. 
+e.g. One Test simulation:  
 ```
-python simprily.py examples/eg3/param_file_eg3.txt examples/eg3/model_file_eg3.csv macsSwig 1 array_template/Axiom_LAT_chr1.bed 0 True output_dir
+python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 output_dir
 ```
 
 If using Vagrant (if you are on a Mac you should use Vagrant),  
@@ -111,31 +114,25 @@ cd /vagrant
 
 Run SimPrily using the virtual environment
 ```bash
-~/simprily_env/bin/python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
+~/simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 output_dir
 ```
 
 
 #### Input  
-`simprily.py` takes 8 arguments.   
+`simprily.py` takes 4 arguments.   
 
 Run as  
 ```
-python simprily.py param_file.txt model_file.csv sim_option jobID array_template germline output_dir
+python simprily.py param_file.txt model_file.csv jobID output_dir
 ```
 1. `param_file.txt` = full path to file containing parameter values or priors
 2. `model_file.csv` = full path to file containing model commands
-3. `sim_option` = macs or macsswig
-4. `jobID` = can be any unique value to identify the output  
-5. `array_template` = bed file with physical position of SNPs on array to use as template for simulated pseudo array.  
-6. `germline` = 0 to run GERMLINE, 1 to not run GERMLINE.  
-7. `random_discovery` = True to randomly pick number of individuals for SNP discovery, or False to use half of the discovery individuals.
-8. `output_dir` = path to the directory to output to. No argument will use the default of current dir `.`
+3. `jobID` = can be any unique value to identify the output  
+4. `output_dir` = path to the directory to output to. No argument will use the default of current dir `.` 
 
 ### Additional information on input arguments
 
-#### Required arguments
-
-##### param_file.txt
+#### param_file.txt
 Examples of param_file.txt can be found in examples.
 The param_file.txt must define the parameters of the demographic model and the minimum derived allele frequency to be used to create the pseudo array, if a pseudo array is to be created.
 
@@ -169,10 +166,10 @@ daf = (0.01:0.1)
 
 *currently only a range of values is supported for daf. Therefore if you want to hard code a value, use the same value as the min and max of the prior.*
 
-##### model_file.csv
-Examples of param_file.txt can be found in examples.
+#### model_file.csv
+Examples of model_file.csv can be found in examples.
 
-The demographic and SNP ascertainment models are defined in the model_file.csv.
+The demographic and SNP ascertainment models, and additional options are defined in the model_file.csv.
 
 All instances of any argument must start with a dash followed by the corresponding argument parameters, 
 and value(s). 
@@ -197,11 +194,21 @@ For example,
 -ej, T1, 1, 2
 ```
 
-###### Setup simulation arguments
-`-macs`: macs location  
-* Path to macs executable in relation to the working directory.
-This is only relavent if `macs` is specified in the command line argument, since `macs_file` does not simulate and `macsswig` uses it's own internal macs version. 
-When using the `macs` option, we recommend using the compiled executable in `./macs`.
+##### Setup simulation arguments
+One of the following options must be included:   
+`-macs_file` - read in static output from MaCS. This should only be used for rigorous testing.  
+`-macs` - use the original simulator [MaCS](https://github.com/gchen98/macs). This option will stream the MaCS simulation output directly to be read into a python bitarray. This option is ideal for rigorous testing that requires stable reproducible results.  
+`-macsswig` - use the modified version of MaCS, macsswig.
+
+Following the `-macs` and `-macs_file` flags there should be a path to either the executable or static file in relation to the working directory. For example:
+```
+-macs, ./bin/macs
+```
+or 
+```
+-macs_file, tests/test_data/sites1000000.txt
+```
+
 
 `-length`: length  
 * how many base pairs you want to simulate
@@ -214,13 +221,11 @@ If a seed is provided, reproducible parameters will be picked from the priors.
 Using a seed will also cause reproducible simulations with macs.  
 *The seed does not currently work with macsswig*
 
-###### Demographic simulation arguments
+##### Demographic simulation arguments
 All argument flags are based on macs arguments (see macs manual for more detail).  
 
 `-t`  
 * mutation rate per site per 4N generations
-
-
 
 `-d`  
 * enable debugging messages. No entry will default to allowing debugging 
@@ -310,13 +315,20 @@ populations at time t
 * t is a time value. 
 * joins population i with population j at time t
 
-###### SNP array ascertainment arguments
-If the user would like to create a pseudo array from the simulation, three additional arguments must be included in the model_file:  
+##### SNP array ascertainment arguments
+If the user would like to create a pseudo array from the simulation, four additional arguments must be included in the model_file:  
+
 `-discovery`, followed by the populations (defined by their numbers from `-n`) that should be used to discover the SNP (e.g. the HapMap populations).
 These are the populations that will be used to create the pseudo array.
 When calculating summary statistics, summary statistics based on whole genome simulation and pseudo array will be calculated for these populations.    
+
 `-sample`, followed by the populations (defined by their numbers from `-n`) that are the samples of interest for demographic interest.      
-`daf`, followed by the parameter name for daf.
+
+`-daf`, followed by the parameter name for daf.  
+
+`-array`, followed by the full path of file to use as template for the SNP array in [bed format](http://bedtools.readthedocs.io/en/latest/content/general-usage.html).
+The third column is used as the physical positions of the SNP for the pseudo array. 
+
 
 For example:
 ```text
@@ -334,9 +346,31 @@ For example:
 -discovery, 1
 -sample, 2
 -daf, daf
+-array, array_template/ill_650_test.bed
 ```
 
-###### Ordering of time-specific events
+
+An example of an array template is:  
+```text
+chr22	0	15929526
+chr22	0	15991515
+chr22	0	16288162
+chr22	0	16926611
+chr22	0	16990146
+chr22	0	17498992
+chr22	0	17540297
+chr22	0	17728199
+chr22	0	17760714
+chr22	0	18180154
+chr22	0	18217275
+chr22	0	18220413
+```
+
+[//]: <> (The option `-nonrandom_discovery` can also be included in the model_file.
+`True` to randomly pick number of individuals for SNP discovery, or `False` to use all discovery individuals.)
+
+
+##### Ordering of time-specific events
 When using priors, if some demographic events must happen in a certain order, the order can be specified by adding the order number to the argument.
 For example say there are two demographic events, a population split and instantaneous growth, but the instantaneous growth must happen before the population split, we can indicate that in the model file:
 ```text
@@ -354,50 +388,21 @@ For example, say we wanted growth to occur at the same time as the population sp
 ```
 In this case, the population split will technically be simulated slightly after the growth.
 
-##### sim_option
-Choose between `macs` and `macsswig`.  
-`macs_file` - read in static output from MaCS. This should only be used for rigorous testing.  
-`macs` - use the original simulator [MaCS](https://github.com/gchen98/macs). This option will stream the MaCS simulation output directly to be read into a python bitarray. This option is ideal for rigorous testing that requires stable reproducible results.  
-`macsswig` - use the modified version of MaCS, macsswig.
-
-##### jobID
-This is a unique identifier for the job. It is used in the names of the output files.
-For example, the output file with the summary statistics is named `ms_output_{jobid}.summary`.
-
-##### random_discovery
-`True` to randomly pick number of individuals for SNP discovery, or `False` to use all discovery individuals.
-
-#### Optional arguments
-##### array_template
-Full path of file to use as template for the SNP array in [bed format](http://bedtools.readthedocs.io/en/latest/content/general-usage.html).
-The third column is used as the physical positions of the SNP for the pseudo array. 
-
-e.g.
-```text
-chr22	0	15929526
-chr22	0	15991515
-chr22	0	16288162
-chr22	0	16926611
-chr22	0	16990146
-chr22	0	17498992
-chr22	0	17540297
-chr22	0	17728199
-chr22	0	17760714
-chr22	0	18180154
-chr22	0	18217275
-chr22	0	18220413
-```
-
-
 ##### germline
-Use [GERMLINE](https://github.com/sgusev/GERMLINE) to find shared IBD segments between all simulated individuals from pseudo array.
+*currently has a bug*
+
+The option `-germline` can be included in the model_file to use [GERMLINE](https://github.com/sgusev/GERMLINE) to find shared IBD segments between all simulated individuals from pseudo array.
 Does not use the genetic map to run GERMLINE.  
 Runs GERMLINE as:  
 ```
 bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ped_name map_name out_name "-bits 10 -min_m min_m"
 ```
 
-##### output_dir
+#### jobID
+This is a unique identifier for the job. It is used in the names of the output files.
+For example, the output file with the summary statistics is named `ms_output_{jobid}.summary`.
+
+#### output_dir
 
 
 ## Pegasus workflow on the Open Science Grid

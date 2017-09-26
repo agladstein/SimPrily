@@ -1,1 +1,0 @@
-macs_args = ['macs', str(na + nb), str(length), '-s', '3239188', '-t', str(macs_theta), '-r', str(macs_rho), '-h', '1e5', '-R', 'genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs', '-I', '2', str(na), str(nb), '-ej', str(scaled_T), '1', '2']

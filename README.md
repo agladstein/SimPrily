@@ -68,31 +68,27 @@ simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1
 
 e.g. One Test simulation:  
 ```
-python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
+python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 output_dir
 ```
 
+
 #### Input  
-`simprily.py` takes 8 arguments.   
+`simprily.py` takes 4 arguments.   
 
 Run as  
 ```
-python simprily.py param_file.txt model_file.csv sim_option jobID array_template germline output_dir
+python simprily.py param_file.txt model_file.csv jobID output_dir
 ```
 1. `param_file.txt` = full path to file containing parameter values or priors
 2. `model_file.csv` = full path to file containing model commands
-3. `sim_option` = macs or macsswig
-4. `jobID` = can be any unique value to identify the output  
-5. `array_template` = bed file with physical position of SNPs on array to use as template for simulated pseudo array.  
-6. `germline` = 0 to run GERMLINE, 1 to not run GERMLINE. ##Change this flag  
-7. `random_discovery` = True to randomly pick number of individuals for SNP discovery, or False to use half of the discovery individuals.
-8. `output_dir` = path to the directory to output to. No argument will use the default of current dir `.` 
+3. `jobID` = can be any unique value to identify the output  
+4. `output_dir` = path to the directory to output to. No argument will use the default of current dir `.` 
 
 
 #### Output
-Four subdirectories are created in the directory specified in the `output_dir` argument.  
+Three subdirectories are created in the directory specified in the `output_dir` argument.  
 ```
-output_dir/sim_values
-output_dir/results_sims
+output_dir/results
 output_dir/sim_data
 output_dir/germline_out
 ```
@@ -104,13 +100,10 @@ Intermediate files go to `output_dir/sim_data` and `output_dir/germline_out`.
 These files are NOT automatically removed in python script, but are unnecessary once the job is complete.  
 
 ##### Results files
-Output files go to `output_dir/sim_values` and `output_dir/results_sims`.  
-`output_dir/sim_values` contains the parameter values used in the simulation.
-The first line is a header with the parameter names.
-The second line is the parameter values.  
-`output_dir/results_sims` contains the summary statistics calculated from the simulation.
-The first line is a header with the summary statistics names.
-The second line is the summary statistics values.
+Output files go to `output_dir/results`.  
+`output_dir/results` contains the parameter values used in the simulation and the summary statistics calculated from the simulation.  
+The first line is a header with the parameter names and summary statistics names.
+The second line is the parameter values and summary statistics values.  
 
 -------------------------
 
