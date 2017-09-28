@@ -177,7 +177,7 @@ def main(args):
             os.remove(ped_file_name)
             os.remove(map_file_name)
 
-        if using_pseudo_array:
+        if using_pseudo_array and processedData.get('germline') or processedData.get('pedmap'):
             make_ped_file(ped_file_name, sequences)
             make_map_file(map_file_name, pos_asc, chr_number, avail_sites)
 
