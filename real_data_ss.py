@@ -7,7 +7,7 @@ import os
 
 from alleles_generator.bit_structure import set_seq_bits, set_discovery_bits, set_real_genome_bits, set_real_array_bits
 from alleles_generator.real_file import AllelesReal
-from alleles_generator.seqInfo import create_real_sequences
+from alleles_generator.seqInfo import create_real_genotyped
 from main_tools import global_vars
 from main_tools.housekeeping import debugPrint, prettyPrintDict
 from main_tools.write_files import create_sim_directories, write_stats_file
@@ -45,17 +45,17 @@ def main(args):
     debugPrint(3,"#"*22+"param_dict:\n{}".format(prettyPrintDict(processedData['param_dict']))+"#"*22)
 
     ### Create a list of Sequence class instances. These will contain the bulk of all sequence-based data
-    sequences = create_real_sequences(processedData, args)
-    names = [seq.name for seq in sequences]
+    genotyped = create_real_genotyped(processedData, args)
+    names = [seq.name for seq in genotyped]
 
-    n_d = sum([1 for seq in sequences if seq.type == 'discovery'])
+    n_d = sum([1 for seq in genotyped if seq.type == 'discovery'])
 
     print 'name\ttotal\tpanel\tignore'
-    for seq in sequences:
+    for seq in genotyped:
         print '{}\t{}\t{}\t{}'.format(seq.name, seq.tot, seq.panel, seq.ignore)
 
-    total = sum([seq.tot for seq in sequences])
-    print 'total samples:', sum([seq.ignore for seq in sequences if seq.type=='discovery'] + [seq.tot for seq in sequences if seq.type=='sample'])
+    total = sum([seq.tot for seq in genotyped])
+    print 'total samples:', sum([seq.ignore for seq in genotyped if seq.type=='discovery'] + [seq.tot for seq in genotyped if seq.type=='sample'])
 
 
     ##########################################################################
@@ -65,12 +65,12 @@ def main(args):
     genome_file = argv[4]
     job = os.path.basename(genome_file)
     seq_alleles_genome = AllelesReal(str(genome_file)+'.tped')
-    set_real_genome_bits(sequences, seq_alleles_genome)
+    set_real_genome_bits(genotyped, seq_alleles_genome)
     if using_pseudo_array == True:
         array_file = argv[5]
         job = str(job) + '_' + str(os.path.basename(array_file))
         seq_alleles_array = AllelesReal(str(array_file) + '.tped')
-        set_real_array_bits(sequences, seq_alleles_array)
+        set_real_array_bits(genotyped, seq_alleles_array)
 
     ##########################################################################
     ###################### Calculate summary statistics ######################
@@ -78,13 +78,13 @@ def main(args):
     res, head  = [], []
 
     ### Calculate summary stats from genomes
-    stat_tools.store_segregating_site_stats(sequences, res, head)
-    stat_tools.store_pairwise_FSTs(sequences, n_d, res, head)
+    stat_tools.store_segregating_site_stats(genotyped, res, head)
+    stat_tools.store_pairwise_FSTs(genotyped, n_d, res, head)
 
     ### Calculate summary stats from the ascertained SNPs
     if using_pseudo_array:
-        stat_tools.store_array_segregating_site_stats(sequences, res, head)
-        stat_tools.store_array_FSTs(sequences, res, head)
+        stat_tools.store_array_segregating_site_stats(genotyped, res, head)
+        stat_tools.store_array_FSTs(genotyped, res, head)
 
         print 'Make ped and map files'
         ped_file_name = '{0}/{1}.ped'.format(sim_data_dir, job)

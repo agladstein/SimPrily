@@ -237,8 +237,12 @@ def processModelData(variables, modelData):
     macs_args = [flags['-macs'][0][0],str(total),flags['-length'][0][0]]
 
     macs_args.append("-I")
+    random_discovery = True
     for tempLine in flags["-I"][0]:
-        macs_args.append(tempLine)
+        if random_discovery:
+            macs_args.append(int(tempLine) + random.randint(2,int(tempLine)))
+        else:
+            macs_args.append(tempLine)
 
 
     # seasons is all the time based events
