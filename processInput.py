@@ -51,6 +51,7 @@ def readParamsFile(in_file):
         if "=" in line:
             info[line.split("=")[0].strip()] = line.split("=")[1].strip()
     return info
+
 def getUnscaledValue(variables, tempNum, tempLow=False):
     tempVar = ""
     if tempNum in variables.keys():
@@ -226,23 +227,25 @@ def processModelData(variables, modelData):
     processedData = {}
     
     flags = populateFlags(variables, modelData)
-    
 
-
-    # creates a total value from the <n_n> values (from -I)
-    numlist = [float(x) for x in flags['-I'][0][1:]]
-    total = sum(numlist)
-
-    
-    macs_args = [flags['-macs'][0][0],str(total),flags['-length'][0][0]]
-
-    macs_args.append("-I")
-    random_discovery = True
-    for tempLine in flags["-I"][0]:
-        if random_discovery:
-            macs_args.append(int(tempLine) + random.randint(2,int(tempLine)))
-        else:
-            macs_args.append(tempLine)
+    random_discovery = False
+    if random_discovery:
+        macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        sizes = map(int, flags["-I"][0][1:])
+        for discovery_pop_str in flags["-discovery"][0]:
+            discovery_pop = int(discovery_pop_str)-1
+            sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
+        total = float(sum(sizes))
+        macs_args.insert(1,total)
+        sizes_str = map(str, sizes)
+        macs_args.extend(sizes_str)
+    else:
+        # creates a total value from the <n_n> values (from -I)
+        numlist = [float(x) for x in flags['-I'][0][1:]]
+        total = sum(numlist)
+        macs_args = [flags['-macs'][0][0], str(total), flags['-length'][0][0], "-I"]
+        for genotyped_size in flags["-I"][0]:
+            macs_args.append(genotyped_size)
 
 
     # seasons is all the time based events
