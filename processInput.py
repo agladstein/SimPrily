@@ -167,12 +167,10 @@ def populateFlags(variables, modelData):
     # loops through all items in data
     # (data[i] = a line from input file that's has a variable)
         lineSplit = line.split(',')
-
-
             
         flag = lineSplit[0]
 
-        if "_" in flag:
+        if "_" in flag and "macs_file" not in flag:
             if len(lineSplit)>1:
                 lineSplit[1] = lineSplit[1].strip()
                 if lineSplit[1] in variables:
@@ -232,10 +230,12 @@ def processModelData(variables, modelData):
     # creates a total value from the <n_n> values (from -I)
     numlist = [float(x) for x in flags['-I'][0][1:]]
     total = sum(numlist)
-
-    
-    macs_args = [flags['-macs'][0][0],str(total),flags['-length'][0][0]]
-
+    if '-macs' in flags:
+        macs_args = [flags['-macs'][0][0],str(total),flags['-length'][0][0]]
+    if '-macs_file' in flags:
+        macs_args = [flags['-macs_file'][0][0],str(total),flags['-length'][0][0]]
+    if '-macsswig' in flags:
+        macs_args = [flags['-macsswig'][0][0],str(total),flags['-length'][0][0]]
     macs_args.append("-I")
     for tempLine in flags["-I"][0]:
         macs_args.append(tempLine)
@@ -281,6 +281,8 @@ def processModelData(variables, modelData):
                 if flag == "-array":
                     continue
                 if flag == "-nonrandom_discovery":
+                    continue
+                if flag == "-macsswig":
                     continue
                 
                 if flag == "-Ne":
