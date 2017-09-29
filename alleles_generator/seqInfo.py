@@ -42,32 +42,7 @@ def create_sequences(processedData, args):
         seq = SeqInfo(name, tot, seq_type = 'sample')
 
         seq.panel = seq.tot
+        seq.genotyped = seq.tot
         sequences.append(seq)
 
     return sequences
-
-
-# def create_real_sequences(processedData, args):
-#     sequences = []
-#
-#     ### Initialize all discovery type sequence data
-#     for i, ind in enumerate(processedData.get('discovery')):
-#         tot = processedData['I'][ind - 1]
-#         name = 'D' + str(i + 1)
-#         seq = SeqInfo(name, tot, seq_type='discovery')
-#
-#         seq.genotyped = random.randint(4, seq.tot - 1)  # number of genotyped cannot be less than 4 in order for Tajima's D to iterate
-#
-#         seq.panel = seq.tot - seq.genotyped
-#         sequences.append(seq)
-#
-#     ### Initialize all sample type sequence data
-#     for i, ind in enumerate(processedData.get('sample')):
-#         tot = processedData['I'][ind - 1]
-#         name = 'S' + str(i + 1)
-#         seq = SeqInfo(name, tot, seq_type='sample')
-#
-#         seq.panel = seq.tot
-#         sequences.append(seq)
-#
-#     return sequences
