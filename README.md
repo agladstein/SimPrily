@@ -45,7 +45,7 @@ pip install --upgrade pip
 pip install pip-tools
 cd /vagrant
 pip-sync
-~/simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
+~/simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 output_dir
 ```
 
 If not using Vagrant:
@@ -60,7 +60,7 @@ cd SimPrily
 pip install --upgrade pip
 pip install pip-tools
 pip-sync
-simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
+simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 output_dir
 ```
 
 
