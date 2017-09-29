@@ -228,7 +228,7 @@ def processModelData(variables, modelData):
     
     flags = populateFlags(variables, modelData)
 
-    random_discovery = False
+    random_discovery = True
     if random_discovery:
         macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
         sizes = map(int, flags["-I"][0][1:])
@@ -236,7 +236,7 @@ def processModelData(variables, modelData):
             discovery_pop = int(discovery_pop_str)-1
             sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
         total = float(sum(sizes))
-        macs_args.insert(1,total)
+        macs_args.insert(1,str(total))
         sizes_str = map(str, sizes)
         macs_args.extend(sizes_str)
     else:
