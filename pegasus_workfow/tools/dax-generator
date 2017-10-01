@@ -131,6 +131,7 @@ for job_id in range(job_num + 1):
 # recurisvly process the outputs - this is so that we can handle the large amount of files
 final_out_file = merge_outputs(current_outputs, 0)
 
+############### Don't need this part ################
 # generate the .txt summary files
 j = Job(name="summarize.sh")
 j.uses(final_out_file, link=Link.INPUT)
@@ -142,6 +143,7 @@ j.uses(out2, link=Link.OUTPUT, transfer=True)
 # set a priority to the jobs run in the order the wf was submitted
 j.addProfile(Profile(Namespace.CONDOR, "priority", base_priority + 10))
 dax.addJob(j)
+#####################################################
 
 # Write the DAX to stdout
 f = open("dax.xml", "w")
