@@ -414,6 +414,25 @@ For example, the output file with the summary statistics is named `ms_output_{jo
 
 ## Pegasus workflow on the Open Science Grid
 
+
+Run interactively with the Singularity container on the OSG  
+```bash
+[agladstein@login02 brassica]$ singularity shell --home $PWD:/srv --pwd /srv /cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest
+Singularity: Invoking an interactive shell within container...
+
+$ bash
+agladstein@login02:~$ export PATH=/usr/local/bin:/usr/bin:/bin
+agladstein@login02:~$ python /app/simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv 2 out_dir
+```
+
+### Monitoring and Debugging
+
+To find the run times of the executable:
+```
+pegasus-statistics -s all
+```
+Then, look at `Transformation statistics`.
+
 ### Submit a workflow
 
 All components of the Pegasus workflow are located in the directory 
