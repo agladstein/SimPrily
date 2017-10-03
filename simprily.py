@@ -63,13 +63,13 @@ def main(args):
 
     n_d = sum([1 for seq in sequences if seq.type == 'discovery'])
 
-    print 'name\ttotal\tpanel\tignore'
+    print 'name\ttotal\tpanel\tgenotyped'
     for seq in sequences:
-        print '{}\t{}\t{}\t{}'.format(seq.name, seq.tot, seq.panel, seq.ignore)
+        print '{}\t{}\t{}\t{}'.format(seq.name, seq.tot, seq.panel, seq.genotyped)
 
 
     total = sum([seq.tot for seq in sequences])
-    print 'total samples:', sum([seq.ignore for seq in sequences if seq.type=='discovery'] + [seq.tot for seq in sequences if seq.type=='sample'])
+    print 'total samples:', sum([seq.genotyped for seq in sequences if seq.type=='discovery'] + [seq.tot for seq in sequences if seq.type=='sample'])
 
 
     debugPrint(1,"\n-".join(" ".join(processedData['macs_args']).split(" -")))

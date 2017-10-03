@@ -12,13 +12,13 @@ def set_asc_bits(seq_list, n_asc, pos, site_inds):
     if n_asc == len(site_inds):
         for x in xrange(n_asc):
             for seq in seq_list:
-                n = seq.ignore if seq.type == 'discovery' else seq.tot
+                n = seq.genotyped if seq.type == 'discovery' else seq.tot
                 bit_list = seq.CGI_bits if seq.type == 'discovery' else seq.bits
                 seq.asc_bits.extend( bit_list[ pos[x]*n : pos[x]*n + n ] )
     elif len(site_inds) > n_asc:
         for x in xrange( len(pos) ):
             for seq in seq_list:
-                n = seq.ignore if seq.type == 'discovery' else seq.tot
+                n = seq.genotyped if seq.type == 'discovery' else seq.tot
                 bit_list = seq.CGI_bits if seq.type == 'discovery' else seq.bits
                 seq.asc_bits.extend( bit_list[ site_inds[pos[x]]*n : site_inds[pos[x]]*n + n])
 
@@ -27,7 +27,7 @@ def make_ped_file(file_name, seq_list):
 
     for seq in seq_list:
         if seq.type == 'discovery':
-            n = seq.ignore
+            n = seq.genotyped
         elif seq.type == 'sample':
             n = seq.tot
         write_ped(fileped, seq, n)
