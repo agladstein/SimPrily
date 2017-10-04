@@ -71,5 +71,7 @@ def argsFromModelCSV(filename):
     if 'SNP file' not in model_args:
         print("No SNP file provided in model_file.csv")
         sys.exit(1)
+    if 'pedmap' not in model_args:
+        model_args['pedmap'] = False
     return model_args
         
