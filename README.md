@@ -45,7 +45,7 @@ pip install --upgrade pip
 pip install pip-tools
 cd /vagrant
 pip-sync
-~/simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
+~/simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 output_dir
 ```
 
 If not using Vagrant:
@@ -60,7 +60,7 @@ cd SimPrily
 pip install --upgrade pip
 pip install pip-tools
 pip-sync
-simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
+simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 output_dir
 ```
 
 
@@ -108,16 +108,15 @@ The second line is the parameter values and summary statistics values.
 -------------------------
 
 ## Open Science Grid
+Must have an Open Science Grid Connect account.  
+Create an account at https://osgconnect.net/signup
 
-Run interactively with the Singularity container on the OSG  
-```bash
-[agladstein@login02 brassica]$ singularity shell --home $PWD:/srv --pwd /srv /cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest
-Singularity: Invoking an interactive shell within container...
-
-$ bash
-agladstein@login02:~$ export PATH=/usr/local/bin:/usr/bin:/bin
-agladstein@login02:~$ python /app/simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
+Log onto Open Science Grid Connect
 ```
+ssh user-name@login01.osgconnect.net
+```
+
+Working directory must be `pegasus_workflow`.
 
 Submit a Pegasus workflow (must be in `pegasus_workflow`)
 ```bash
@@ -128,7 +127,13 @@ Submit a Pegasus workflow (must be in `pegasus_workflow`)
 e.g.  
 ```bash
 ./submit ../examples/eg2/Param_file_eg2.txt ../examples/eg2/model_file_eg2.csv ../array_template/ill_650_test.bed ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs 10
+``` 
+
+The results will appear in 
 ```
+/local-scratch/user-name/workflows/simprily_id
+```
+where `user-name` is specific to the user, and `id` is the workflow id.
 
 -------------------------
 

@@ -27,3 +27,4 @@
 -sample,4,5,6
 -daf,daf
 -array, array_template/ill_650_test.bed
+-random_discovery, True
