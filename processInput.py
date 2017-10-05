@@ -164,7 +164,10 @@ def processModelData(variables, modelData):
     # random_discovery = True
     # if random_discovery:
     if flags['-random_discovery']:
-        macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        if '-macs_file' in flags:
+            macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        elif '-macs' in flags:
+            macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
         sizes = map(int, flags["-I"][0][1:])
         for discovery_pop_str in flags["-discovery"][0]:
             discovery_pop = int(discovery_pop_str)-1
