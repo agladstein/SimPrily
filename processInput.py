@@ -166,6 +166,8 @@ def processModelData(variables, modelData):
     if flags['-random_discovery']:
         if '-macs_file' in flags:
             macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        elif '-macsswig' in flags:
+              macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
         elif '-macs' in flags:
             macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
         sizes = map(int, flags["-I"][0][1:])
@@ -176,6 +178,7 @@ def processModelData(variables, modelData):
         macs_args.insert(1,str(total))
         sizes_str = map(str, sizes)
         macs_args.extend(sizes_str)
+        
     else:
         # creates a total value from the <n_n> values (from -I)
         numlist = [float(x) for x in flags['-I'][0][1:]]
@@ -217,6 +220,9 @@ def processModelData(variables, modelData):
                     continue
                 if flag == "-I":
                     processedData["I"] = [int(s.strip()) for s in tempLine[1:] if s]
+                    continue
+                if flag == "-macsswig":
+                    processedData['macsswig'] = tempLine[0]
                     continue
                 
                 #----------------------- For Added Arguments from Model_CSV
