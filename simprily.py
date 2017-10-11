@@ -1,7 +1,6 @@
 import sys
 from collections import OrderedDict
 from sys import argv
-
 import numpy as np
 import os
 
@@ -15,7 +14,6 @@ from main_tools import global_vars
 from main_tools.housekeeping import process_args, debugPrint, prettyPrintDict
 from main_tools.write_files import create_sim_directories, write_sim_results_file
 from processInput import processInputFiles
-from simulation import macsSwig
 from simulation.run_sim import run_macs
 from simulation.sim_tools import get_sim_positions, get_sim_positions_old
 from summary_statistics import stat_tools
@@ -25,7 +23,7 @@ verbos = 0
 
 
 def main(args):
-    print ''
+    print('')
 
     # Enable David's debugging thing
     global_vars.init()
@@ -40,7 +38,7 @@ def main(args):
     # Use dictionary keys instead of index keys for args
     args = process_args(args)
     job = str(args['job'])  # must be a number
-    print 'JOB', job
+    print('JOB', job)
 
     sim_option = args['sim option']
 
@@ -63,13 +61,13 @@ def main(args):
 
     n_d = sum([1 for seq in sequences if seq.type == 'discovery'])
 
-    print 'name\ttotal\tpanel\tgenotyped'
+    print('name\ttotal\tpanel\tgenotyped')
     for seq in sequences:
-        print '{}\t{}\t{}\t{}'.format(seq.name, seq.tot, seq.panel, seq.genotyped)
+        print('{}\t{}\t{}\t{}'.format(seq.name, seq.tot, seq.panel, seq.genotyped))
 
 
     total = sum([seq.tot for seq in sequences])
-    print 'total samples:', sum([seq.genotyped for seq in sequences if seq.type=='discovery'] + [seq.tot for seq in sequences if seq.type=='sample'])
+    print('total samples:', sum([seq.genotyped for seq in sequences if seq.type=='discovery'] + [seq.tot for seq in sequences if seq.type=='sample']))
 
 
     debugPrint(1,"\n-".join(" ".join(processedData['macs_args']).split(" -")))
@@ -86,9 +84,9 @@ def main(args):
     while SNPs_exceed_available_sites:
 
         if sim_option == 'macsswig':
-            print 'Run macsswig simulation'
+            print('Run macsswig simulation')
             sim = macsSwig.swigMain(len(processedData['macs_args']), processedData['macs_args'])
-            print 'Finished macsswig simulation'
+            print('Finished macsswig simulation')
             nbss = sim.getNumSites()
 
             ### Get data from the simulations
@@ -126,7 +124,7 @@ def main(args):
 
         set_discovery_bits(sequences)
 
-        print 'number sites in simulation:', nbss
+        print('number sites in simulation:', nbss)
 
         ##########################################################################
         ### Create pseudo array according to ascertainment scheme and template ###
@@ -134,13 +132,13 @@ def main(args):
 
         if using_pseudo_array:
             SNPs = get_SNP_sites(args['SNP file'])
-            print 'nb Array SNPs:', len(SNPs)
+            print('nb Array SNPs:', len(SNPs))
 
             asc_panel_bits = set_panel_bits(nbss, sequences)
-            print 'number of chromosomes in asc_panel:', asc_panel_bits.length()/nbss
+            print('number of chromosomes in asc_panel:', asc_panel_bits.length()/nbss)
 
             ### Get pseudo array sites
-            print 'Make pseudo array'
+            print('Make pseudo array')
             [pos_asc, nbss_asc, avail_site_indices, avail_sites] = pseudo_array_bits(asc_panel_bits, processedData['daf'], sim_positions, SNPs)
             nb_avail_sites = len(avail_sites)
         else:
@@ -168,7 +166,7 @@ def main(args):
             stat_tools.store_array_segregating_site_stats(sequences, res, head)   
             stat_tools.store_array_FSTs(sequences, res, head)
 
-        print 'Make ped and map files'
+        print('Make ped and map files')
         ped_file_name = '{0}/macs_asc_{1}_chr{2}.ped'.format(sim_data_dir, job, str(chr_number))
         map_file_name = '{0}/macs_asc_{1}_chr{2}.map'.format(sim_data_dir, job, str(chr_number))
         out_file_name = '{0}/macs_asc_{1}_chr{2}'.format(germline_out_dir, job, str(chr_number))
@@ -184,7 +182,7 @@ def main(args):
         ### Use Germline to find IBD on pseduo array ped and map files
         do_i_run_germline = int(args['germline'])
 
-        print 'run germline? ' + str(do_i_run_germline)
+        print('run germline? ' + str(do_i_run_germline))
         if (do_i_run_germline == 0):
             ########################### <CHANGE THIS LATER> ###########################
             ### Germline seems to be outputting in the wrong unit - so I am putting the min at 3000000 so that it is 3Mb, but should be the default.
@@ -194,18 +192,18 @@ def main(args):
 
         ### Get IBD stats from Germline output
         if os.path.isfile(out_file_name + '.match'):
-            print 'Reading Germline IBD output'
+            print('Reading Germline IBD output')
             [IBD_pairs, IBD_dict] = process_germline_file(out_file_name, names)
 
-            print 'Calculating summary stats'
+            print('Calculating summary stats')
             stats = OrderedDict([('num', len), ('mean', np.mean), ('med', np.median), ('var', np.var)])
             stat_tools.store_IBD_stats(stats, IBD_pairs, IBD_dict, res, head)
             stat_tools.store_IBD_stats(stats, IBD_pairs, IBD_dict, res, head, min_val=30)
 
-        print 'finished calculating ss'
+        print('finished calculating ss')
 
 
-    print processedData['param_dict']
+    print(processedData['param_dict'])
 
     #Previously used for separate files
     '''
@@ -216,11 +214,11 @@ def main(args):
     write_sim_results_file(sim_results_dir, job, processedData['param_dict'], res, head)
     
 
-    print ''
-    print '######################################'
-    print '### PROGRAM COMPLETED SUCCESSFULLY ###'
-    print '######################################'
-    print ''
+    print('')
+    print('######################################')
+    print('### PROGRAM COMPLETED SUCCESSFULLY ###')
+    print('######################################')
+    print('')
 
 
 if __name__ == '__main__':
