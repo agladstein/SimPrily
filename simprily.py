@@ -11,7 +11,7 @@ from alleles_generator.seqInfo import create_sequences
 from ascertainment.asc_tools import set_asc_bits, make_ped_file, make_map_file, get_SNP_sites
 from ascertainment.pseudo_array import pseudo_array_bits
 from main_tools import global_vars
-from main_tools.housekeeping import process_args, debugPrint, prettyPrintDict
+from main_tools.housekeeping import process_args, debugPrint, prettyPrintSet
 from main_tools.write_files import create_sim_directories, write_sim_results_file
 from processInput import processInputFiles
 from simulation.run_sim import run_macs
@@ -52,7 +52,8 @@ def main(args):
     if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):
         using_pseudo_array = False
 
-    debugPrint(3,"#"*22+"param_dict:\n{}".format(prettyPrintDict(processedData['param_dict']))+"#"*22)
+    debugPrint(3, "Here is processedData", processedData)
+    # debugPrint(3,"#"*22+"param_dict:\n{}".format(prettyPrintDict(processedData['param_dict']))+"#"*22)
 
 
     ### Create a list of Sequence class instances. These will contain the bulk of all sequence-based data

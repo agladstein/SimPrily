@@ -3,16 +3,33 @@ from main_tools.my_random import MY_RANDOM as random
 import sys
 
 
-def prettyPrintDict(dic):
-    out = ""
-    for x in dic:
-        out += x+'-->' + dic[x] + "\n"
-    return out
+def prettyPrintSet(level, prefix, element, dictionary=None):
+    if dictionary:
+        print("{}{}{} --> {}".format(prefix, "  "*level, element, dictionary[element]))
+    else:
+        print("{}{}{}".format(prefix, "  "*level, element))
+    if type(element) == type({}):
+        for item in element:
+            prettyPrintSet(level + 1, prefix, item, dictionary)
+    elif type(element) == type([]):
+        for item in element:
+            prettyPrintSet(level + 1, prefix, item)
 
-def debugPrint(verbosLevel, string):
+def debugPrint(verbosLevel, string, dictionary=None):
     if global_vars.verbos >= verbosLevel: 
-        for line in string.split("\n"):
-            print("  "*(verbosLevel-1) + "debug-" + str(verbosLevel) +": "+ line)
+        spacing = "  "*(verbosLevel-1)
+        BLUE_START = "\033[94m"
+        COLOR_END = "\033[0m"
+        prefix = "{}{}debug-{}: {}".format(spacing,BLUE_START,verbosLevel,COLOR_END)
+        print("{}{}".format(prefix,string))
+        if dictionary:
+            for element in dictionary:
+                if type(dictionary) == type({}):
+                    prettyPrintSet(1, prefix, element, dictionary)
+                else:
+                    prettyPrintSet(1, prefix, element)
+
+
 
 def process_args(arguments):
     args = {'command':arguments[0],
