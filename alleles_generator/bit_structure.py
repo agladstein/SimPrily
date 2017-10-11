@@ -10,12 +10,12 @@ def set_seq_bits(sequences, alleles):
 def set_discovery_bits(sequences):
     for seq in sequences:
         if seq.type == 'discovery':
-            for ind in xrange(0, len(seq.bits), seq.tot):
+            for ind in range(0, len(seq.bits), seq.tot):
                 seq.CGI_bits.extend(seq.bits[ind : ind+seq.genotyped])
 
 def set_panel_bits(n, sequences):
     panel_bits = bitarray()
-    for site in xrange(n):
+    for site in range(int(n)):
         for seq in sequences:
             if seq.type == 'discovery':
                 panel_bits.extend( seq.bits[ site*seq.tot + seq.genotyped : site*seq.tot + seq.tot ] )

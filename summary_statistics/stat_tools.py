@@ -1,4 +1,8 @@
-import afs_stats_bitarray
+import sys
+if (sys.version_info > (3, 0)):
+    import summary_statistics.afs_stats_bitarray as afs_stats_bitarray
+else:
+    import afs_stats_bitarray
 
 def store_segregating_site_stats(seq_list, results, head_list):
     for seq in seq_list:

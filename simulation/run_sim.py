@@ -11,10 +11,10 @@ def run_macs(macs_args, sequences):
     while True:
         line = proc.stdout.readline()
         line = line.rstrip()
-        if line != '':
-            if line.startswith("SITE:"):
-            # debugPrint(3,line)
-                columns = line.split('\t')
+        # line = line.decode("utf-8") 
+        if line != b'':
+            if line.startswith(b"SITE:"):
+                columns = line.split(b'\t')
                 site_alleles = columns[4].strip()
                 position.append(columns[2])
                 seq_loc = 0
