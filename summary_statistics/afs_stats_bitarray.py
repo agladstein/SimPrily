@@ -7,7 +7,7 @@ def base_S_ss(seq_bits,n):
     for g in range(n - 1):
         spec_zero.append(0)
     var_ss = 0  # Segregating sites
-    for site in xrange(0, seq_bits.length(), n):
+    for site in range(0, seq_bits.length(), n):
         if seq_bits[site:site+n].any() and not seq_bits[site:site+n].all(): ##this ignores sites that have all zeros, or all ones
             var_ss = var_ss + 1
             spec_zero[seq_bits[site:site+n].count(1) - 1] = spec_zero[seq_bits[site:site+n].count(1) - 1] + 1
@@ -56,9 +56,9 @@ def FST2(seq1_bits,pi1,n1,seq2_bits,pi2,n2):
     k3=0
     #Pi within populations
     pw=(pi1+pi2)/2
-    for i in xrange(0, n1):
+    for i in range(0, n1):
         s1 = seq1_bits[i::n1]
-        for j in xrange(0, n2):
+        for j in range(0, n2):
             s2 = seq2_bits[j::n2]
             k3 = k3 + count_bit_differences(s1,s2)
     pb=k3/(float(n1)*float(n2))

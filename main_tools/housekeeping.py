@@ -30,7 +30,7 @@ def process_args(arguments):
 
 def set_seed(seed_option):
     seed_option = int(seed_option)
-    print seed_option
+    print(seed_option)
     if seed_option == 0:
         random.seed()
     if seed_option > int(0):

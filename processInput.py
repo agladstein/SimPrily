@@ -168,12 +168,16 @@ def processModelData(variables, modelData):
     if flags['-random_discovery']:
         macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
         sizes = map(int, flags["-I"][0][1:])
+        if (sys.version_info > (3, 0)):
+            sizes = list(sizes)
         for discovery_pop_str in flags["-discovery"][0]:
             discovery_pop = int(discovery_pop_str)-1
             sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
         total = float(sum(sizes))
         macs_args.insert(1,str(total))
         sizes_str = map(str, sizes)
+        if (sys.version_info > (3, 0)):
+            sizes_str = list(sizes_str)
         macs_args.extend(sizes_str)
     else:
         # creates a total value from the <n_n> values (from -I)
@@ -219,15 +223,13 @@ def processModelData(variables, modelData):
                     continue
                 
                 #----------------------- For Added Arguments from Model_CSV
-                if flag == "-germline":
+                ignoredFlags = ["-germline",
+                                "-array",
+                                "-nonrandom_discovery",
+                                "-random_discovery"]
+                if flag in ignoredFlags:
                     continue
-                if flag == "-array":
-                    continue
-                if flag == "-nonrandom_discovery":
-                    continue
-                if flag == "-random_discovery":
-                    continue
-                
+
                 if flag == "-Ne":
                     tempLine[0] = getUnscaledValue(variables, tempLine[0])
                 if flag == "-em":
@@ -282,7 +284,7 @@ def processModelData(variables, modelData):
                     macs_args.append(flag.strip())
                     for subLine in tempLine:
                         macs_args.append(subLine.strip())
-            except IndexError, e:
+            except IndexError as e:
                 print("There was an index error!\nThis most likely means your input file has a malformed flag.")
                 print("Try running with -vv argument for last flag ran")
                 sys.exit()

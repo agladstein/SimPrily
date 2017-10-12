@@ -1,14 +1,14 @@
 from subprocess import Popen
 
 def run_germline(ped_name, map_name, out_name, min_m):
-    print 'Running Germline on ' + ped_name + ' ' + map_name
+    print( 'Running Germline on ' + ped_name + ' ' + map_name)
 
     bash_command = 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  {0} {1} {2} "-bits 10 -min_m {3}"'.format(
         ped_name, map_name, out_name, str(min_m))
-    print bash_command
+    print( bash_command)
 
     germ_flag = Popen.wait(Popen(bash_command, shell=True))
-    print 'finished running germline'
+    print( 'finished running germline')
     return germ_flag
 
 def process_germline_file(germfile_name, name_list):
