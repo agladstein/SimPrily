@@ -226,7 +226,8 @@ def processModelData(variables, modelData):
                 ignoredFlags = ["-germline",
                                 "-array",
                                 "-nonrandom_discovery",
-                                "-random_discovery"]
+                                "-random_discovery",
+                                "-pedmap"]
                 if flag in ignoredFlags:
                     continue
 
