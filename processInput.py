@@ -83,7 +83,7 @@ def sci_to_float(s):
 
 def findScaleValue(flags = {}, variables = {}):
     # used for scaling
-    debugPrint(1, "Finding scaling value")
+    debugPrint(2, "Finding scaling value")
     Ne=10000
     if "-Ne" not in flags.keys():
         if "-n" in flags.keys():
@@ -98,7 +98,7 @@ def populateFlags(variables, modelData):
     This will fill a dictionary with keys that equal the flags, and values that
     is a list of every time (in order) the flag is used
     '''
-    debugPrint(1, "Starting: populateFlags ")
+    debugPrint(2, "Starting: populateFlags ")
     flags = OrderedDict()
     orderedEvents = []
     lowTime = False
@@ -158,7 +158,7 @@ def populateFlags(variables, modelData):
 def processModelData(variables, modelData):
     """
     """
-    debugPrint(1, "Starting: processModelData")
+    debugPrint(2, "Starting: processModelData")
     processedData = {}
     
     flags = populateFlags(variables, modelData)
@@ -194,9 +194,9 @@ def processModelData(variables, modelData):
     Ne = findScaleValue(flags, variables)
     
     # processOrderedSeasons(flags, variables)
-    debugPrint(2,"Processing flags in for macs_args")
+    debugPrint(3,"Processing flags in for macs_args")
     for flag in flags.keys():
-        debugPrint(2,"  {}: {}".format(flag,flags[flag]))
+        debugPrint(3,"  {}: {}".format(flag,flags[flag]))
 
         for tempLine in flags[flag]:
             try:
@@ -297,7 +297,7 @@ def processModelData(variables, modelData):
             quit()
             
 
-    debugPrint(1, "Adding events data back to flag pool")
+    debugPrint(2, "Adding events data back to flag pool")
     for i in range(len(seasons)):
         seasons[i][1] = float(seasons[i][1])
     seasons = sorted(seasons, key=itemgetter(1))
@@ -315,21 +315,21 @@ def processInputFiles(paramFile, modelFile):
     This is the function that takes links to two files and outputs a dictionay (processedData)
     With all the (useful) data in the two files
     '''
-    debugPrint(1, "Starting processInputFiles")
+    debugPrint(2, "Starting processInputFiles")
     
     modelData = readModelFile(modelFile)
-    debugPrint(1, "Finished reading " + str(modelFile))
+    debugPrint(2, "Finished reading " + str(modelFile))
     debugPrint(3, "Raw input data into make_args", modelData)
 
     variables = readParamsFile(paramFile)
-    debugPrint(1, "Finished reading " + str(paramFile))
+    debugPrint(2, "Finished reading " + str(paramFile))
     
     debugPrint(3,"Raw Output for variables", variables)
 
 
 
     processedData = processModelData(variables, modelData) # creates the input for macsSwig
-    debugPrint(2,"Priting variables:", variables)
+    debugPrint(3,"Priting variables:", variables)
 
     processedData['param_dict'] = variables
 
