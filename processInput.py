@@ -103,8 +103,6 @@ def populateFlags(variables, modelData):
     # loops through all items in data
     # (data[i] = a line from input file that's has a variable)
         lineSplit = line.split(',')
-
-
             
         flag = lineSplit[0]
 
@@ -166,7 +164,12 @@ def processModelData(variables, modelData):
     # random_discovery = True
     # if random_discovery:
     if flags['-random_discovery']:
-        macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        if '-macs_file' in flags:
+            macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        elif '-macsswig' in flags:
+              macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        elif '-macs' in flags:
+            macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
         sizes = map(int, flags["-I"][0][1:])
         if (sys.version_info > (3, 0)):
             sizes = list(sizes)
@@ -179,6 +182,7 @@ def processModelData(variables, modelData):
         if (sys.version_info > (3, 0)):
             sizes_str = list(sizes_str)
         macs_args.extend(sizes_str)
+        
     else:
         # creates a total value from the <n_n> values (from -I)
         numlist = [float(x) for x in flags['-I'][0][1:]]
@@ -220,6 +224,9 @@ def processModelData(variables, modelData):
                     continue
                 if flag == "-I":
                     processedData["I"] = [int(s.strip()) for s in tempLine[1:] if s]
+                    continue
+                if flag == "-macsswig":
+                    processedData['macsswig'] = tempLine[0]
                     continue
                 
                 #----------------------- For Added Arguments from Model_CSV
