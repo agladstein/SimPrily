@@ -14,3 +14,4 @@
 -sample,2
 -daf,daf
 -array, array_template/ill_650_test.bed
+-random_discovery, True

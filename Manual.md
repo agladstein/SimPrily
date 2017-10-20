@@ -316,7 +316,8 @@ populations at time t
 * joins population i with population j at time t
 
 ##### SNP array ascertainment arguments
-If the user would like to create a pseudo array from the simulation, four additional arguments must be included in the model_file:  
+
+If the user would like to create a pseudo array from the simulation, five additional arguments must be included in the model_file:  
 
 `-discovery`, followed by the populations (defined by their numbers from `-n`) that should be used to discover the SNP (e.g. the HapMap populations).
 These are the populations that will be used to create the pseudo array.
@@ -328,6 +329,11 @@ When calculating summary statistics, summary statistics based on whole genome si
 
 `-array`, followed by the full path of file to use as template for the SNP array in [bed format](http://bedtools.readthedocs.io/en/latest/content/general-usage.html).
 The third column is used as the physical positions of the SNP for the pseudo array. 
+
+`-random_discovery`, followed by `True`. 
+This will add a random number of individuals to the discovery populations to use as the "panel" to create the pseudo array.
+When this option is True, the total number of simulated discovery populations is equal to the number "genotyped" and in the "panel".  
+*currently only works with True option*
 
 
 For example:
@@ -347,6 +353,7 @@ For example:
 -sample, 2
 -daf, daf
 -array, array_template/ill_650_test.bed
+-random_discovery, True
 ```
 
 
@@ -406,6 +413,25 @@ For example, the output file with the summary statistics is named `ms_output_{jo
 
 
 ## Pegasus workflow on the Open Science Grid
+
+
+Run interactively with the Singularity container on the OSG  
+```bash
+[agladstein@login02 brassica]$ singularity shell --home $PWD:/srv --pwd /srv /cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest
+Singularity: Invoking an interactive shell within container...
+
+$ bash
+agladstein@login02:~$ export PATH=/usr/local/bin:/usr/bin:/bin
+agladstein@login02:~$ python /app/simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv 2 out_dir
+```
+
+### Monitoring and Debugging
+
+To find the run times of the executable:
+```
+pegasus-statistics -s all
+```
+Then, look at `Transformation statistics`.
 
 ### Submit a workflow
 

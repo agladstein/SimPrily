@@ -110,7 +110,12 @@ sudo docker pull agladstein/simprily
 
 Run program:
 ```bash
-sudo docker run -t -i --mount type=bind,src=/home/agladstein/docker_test/SimPrily,dst=/app agladstein/simprily-little python /app/simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False /app/out_dir
+sudo docker run -t -i --mount type=bind,src=/home/agladstein/docker_test/SimPrily,dst=/app agladstein/simprily python /app/simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 /app/out_dir
+```
+
+or Run Docker container interactively to poke around
+```bash
+docker run --rm -it --entrypoint=/bin/bash agladstein/simprily
 ```
 
 ## Cheat sheet
@@ -127,6 +132,7 @@ docker container rm $(docker container ls -a -q)         # Remove all containers
 docker image ls -a                             # List all images on this machine
 docker image rm <image id>            # Remove specified image from this machine
 docker image rm $(docker image ls -a -q)   # Remove all images from this machine
+docker rmi $(docker images -q)  # Remove all containers from this machine
 docker login             # Log in this CLI session using your Docker credentials
 docker tag <image> username/repository:tag  # Tag <image> for upload to registry
 docker push username/repository:tag            # Upload tagged image to registry

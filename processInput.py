@@ -81,71 +81,6 @@ def sci_to_float(s):
         return float(s[0]) * 10**float(s[1])
     return s
 
-
-def processOrderedSeasons(flags, variables):
-    orderedSeasons = OrderedDict()
-    debugPrint(1,"About to add time data to ordered events")
-
-    print("="*100)
-    for flag in flags.keys():
-
-        if "_" in flag:
-            # print("-{}: {}".format(flag,flags[flag]))
-            # print(flag)
-            if int(flag.split("_")[1]) in orderedSeasons:
-                # print(flags[flag][0][0])
-                if flags[flag][0][0] == 'inst':
-                    orderedSeasons[int(flag.split("_")[1])][1].extend(flags.pop(flag, None))
-                else:
-                    for event in flags[flag]:
-                        orderedSeasons[int(flag.split("_")[1])][1].insert(0,event)
-                    flags.pop(flag, None)
-            else:
-                orderedSeasons[int(flag.split("_")[1])] = [flag,flags.pop(flag, None)]
-
-    if not orderedSeasons:
-        return orderedSeasons
-    debugPrint(3,"Printing all ordered events raw data:")
-    # print(orderedSeasons)
-    for event in orderedSeasons:
-        print("{}: {}".format(event,orderedSeasons[event]))
-
-    print("="*100)
-    for i in range(min(orderedSeasons),max(orderedSeasons)+1):
-        debugPrint(2,str(i) + ": "+ str(orderedSeasons[i]))
-        # looping through the flags, in order of the order tags
-        if i == min(orderedSeasons):
-            debugPrint(3,"first event, no change to range")
-            tempLow = False
-        else:
-            tempLow = float(orderedSeasons[i-1][1][-1][0])
-        for j in range(len(orderedSeasons[i][1])):
-            if j == 0:
-                # Meaning if it's the first run through of the same number
-                # Find time...but also check if you need to change low
-                orderedSeasons[i][1][j][0] = getUnscaledValue(variables, orderedSeasons[i][1][j][0], tempLow)
-            else:
-                # add a very small number
-                if orderedSeasons[i][1][j][0].strip() == "inst":
-                    debugPrint(3,"inst found, adding 0.00001 to " + str(float(orderedSeasons[i][1][j-1][0])))
-                    orderedSeasons[i][1][j][0] = str(float(orderedSeasons[i][1][j-1][0]) + 0.00001)
-                else:
-                    print("Error: {0} is used before, but this time isn't set as 'inst'. Please review your input file.".format(flag) )
-                    sys.exit()
-
-    # adding keys with right time back to flags
-    debugPrint(1,"Adding ordered flags back into general pool of flags")
-
-    for flag in orderedSeasons:
-        debugPrint(3,str(flag) + ": "+ str(orderedSeasons[flag]))
-        tempFlag = orderedSeasons[flag][0].split("_")[0]
-        if tempFlag not in flags.keys():
-            flags[tempFlag] = orderedSeasons[flag][1]
-        else:
-            for line in orderedSeasons[flag][1]:
-                flags[tempFlag].append(line)
-    return orderedSeasons
-
 def findScaleValue(flags = {}, variables = {}):
     # used for scaling
     debugPrint(1, "Finding scaling value")
@@ -168,36 +103,35 @@ def populateFlags(variables, modelData):
     # loops through all items in data
     # (data[i] = a line from input file that's has a variable)
         lineSplit = line.split(',')
-
-
             
         flag = lineSplit[0]
 
-        if "_" in flag:
-            lineSplit[1] = lineSplit[1].strip()
-            if lineSplit[1] in variables:
-                lineSplit[1] = variables[lineSplit[1]]
-            print("Before:{} ".format(i+1)+",".join(lineSplit))
-            if int(flag.split("_")[1]) > 1:
-                lowTime = modelData[i-1].split(',')[1]
-            if lineSplit[1] not in times and "inst" not in lineSplit[1]:
-                if lowTime:
-                    lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
+        if flag.startswith("-e") and "_" in flag:
+            if len(lineSplit)>1:
+                lineSplit[1] = lineSplit[1].strip()
+                if lineSplit[1] in variables:
+                    lineSplit[1] = variables[lineSplit[1]]
+                print("Before:{} ".format(i+1)+",".join(lineSplit))
+                if int(flag.split("_")[1]) > 1:
+                    lowTime = modelData[i-1].split(',')[1]
+                if lineSplit[1] not in times and "inst" not in lineSplit[1]:
+                    if lowTime:
+                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
+                    else:
+                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
+                    # print("->{}".format(lineSplit[1]))
                 else:
-                    lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
-                # print("->{}".format(lineSplit[1]))
-            else:
-                Ne = findScaleValue(flags, variables)
-                lastTime = getUnscaledValue(variables, modelData[i-1].split(',')[1])
-                tempTime = str(float(lastTime) + 1)
-                while tempTime in times:
-                    tempTime += 1
-                print("Time '{}' has been used before: adding {} to time, changing to {}".format(lineSplit[1], str(0.00001*Ne),tempTime))
-                lineSplit[1] = tempTime
-            times.append(lineSplit[1])
-            flag = lineSplit[0].split("_")[0]
-            print("times: {}".format(times))
-            print("After:{} ".format(i+1)+",".join(lineSplit))
+                    Ne = findScaleValue(flags, variables)
+                    lastTime = getUnscaledValue(variables, modelData[i-1].split(',')[1])
+                    tempTime = str(float(lastTime) + 1)
+                    while tempTime in times:
+                        tempTime += 1
+                    print("Time '{}' has been used before: adding {} to time, changing to {}".format(lineSplit[1], str(0.00001*Ne),tempTime))
+                    lineSplit[1] = tempTime
+                times.append(lineSplit[1])
+                flag = lineSplit[0].split("_")[0]
+                print("times: {}".format(times))
+                print("After:{} ".format(i+1)+",".join(lineSplit))
 
 
 
@@ -226,19 +160,36 @@ def processModelData(variables, modelData):
     processedData = {}
     
     flags = populateFlags(variables, modelData)
-    
 
-
-    # creates a total value from the <n_n> values (from -I)
-    numlist = [float(x) for x in flags['-I'][0][1:]]
-    total = sum(numlist)
-
-    
-    macs_args = [flags['-macs'][0][0],str(total),flags['-length'][0][0]]
-
-    macs_args.append("-I")
-    for tempLine in flags["-I"][0]:
-        macs_args.append(tempLine)
+    # random_discovery = True
+    # if random_discovery:
+    if flags['-random_discovery']:
+        if '-macs_file' in flags:
+            macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        elif '-macsswig' in flags:
+              macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        elif '-macs' in flags:
+            macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        sizes = map(int, flags["-I"][0][1:])
+        if (sys.version_info > (3, 0)):
+            sizes = list(sizes)
+        for discovery_pop_str in flags["-discovery"][0]:
+            discovery_pop = int(discovery_pop_str)-1
+            sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
+        total = float(sum(sizes))
+        macs_args.insert(1,str(total))
+        sizes_str = map(str, sizes)
+        if (sys.version_info > (3, 0)):
+            sizes_str = list(sizes_str)
+        macs_args.extend(sizes_str)
+        
+    else:
+        # creates a total value from the <n_n> values (from -I)
+        numlist = [float(x) for x in flags['-I'][0][1:]]
+        total = sum(numlist)
+        macs_args = [flags['-macs'][0][0], str(total), flags['-length'][0][0], "-I"]
+        for genotyped_size in flags["-I"][0]:
+            macs_args.append(genotyped_size)
 
 
     # seasons is all the time based events
@@ -274,15 +225,18 @@ def processModelData(variables, modelData):
                 if flag == "-I":
                     processedData["I"] = [int(s.strip()) for s in tempLine[1:] if s]
                     continue
+                if flag == "-macsswig":
+                    processedData['macsswig'] = tempLine[0]
+                    continue
                 
                 #----------------------- For Added Arguments from Model_CSV
-                if flag == "-germline":
+                ignoredFlags = ["-germline",
+                                "-array",
+                                "-nonrandom_discovery",
+                                "-random_discovery"]
+                if flag in ignoredFlags:
                     continue
-                if flag == "-array":
-                    continue
-                if flag == "-nonrandom_discovery":
-                    continue
-                
+
                 if flag == "-Ne":
                     tempLine[0] = getUnscaledValue(variables, tempLine[0])
                 if flag == "-em":
@@ -337,7 +291,7 @@ def processModelData(variables, modelData):
                     macs_args.append(flag.strip())
                     for subLine in tempLine:
                         macs_args.append(subLine.strip())
-            except IndexError, e:
+            except IndexError as e:
                 print("There was an index error!\nThis most likely means your input file has a malformed flag.")
                 print("Try running with -vv argument for last flag ran")
                 sys.exit()

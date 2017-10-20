@@ -7,7 +7,7 @@ import os
 
 from alleles_generator.bit_structure import set_seq_bits, set_discovery_bits, set_real_genome_bits, set_real_array_bits
 from alleles_generator.real_file import AllelesReal
-from alleles_generator.seqInfo import create_real_sequences
+from alleles_generator.seqInfo import create_sequences
 from main_tools import global_vars
 from main_tools.housekeeping import debugPrint, prettyPrintDict
 from main_tools.write_files import create_sim_directories, write_stats_file
@@ -45,17 +45,17 @@ def main(args):
     debugPrint(3,"#"*22+"param_dict:\n{}".format(prettyPrintDict(processedData['param_dict']))+"#"*22)
 
     ### Create a list of Sequence class instances. These will contain the bulk of all sequence-based data
-    sequences = create_real_sequences(processedData, args)
+    sequences = create_sequences(processedData, args)
     names = [seq.name for seq in sequences]
 
     n_d = sum([1 for seq in sequences if seq.type == 'discovery'])
 
-    print 'name\ttotal\tpanel\tignore'
+    print 'name\ttotal\tpanel\tgenotyped'
     for seq in sequences:
-        print '{}\t{}\t{}\t{}'.format(seq.name, seq.tot, seq.panel, seq.ignore)
+        print '{}\t{}\t{}\t{}'.format(seq.name, seq.tot, seq.panel, seq.genotyped)
 
     total = sum([seq.tot for seq in sequences])
-    print 'total samples:', sum([seq.ignore for seq in sequences if seq.type=='discovery'] + [seq.tot for seq in sequences if seq.type=='sample'])
+    print 'total samples:', sum([seq.genotyped for seq in sequences if seq.type=='discovery'] + [seq.tot for seq in sequences if seq.type=='sample'])
 
 
     ##########################################################################

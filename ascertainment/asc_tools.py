@@ -10,15 +10,15 @@ def get_SNP_sites(snp_file):
 
 def set_asc_bits(seq_list, n_asc, pos, site_inds):
     if n_asc == len(site_inds):
-        for x in xrange(n_asc):
+        for x in range(n_asc):
             for seq in seq_list:
-                n = seq.ignore if seq.type == 'discovery' else seq.tot
+                n = seq.genotyped if seq.type == 'discovery' else seq.tot
                 bit_list = seq.CGI_bits if seq.type == 'discovery' else seq.bits
                 seq.asc_bits.extend( bit_list[ pos[x]*n : pos[x]*n + n ] )
     elif len(site_inds) > n_asc:
-        for x in xrange( len(pos) ):
+        for x in range( len(pos) ):
             for seq in seq_list:
-                n = seq.ignore if seq.type == 'discovery' else seq.tot
+                n = seq.genotyped if seq.type == 'discovery' else seq.tot
                 bit_list = seq.CGI_bits if seq.type == 'discovery' else seq.bits
                 seq.asc_bits.extend( bit_list[ site_inds[pos[x]]*n : site_inds[pos[x]]*n + n])
 
@@ -27,7 +27,7 @@ def make_ped_file(file_name, seq_list):
 
     for seq in seq_list:
         if seq.type == 'discovery':
-            n = seq.ignore
+            n = seq.genotyped
         elif seq.type == 'sample':
             n = seq.tot
         write_ped(fileped, seq, n)
@@ -35,10 +35,11 @@ def make_ped_file(file_name, seq_list):
 
 def write_ped(fped, sequence, n):
     name = sequence.name
+    n = int(n)
 
-    for indiv in xrange(0, n, 2):
+    for indiv in range(0, n, 2):
         fped.write(name + ' ' + name + str(indiv / 2 + 1) + '_' + name  + ' 0 0 1 -9 ')
-        for bit in itertools.chain.from_iterable( [sequence.asc_bits[i : i+2] for i in xrange(indiv, sequence.asc_bits.length(), n)] ):
+        for bit in itertools.chain.from_iterable( [sequence.asc_bits[i : i+2] for i in range(indiv, sequence.asc_bits.length(), n)] ):
             if bit:
                 fped.write('2 ')
             else:

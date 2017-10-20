@@ -1,11 +1,15 @@
-import afs_stats_bitarray
+import sys
+if (sys.version_info > (3, 0)):
+    import summary_statistics.afs_stats_bitarray as afs_stats_bitarray
+else:
+    import afs_stats_bitarray
 
 def store_segregating_site_stats(seq_list, results, head_list):
     for seq in seq_list:
         if seq.type == 'discovery':
-            current_res = afs_stats_bitarray.base_S_ss( seq.CGI_bits, seq.ignore )
-            seq.pi_CGIs = afs_stats_bitarray.Pi2( current_res.pop(3), seq.ignore )
-            current_res.append( afs_stats_bitarray.Tajimas( seq.pi_CGIs, current_res[0], seq.ignore ) )
+            current_res = afs_stats_bitarray.base_S_ss( seq.CGI_bits, seq.genotyped )
+            seq.pi_CGIs = afs_stats_bitarray.Pi2( current_res.pop(3), seq.genotyped )
+            current_res.append( afs_stats_bitarray.Tajimas( seq.pi_CGIs, current_res[0], seq.genotyped ) )
 
             results.extend(current_res)
             head_list.extend([c+seq.name+'_CGI' for c in ['SegS_', 'Sing_', 'Dupl_', 'TajD_']])
@@ -16,8 +20,8 @@ def store_pairwise_FSTs(seq_list, n, results, head_list):
             seq1 = seq_list[i]
             seq2 = seq_list[j]
 
-            size1 = seq1.ignore if seq1.type == 'discovery' else seq1.tot
-            size2 = seq2.ignore if seq2.type == 'discovery' else seq2.tot
+            size1 = seq1.genotyped if seq1.type == 'discovery' else seq1.tot
+            size2 = seq2.genotyped if seq2.type == 'discovery' else seq2.tot
 
             results.append(afs_stats_bitarray.FST2( seq1.CGI_bits, seq1.pi_CGIs, size1, seq2.CGI_bits, seq2.pi_CGIs, size2 ))
             head_list.append('FST_' + seq1.name + seq2.name + '_CGI')
@@ -41,7 +45,7 @@ def store_array_segregating_site_stats(seq_list, results, head_list):
     for seq in seq_list:
 
         asc_bits = seq.asc_bits
-        n = seq.ignore if seq.type == 'discovery' else seq.tot
+        n = seq.genotyped if seq.type == 'discovery' else seq.tot
 
         code_asc = []
         ss_code_asc = afs_stats_bitarray.base_S_ss(asc_bits, n)
@@ -65,8 +69,8 @@ def store_array_FSTs(seq_list, results, head_list):
     for seq1 in seq_list:
         for seq2 in seq_list:
             if seq_list.index(seq2) > seq_list.index(seq1):
-                size1 = seq1.ignore if seq1.type == 'discovery' else seq1.tot
-                size2 = seq2.ignore if seq2.type == 'discovery' else seq2.tot
+                size1 = seq1.genotyped if seq1.type == 'discovery' else seq1.tot
+                size2 = seq2.genotyped if seq2.type == 'discovery' else seq2.tot
 
                 results.append( afs_stats_bitarray.FST2( seq1.asc_bits, seq1.pi_asc, size1, seq2.asc_bits, seq2.pi_asc, size2) )
                 head_list.append('FST_{}_{}_ASC'.format(seq1.name, seq2.name))

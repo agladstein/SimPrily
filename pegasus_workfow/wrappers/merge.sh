@@ -5,12 +5,11 @@ set -e
 OUT_FILE=$1
 shift
 
-for FILE in "$@"; do
-    echo "Untarring $FILE"
-    tar xzf $FILE
-done
+head -1 "$1" > $OUT_FILE
 
-echo "Creating merged tarball $OUT_FILE"
-tar czf $OUT_FILE results_sims sim_values
+for f in "$@"
+do
+    tail -n +2 $f >> $OUT_FILE
+done
 
 
