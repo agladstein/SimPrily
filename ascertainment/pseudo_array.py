@@ -6,6 +6,18 @@ from main_tools.my_random import MY_RANDOM as random
 
 def find2(a, x):
     """This function receives the array with available sites (sites that passed the frequency cut-off)"""
+    '''
+    Takes two parameters: a and x. A is a list with the
+    length of 2680 that contains integers in ascending order. 
+    X is an integer that is 8 digits long and between 15929526
+    and 49365777. 
+
+    Returns: example 1 only returns from the len(a) -1 condition, 
+    which returns the integer 2679
+
+    Errors: 
+    - breaks when x is a string
+    '''
     if x <= a[0]: #x is smaller than first value in a
         return 0
     elif x >= a[len(a)-1]: #x is larger than last value in a
@@ -24,6 +36,11 @@ def find2(a, x):
             return i
 
 def add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps):
+    print("THIS IS AVAIL_SITES: " + str(avail_sites))
+    print("THIS IS NB_AVAIL_SITES: " + str(nb_avail_sites))
+    print("THIS IS POS_ASC: " + str(pos_asc))
+    print("THIS IS NBSS_ACS: " + str(nbss_asc))
+    print("THIS IS NB_ARRAY_SNPS: " + str(nb_array_snps))
     first_index=pos_asc[0]
     last_index=pos_asc[-1]
     if(nb_avail_sites>nbss_asc): ###this should happen all the time
@@ -45,6 +62,7 @@ def add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps):
         elif (last_index==nb_avail_sites-1):
             if(first_index-1)>=0:
                 pos_asc.insert(0,first_index-1)
+    print("THIS IS THE RETURNED POS_ASC: " + str(pos_asc))      
     return pos_asc
 
 def pseudo_array(asc_panel, daf, pos, snps):

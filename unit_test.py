@@ -3,6 +3,7 @@ import unittest
 from main_tools.housekeeping import process_args
 from summary_statistics.afs_stats_bitarray import Pi2, Tajimas, FST2, count_bit_differences, base_S_ss
 from alleles_generator.seqInfo import create_sequences
+from ascertainment.pseudo_array import find2, add_snps, pseudo_array
 from bitarray import bitarray
 import random
 
@@ -170,15 +171,68 @@ class TestFns(unittest.TestCase):
         
     def test_count_bit_differences(self):
         '''
+        This function takes two binary sequences and compares the 
+        lengths between the two. If they are not equal, it returns false
+        Parameters: s1 and s2 are both binary sequences
+
+        Returns: 
 
         Errors:
         - with strings, ints, and lists
-
         '''
         bits = bitarray('0000000000000000')
         bits2 = bitarray('0000000000000000')
         check = count_bit_differences(bits, bits2)
         self.assertEquals(check, 0.0)
+
+    def test_find2(self):
+        '''
+        Takes two parameters: a and x. A is a list with the
+        length of 2680 that contains integers in ascending order. 
+        X is an integer that is 8 digits long and between 15929526
+        and 49365777. 
+
+        Returns: example 1 only returns from the len(a) -1 condition, 
+        which returns the integer 2679
+
+        Errors: 
+        - breaks when x is a string
+        '''
+        a = [1,2,3,4]
+        x = 213
+        check = find2(a, x)
+        self.assertEquals(check, 3)
+
+        a = [-1,-2,-3]
+        x =213
+        check = find2(a, x)
+        self.assertEquals(check, 2)
+
+        a = [0]
+        x = 2
+        check = find2(a, x)
+        self.assertEquals(check, 0)
+
+        a = [-1212121212]
+        x = -1
+        check = find2(a, x)
+        self.assertEquals(check, 0)
+
+        a = [-1212121212]
+        x = -1212121212
+        check = find2(a, x)
+        self.assertEquals(check, 0)
+
+        a = ["-1212121212", "312423"]
+        x = -1212121212
+        check = find2(a, x)
+        self.assertEquals(check, 0)
+
+        a = ["hey", "312423"]
+        x = [22]
+        check = find2(a, x)
+        self.assertEquals(check, 0)
+
 
 
 def main():
