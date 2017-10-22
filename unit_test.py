@@ -233,6 +233,49 @@ class TestFns(unittest.TestCase):
         check = find2(a, x)
         self.assertEquals(check, 0)
 
+    def test_add_snps(self):
+        ''''
+        This function is called 199 times when the program is 
+        ran. 
+        It five parameters: avail_sites, 
+        nb_avail_sites, pos_asc, nbss_asc, nb_array_snps. 
+        -avail_sites has a list of floats. Length: 2860
+        -nb_avail_sites: 2680
+        -pos_asc: list of ints (2481-2679). Increases by one every time the 
+            program is ran (lengths increase from 1 to 199).
+        -nbss_acs is an int (198)
+        -nb_array_snps: 200
+        
+        Returns: list of ints is ascending order from 2481 to 2679. Length: 9
+
+        Errors: 
+        -negative numbers in pos_asc
+        '''
+        avail_sites = [21313211242134.0, 234234.0]
+        nb_avail_sites = 2680
+        pos_asc = [3000, 3000, 3000]
+        nbss_acs  = 198
+        nb_array_snps = 200
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        self.assertEquals(check, [-1, -1, 1])
+
+        avail_sites = [1.0, 2.0]
+        nb_avail_sites = 1000
+        pos_asc = [12, 12, 12]
+        nbss_acs = 23
+        nb_array_snps = 200
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        self.assertEquals(check, [12, 12 ,12])
+
+        avail_sites = [21313211242134]
+        nb_avail_sites = -1000
+        pos_asc = [-1, -1, 1]
+        nbss_acs  = 23
+        nb_array_snps = 200
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        self.assertEquals(check, [-1, -1, 1])
+
+        
 
 
 def main():

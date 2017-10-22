@@ -36,11 +36,6 @@ def find2(a, x):
             return i
 
 def add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps):
-    print("THIS IS AVAIL_SITES: " + str(avail_sites))
-    print("THIS IS NB_AVAIL_SITES: " + str(nb_avail_sites))
-    print("THIS IS POS_ASC: " + str(pos_asc))
-    print("THIS IS NBSS_ACS: " + str(nbss_asc))
-    print("THIS IS NB_ARRAY_SNPS: " + str(nb_array_snps))
     first_index=pos_asc[0]
     last_index=pos_asc[-1]
     if(nb_avail_sites>nbss_asc): ###this should happen all the time
@@ -62,7 +57,6 @@ def add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps):
         elif (last_index==nb_avail_sites-1):
             if(first_index-1)>=0:
                 pos_asc.insert(0,first_index-1)
-    print("THIS IS THE RETURNED POS_ASC: " + str(pos_asc))      
     return pos_asc
 
 def pseudo_array(asc_panel, daf, pos, snps):
