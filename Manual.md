@@ -170,7 +170,7 @@ daf = (0.01:0.1)
 Examples of model_file.csv can be found in examples.
 
 The demographic model, SNP ascertainment model, and additional options are defined in the model_file.csv.
-The demographic model defines events in populations' history, including population divergence, instantanious effective population size changes, exponential growth, gene flow and admixture. We use a coalescent simulation, so are models must be defined backwards in time, starting from the present, with each event going back in the past. The SNP ascertainment model defines how to create a pseudo SNP array using a template SNP array and a set of discovery populations and a minor allele frequency cutoff. The SNP ascertainment model should be used when comparing to real SNP array data. 
+The demographic model defines events in populations' history, including population divergence, instantanious effective population size changes, exponential growth, gene flow and admixture. We use a coalescent simulation, so models must be defined backwards in time, starting from the present, with each event going back in the past. The SNP ascertainment model defines how to create a pseudo SNP array using a template SNP array, a set of discovery populations and a minor allele frequency cutoff. The SNP ascertainment model should be used when comparing to real SNP array data. 
 
 All instances of any argument must start with a dash followed by the corresponding argument parameters, 
 and value(s). 
