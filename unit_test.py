@@ -250,6 +250,8 @@ class TestFns(unittest.TestCase):
 
         Errors: 
         -negative numbers in pos_asc
+
+        Need to figure out how to get it to not return only the pos_asc
         '''
         avail_sites = [21313211242134.0, 234234.0]
         nb_avail_sites = 2680
@@ -257,7 +259,7 @@ class TestFns(unittest.TestCase):
         nbss_acs  = 198
         nb_array_snps = 200
         check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
-        self.assertEquals(check, [-1, -1, 1])
+        self.assertEquals(check, [3000, 3000, 3000])
 
         avail_sites = [1.0, 2.0]
         nb_avail_sites = 1000
@@ -268,16 +270,40 @@ class TestFns(unittest.TestCase):
         self.assertEquals(check, [12, 12 ,12])
 
         avail_sites = [21313211242134]
-        nb_avail_sites = -1000
-        pos_asc = [-1, -1, 1]
+        nb_avail_sites = 3000
+        pos_asc = [-1, -1, 3000]
         nbss_acs  = 23
         nb_array_snps = 200
         check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
-        self.assertEquals(check, [-1, -1, 1])
+        self.assertEquals(check, [-1, -1, 3000])
 
+        # this one is defined
+        avail_sites = [1.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+        nb_avail_sites = 24
+        pos_asc = [12, -1, 2]
+        nbss_acs  = 23
+        nb_array_snps = 200
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        self.assertEquals(check, [12, -1, 2, 3])
+
+        # defined, even though nbss_acs is negative and a float
+        avail_sites = [1,  3, 4, 5]
+        nb_avail_sites = 5
+        pos_asc = [12, -1, 2]
+        nbss_acs  = -1
+        nb_array_snps = 200
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        self.assertEquals(check, [12, -1, 2, 3])
+
+        # not defined
+        avail_sites = [1, 9000, 5]
+        nb_avail_sites = 5
+        pos_asc = [12, 8000001, 2]
+        nbss_acs  = -1
+        nb_array_snps = 200
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        self.assertEquals(check, [12, 8000001, 2])
         
-
-
 def main():
     test = unittest.defaultTestLoader.loadTestsFromTestCase(TestFns)
     results = unittest.TextTestRunner().run(test)
