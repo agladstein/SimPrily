@@ -55,7 +55,7 @@ def argsFromModelCSV(filename):
             else:
                 model_args['SNP file']= x[1]
         if line.startswith("-germline"):
-            model_args['germline']= 0
+            model_args['germline']= True
         if line.startswith("-nonrandom_discovery"):
             model_args['random discovery'] = False
         if line.startswith("-pedmap"):
@@ -65,7 +65,7 @@ def argsFromModelCSV(filename):
         print("Sim option not provided in model_file.csv")
         sys.exit(1)
     if 'germline' not in model_args:
-        model_args['germline'] = 1
+        model_args['germline'] = False
     if 'random discovery' not in model_args:
         model_args['random discovery'] = True
     if 'SNP file' not in model_args:
