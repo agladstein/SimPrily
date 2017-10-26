@@ -74,7 +74,8 @@ def main(args):
 
     ### Define simulation size
     length = processedData['length']
-
+    pedmap = args['pedmap']
+    germline = args['germline']
     ##########################################################################
     ################## Perform simulation and get sequences ##################
     ##########################################################################
@@ -174,8 +175,9 @@ def main(args):
         if os.path.isfile(out_file_name + '.match'):  # Maybe remove if statement
             os.remove(ped_file_name)
             os.remove(map_file_name)
-
-        if using_pseudo_array:
+            
+        
+        if using_pseudo_array and pedmap or germline:
             make_ped_file(ped_file_name, sequences)
             make_map_file(map_file_name, pos_asc, chr_number, avail_sites)
 
@@ -183,7 +185,7 @@ def main(args):
         do_i_run_germline = int(args['germline'])
 
         print('run germline? ' + str(do_i_run_germline))
-        if (do_i_run_germline == 0):
+        if (do_i_run_germline == True):
             ########################### <CHANGE THIS LATER> ###########################
             ### Germline seems to be outputting in the wrong unit - so I am putting the min at 3000000 so that it is 3Mb, but should be the default.
             # germline = run_germline(ped_file_name, map_file_name, out_file_name, min_m = 3000000)
