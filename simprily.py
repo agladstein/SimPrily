@@ -84,9 +84,14 @@ def main(args):
     SNPs_exceed_available_sites = True
     while SNPs_exceed_available_sites:
 
+        # add genetic map to macs_args list
+        macs_args = []
+        macs_args = processedData['macs_args']
+        macs_args.extend(['-R',args['genetic map']])
+
         if sim_option == 'macsswig':
             print('Run macsswig simulation')
-            sim = macsSwig.swigMain(len(processedData['macs_args']), processedData['macs_args'])
+            sim = macsSwig.swigMain(len(macs_args), processedData['macs_args'])
             print('Finished macsswig simulation')
             nbss = sim.getNumSites()
 
@@ -105,7 +110,7 @@ def main(args):
 
         elif sim_option == 'macs':
             ### Run macs and make bitarray
-            [sequences,position] = run_macs(processedData['macs_args'], sequences)
+            [sequences,position] = run_macs(macs_args, sequences)
             nbss = len(sequences[0].bits) / (sequences[0].tot)
 
             if using_pseudo_array:
