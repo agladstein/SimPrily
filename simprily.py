@@ -71,8 +71,9 @@ def main(args):
 
     ### Define simulation size
     length = processedData['length']
-
     debugPrint(1, 'Perform simulation and get sequences')
+    pedmap = args['pedmap']
+    germline = args['germline']
 
     ##########################################################################
     ################## Perform simulation and get sequences ##################
@@ -82,9 +83,14 @@ def main(args):
     SNPs_exceed_available_sites = True
     while SNPs_exceed_available_sites:
 
+        # add genetic map to macs_args list
+        macs_args = []
+        macs_args = processedData['macs_args']
+        macs_args.extend(['-R',args['genetic map']])
+
         if sim_option == 'macsswig':
             print('Run macsswig simulation')
-            sim = macsSwig.swigMain(len(processedData['macs_args']), processedData['macs_args'])
+            sim = macsSwig.swigMain(len(macs_args), processedData['macs_args'])
             print('Finished macsswig simulation')
             nbss = sim.getNumSites()
 
@@ -103,7 +109,7 @@ def main(args):
 
         elif sim_option == 'macs':
             ### Run macs and make bitarray
-            [sequences,position] = run_macs(processedData['macs_args'], sequences)
+            [sequences,position] = run_macs(macs_args, sequences)
             nbss = len(sequences[0].bits) / (sequences[0].tot)
 
             if using_pseudo_array:
@@ -174,8 +180,9 @@ def main(args):
         if os.path.isfile(out_file_name + '.match'):  # Maybe remove if statement
             os.remove(ped_file_name)
             os.remove(map_file_name)
-
-        if using_pseudo_array:
+            
+        
+        if using_pseudo_array and pedmap or germline:
             make_ped_file(ped_file_name, sequences)
             make_map_file(map_file_name, pos_asc, chr_number, avail_sites)
 
@@ -184,7 +191,7 @@ def main(args):
 
         debugPrint(1,'run germline? {}'.format("True" if do_i_run_germline else "False"))
 
-        if (do_i_run_germline == 0):
+        if (do_i_run_germline == True):
             ########################### <CHANGE THIS LATER> ###########################
             ### Germline seems to be outputting in the wrong unit - so I am putting the min at 3000000 so that it is 3Mb, but should be the default.
             # germline = run_germline(ped_file_name, map_file_name, out_file_name, min_m = 3000000)

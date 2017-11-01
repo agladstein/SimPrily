@@ -114,8 +114,8 @@ def populateFlags(variables, modelData):
                 lineSplit[1] = lineSplit[1].strip()
                 # if a varibles is used, replace it with the value defined in variables
                 if lineSplit[1] in variables:
-                    lineSplit[1] = variables[lineSplit[1]]
-
+                    lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
+                print("Before:{} ".format(i+1)+",".join(lineSplit))
                 if int(flag.split("_")[1]) > 1:
                     lowTime = modelData[i-1].split(',')[1]
                 if lineSplit[1] not in times and "inst" not in lineSplit[1]:
@@ -235,7 +235,8 @@ def processModelData(variables, modelData):
                 ignoredFlags = ["-germline",
                                 "-array",
                                 "-nonrandom_discovery",
-                                "-random_discovery"]
+                                "-random_discovery",
+                                "-pedmap"]
                 if flag in ignoredFlags:
                     continue
 

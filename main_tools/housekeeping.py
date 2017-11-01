@@ -35,12 +35,15 @@ def process_args(arguments):
     args = {'command':arguments[0],
             'param file':arguments[1],
             'model file':arguments[2],
-            'job':arguments[3],
-            'path':arguments[4]}
+            'genetic map':arguments[3],
+            'SNP file':arguments[4],
+            'job':arguments[5],
+            'path':arguments[6]}
     model_args = argsFromModelCSV(args['model file'])
     args['sim option'] = model_args['sim option']
-    args['SNP file'] = model_args['SNP file']
+    # args['SNP file'] = model_args['SNP file']
     args['germline'] = model_args['germline']
+    args['pedmap'] = model_args['pedmap']
     args['random discovery'] = model_args['random discovery']
     return args
 
@@ -63,26 +66,30 @@ def argsFromModelCSV(filename):
         if line.startswith("-macsswig"):
             x = line.strip().split(",")
             model_args['sim option']= x[0][1:]
-        if line.startswith("-array"):
-            x = line.strip().split(",")
-            if x[1].startswith(" "):
-                model_args['SNP file']= x[1][1:]
-            else:
-                model_args['SNP file']= x[1]
+        # if line.startswith("-array"):
+        #     x = line.strip().split(",")
+        #     if x[1].startswith(" "):
+        #         model_args['SNP file']= x[1][1:]
+        #     else:
+        #         model_args['SNP file']= x[1]
         if line.startswith("-germline"):
-            model_args['germline']= 0
+            model_args['germline']= True
         if line.startswith("-nonrandom_discovery"):
             model_args['random discovery'] = False
+        if line.startswith("-pedmap"):
+            model_args['pedmap'] = True
         
     if 'sim option' not in model_args:
         print("Sim option not provided in model_file.csv")
         sys.exit(1)
     if 'germline' not in model_args:
-        model_args['germline'] = 1
+        model_args['germline'] = False
     if 'random discovery' not in model_args:
         model_args['random discovery'] = True
-    if 'SNP file' not in model_args:
-        print("No SNP file provided in model_file.csv")
-        sys.exit(1)
+    # if 'SNP file' not in model_args:
+    #     print("No SNP file provided in model_file.csv")
+    #     sys.exit(1)
+    if 'pedmap' not in model_args:
+        model_args['pedmap'] = False
     return model_args
         
