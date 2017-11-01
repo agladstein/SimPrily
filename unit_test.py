@@ -3,7 +3,7 @@ import unittest
 from main_tools.housekeeping import process_args
 from summary_statistics.afs_stats_bitarray import Pi2, Tajimas, FST2, count_bit_differences, base_S_ss
 from alleles_generator.seqInfo import create_sequences
-from ascertainment.pseudo_array import find2, add_snps, pseudo_array
+from ascertainment.pseudo_array import find2, add_snps, pseudo_array, pseudo_array_bits
 from bitarray import bitarray
 import random
 
@@ -303,7 +303,85 @@ class TestFns(unittest.TestCase):
         nb_array_snps = 200
         check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
         self.assertEquals(check, [12, 8000001, 2])
-        
+
+
+    def test_pseudo_array(self):
+        '''
+        Parameters: asc_panel, daf, pos, snps 
+
+        Cannot make test yet because the function does
+        not appear to be called by any of the examples (verified by 
+        print statements)
+        '''
+        print()
+
+    def test_pseudo_array_bits(self):
+        '''
+        Parameters: 
+        asc_panel_bits: bitarray
+        daf: float (0.0264139586625)
+        pos: list of floats in acsending order
+        snps: list of ints
+
+        Returns: pos_asc: list of ints (2481-2679)
+        nbss_asc: 200
+        index_avail_sites: 
+        avail_sites: list of floats
+
+        Errors: 
+        - the asc_panel_bits needs to be divisible by pos
+        - daf cannot be negative or greater than 1
+        '''
+        asc_panel_bits = bitarray('1001100110011001')
+        daf = .02
+        pos = [1.02, 1.03, 1.04, 1.05]
+        snps = [12, 13 ,15]
+        check = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
+        self.assertEquals(check,  (([1, 2, 3], 3, [0, 1, 2, 3], [1.02, 1.03, 1.04, 1.05])))
+
+        #tests negative numbers in pos parameter
+        asc_panel_bits = bitarray('1001100110011001')
+        daf = .02
+        pos = [-1.02, -1.03, -1.04, -1.05]
+        snps = [12, 13 ,15]
+        check = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
+        self.assertEquals(check, ([1, 2, 3], 3, [0, 1, 2, 3], [-1.02, -1.03, -1.04, -1.05]))
+
+        # even number in snps
+        asc_panel_bits = bitarray('1001100110011001')
+        daf = .02
+        pos = [-1.02, -1.03, -1.04, -1.05]
+        snps = [12, 13]
+        check = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
+        self.assertEquals(check, ([2, 3], 2, [0, 1, 2, 3], [-1.02, -1.03, -1.04, -1.05]))
+
+        # odd number of asc_panel_bits and pos  
+        asc_panel_bits = bitarray('10011001100')
+        daf = .02
+        pos = [-1.02, -.00000000000103, 12000000000]
+        snps = [12, 13, .02]
+        check = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
+        self.assertEquals(check, ([0, 1, 2], 3, [0, 1, 2], [-1.02, -1.03e-12, 12000000000]))
+
+
+        # one value for pos and snps 
+        asc_panel_bits = bitarray('10011001100')
+        daf = .01
+        pos = [-1.02]
+        snps = [12]
+        check = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
+        self.assertEquals(check, ([0], 1, [0], [-1.02]))
+
+        # one value for pos and snps 
+        asc_panel_bits = bitarray('10011001100')
+        daf = .01
+        pos = [4290345925890245902345092]
+        snps = [12]
+        check = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
+        self.assertEquals(check, ([0], 1, [0], [4290345925890245902345092L]))
+
+
+
 def main():
     test = unittest.defaultTestLoader.loadTestsFromTestCase(TestFns)
     results = unittest.TextTestRunner().run(test)
