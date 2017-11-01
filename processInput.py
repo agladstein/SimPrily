@@ -196,7 +196,6 @@ def processModelData(variables, modelData):
     seasons = []
 
     Ne = findScaleValue(flags, variables)
-    
     # processOrderedSeasons(flags, variables)
     
     for flag in flags.keys():
