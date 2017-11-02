@@ -46,11 +46,11 @@ def readParamsFile(in_file):
     :return: a list with each line as a single string object 
     '''
     fl = open(in_file, "r")
-    info = {}
+    variables = {}
     for line in fl:
         if "=" in line:
-            info[line.split("=")[0].strip()] = line.split("=")[1].strip()
-    return info
+            variables[line.split("=")[0].strip()] = line.split("=")[1].strip()
+    return variables
 
 def getUnscaledValue(variables, tempNum, tempLow=False):
     tempVar = ""
@@ -83,7 +83,7 @@ def sci_to_float(s):
 
 def findScaleValue(flags = {}, variables = {}):
     # used for scaling
-    debugPrint(1, "Finding scaling value")
+    debugPrint(2, "Finding scaling value")
     Ne=10000
     if "-Ne" not in flags.keys():
         if "-n" in flags.keys():
@@ -94,21 +94,25 @@ def findScaleValue(flags = {}, variables = {}):
     return Ne
 
 def populateFlags(variables, modelData):
-    debugPrint(1, "Starting: populateFlags ")
-    print("="*100)
+    '''
+    This will fill a dictionary with keys that equal the flags, and values that
+    is a list of every time (in order) the flag is used
+    '''
+    debugPrint(2, "Starting: populateFlags ")
     flags = OrderedDict()
     orderedEvents = []
     lowTime = False
-    for i, line in enumerate(modelData):
     # loops through all items in data
-    # (data[i] = a line from input file that's has a variable)
+    for i, line in enumerate(modelData):
         lineSplit = line.split(',')
-            
-        flag = lineSplit[0]
 
+        flag = lineSplit[0]
+        # if flag starts with -e it will be an event flag, thus, the order must be preserved
         if flag.startswith("-e") and "_" in flag:
             if len(lineSplit)>1:
+                # striping any random whitepace
                 lineSplit[1] = lineSplit[1].strip()
+                # if a varibles is used, replace it with the value defined in variables
                 if lineSplit[1] in variables:
                     lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
                 print("Before:{} ".format(i+1)+",".join(lineSplit))
@@ -119,19 +123,18 @@ def populateFlags(variables, modelData):
                         lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
                     else:
                         lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
-                    # print("->{}".format(lineSplit[1]))
                 else:
                     Ne = findScaleValue(flags, variables)
                     lastTime = getUnscaledValue(variables, modelData[i-1].split(',')[1])
                     tempTime = str(float(lastTime) + 1)
                     while tempTime in times:
                         tempTime += 1
-                    print("Time '{}' has been used before: adding {} to time, changing to {}".format(lineSplit[1], str(0.00001*Ne),tempTime))
+                    # print("Time '{}' has been used before: adding {} to time, changing to {}".format(lineSplit[1], str(0.00001*Ne),tempTime))
                     lineSplit[1] = tempTime
                 times.append(lineSplit[1])
                 flag = lineSplit[0].split("_")[0]
-                print("times: {}".format(times))
-                print("After:{} ".format(i+1)+",".join(lineSplit))
+                # print("times: {}".format(times))
+                # print("After:{} ".format(i+1)+",".join(lineSplit))
 
 
 
@@ -150,13 +153,12 @@ def populateFlags(variables, modelData):
 
         modelData[i] = ",".join(lineSplit)
 
-    print("="*100)
     return flags
 
 def processModelData(variables, modelData):
     """
     """
-    debugPrint(1, "Starting: processModelData")
+    debugPrint(2, "Starting: processModelData")
     processedData = {}
     
     flags = populateFlags(variables, modelData)
@@ -198,9 +200,9 @@ def processModelData(variables, modelData):
     Ne = findScaleValue(flags, variables)
     
     # processOrderedSeasons(flags, variables)
-    
+    debugPrint(3,"Processing flags in for macs_args")
     for flag in flags.keys():
-        debugPrint(2,flag + ": " + str(flags[flag]))
+        debugPrint(3,"  {}: {}".format(flag,flags[flag]))
 
         for tempLine in flags[flag]:
             try:
@@ -305,7 +307,7 @@ def processModelData(variables, modelData):
             quit()
             
 
-    debugPrint(1, "Adding event data back to flag pool")
+    debugPrint(2, "Adding events data back to flag pool")
     for i in range(len(seasons)):
         seasons[i][1] = float(seasons[i][1])
     seasons = sorted(seasons, key=itemgetter(1))
@@ -319,29 +321,26 @@ def processModelData(variables, modelData):
 
 
 def processInputFiles(paramFile, modelFile):
-    debugPrint(1, "Starting processInputFiles")
+    '''
+    This is the function that takes links to two files and outputs a dictionay (processedData)
+    With all the (useful) data in the two files
+    '''
+    debugPrint(2, "Starting processInputFiles")
     
     modelData = readModelFile(modelFile)
-    debugPrint(1, "Finished reading " + str(modelFile))
-    debugPrint(3, "Raw input data into make_args")
-    for line in modelData:
-        debugPrint(3,line)
+    debugPrint(2, "Finished reading " + str(modelFile))
+    debugPrint(3, "Raw input data into make_args", modelData)
 
     variables = readParamsFile(paramFile)
-    debugPrint(1, "Finished reading " + str(paramFile))
+    debugPrint(2, "Finished reading " + str(paramFile))
     
-    debugPrint(2,"Priting variables:")
-    for var in variables:
-        debugPrint(2,str(var) + ": "+ variables[var])
-
+    debugPrint(3,"Raw Output for variables", variables)
 
 
 
     processedData = processModelData(variables, modelData) # creates the input for macsSwig
-    debugPrint(1, "Finished make_args()")
-    debugPrint(2,"Priting variables:")
-    for var in variables:
-        debugPrint(2,str(var) + ": "+ variables[var])
+    debugPrint(3,"Priting variables:", variables)
+
     processedData['param_dict'] = variables
 
 
