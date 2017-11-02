@@ -16,5 +16,5 @@ RUN mkdir -p /cvmfs
 # Make port 80 available to the world outside this container
 EXPOSE 80
 
-# Run simprily.py when the container launches
-CMD ["python", "simprily.py"]
+# Define entry point
+ENTRYPOINT ["python", "/app/simprily.py"]
