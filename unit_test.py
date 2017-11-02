@@ -3,7 +3,7 @@ import unittest
 from main_tools.housekeeping import process_args
 from summary_statistics.afs_stats_bitarray import Pi2, Tajimas, FST2, count_bit_differences, base_S_ss
 from alleles_generator.seqInfo import create_sequences
-from ascertainment.pseudo_array import find2, add_snps, pseudo_array, pseudo_array_bits
+from ascertainment.pseudo_array import find2, add_snps, pseudo_array_bits
 from bitarray import bitarray
 import random
 
@@ -41,9 +41,7 @@ class TestFns(unittest.TestCase):
            'seed': '1231', 'discovery': [1]}
         Returns: sequences contains [d1, s1] every time for example 1. 
         It is an instance type
-
         '''
-        print()
 
     def test_base_S_ss(self):
         '''
@@ -304,17 +302,15 @@ class TestFns(unittest.TestCase):
         check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
         self.assertEquals(check, [12, 8000001, 2])
 
-
-    def test_pseudo_array(self):
         '''
+        def test_pseudo_array(self):
         Parameters: asc_panel, daf, pos, snps 
 
         Cannot make test yet because the function does
         not appear to be called by any of the examples (verified by 
-        print statements)
-        '''
-        print()
-
+        print statements and commenting out the function)
+        '''     
+       
     def test_pseudo_array_bits(self):
         '''
         Parameters: 
@@ -385,7 +381,7 @@ class TestFns(unittest.TestCase):
 def main():
     test = unittest.defaultTestLoader.loadTestsFromTestCase(TestFns)
     results = unittest.TextTestRunner().run(test)
-    print('Correctness score = ', str((results.testsRun - len(results.errors) - len(results.failures)) / results.testsRun * 100) + ' / 100')
+   ''' print('Correctness score = ', str((results.testsRun - len(results.errors) - len(results.failures)) / results.testsRun * 100) + ' / 100')'''
     
 if __name__ == "__main__":
     main()
