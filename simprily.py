@@ -24,23 +24,11 @@ verbos = 0
 
 
 def main(args):
-    '''
-    '''
-
-    # Enable David's debugging thing
-    global_vars.init()
-    if(len(sys.argv)>1):
-        for arg in sys.argv:
-            if arg.startswith("-v"):
-                global_vars.verbos = arg.count("v")
-    debugPrint(1,"Debug on: Level " + str(global_vars.verbos))
-
-
     chr_number = 1
     # Use dictionary keys instead of index keys for args
     args = process_args(args)
     job = str(args['job'])  # must be a number
-    print('JOB', job)
+    print('JOB {}'.format(job))
 
     sim_option = args['sim option']
 

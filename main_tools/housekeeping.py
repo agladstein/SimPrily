@@ -1,3 +1,5 @@
+import argparse
+
 from main_tools import global_vars
 from main_tools.my_random import MY_RANDOM as random
 import sys
@@ -32,19 +34,35 @@ def debugPrint(verbosLevel, string, dictionary=None):
 
 
 def process_args(arguments):
-    args = {'command':arguments[0],
-            'param file':arguments[1],
-            'model file':arguments[2],
-            'genetic map':arguments[3],
-            'SNP file':arguments[4],
-            'job':arguments[5],
-            'path':arguments[6]}
-    model_args = argsFromModelCSV(args['model file'])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p","--param",help="REQUIRED!: The location of the parameter file",required=True)
+    parser.add_argument("-m","--model",help="REQUIRED!: The location of the model file",required=True)
+    parser.add_argument("-i","--id", help="REQUIRED!: The unique identifier of the job",required=True)
+    parser.add_argument("-o","--out", help="REQUIRED!: The location of the output dir",required=True)
+    parser.add_argument("-g","--map", help="The location of the genetic map file")
+    parser.add_argument("-a","--array", help="The location of the array template file, in bed form")
+    parser.add_argument("-v", help="increase output verbosity", action="count",default=0)
+    tmpArgs = parser.parse_args()
+
+    args = {
+            'param file':tmpArgs.param,
+            'model file':tmpArgs.model,
+            'genetic map':tmpArgs.map,
+            'SNP file':tmpArgs.array,
+            'job':tmpArgs.id,
+            'path':tmpArgs.out
+        }
+    model_args = argsFromModelCSV(tmpArgs.model)
     args['sim option'] = model_args['sim option']
-    # args['SNP file'] = model_args['SNP file']
     args['germline'] = model_args['germline']
     args['pedmap'] = model_args['pedmap']
     args['random discovery'] = model_args['random discovery']
+
+
+    global_vars.init()
+    global_vars.verbos = tmpArgs.v
+    debugPrint(1,"Debug on: Level " + str(global_vars.verbos))
+
     return args
 
 def set_seed(seed_option):
