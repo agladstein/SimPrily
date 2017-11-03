@@ -13,8 +13,11 @@ RUN pip install -r requirements.txt
 # Create directory for OSG
 RUN mkdir -p /cvmfs
 
+# Make executable
+RUN chmod +x /app/simprily.py
+
 # Make port 80 available to the world outside this container
 EXPOSE 80
 
-# Run simprily.py when the container launches
-CMD ["python", "simprily.py"]
+# Define entry point
+#ENTRYPOINT ["python", "/app/simprily.py"]

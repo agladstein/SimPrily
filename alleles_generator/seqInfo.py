@@ -1,6 +1,7 @@
 from bitarray import bitarray
 
 from main_tools.my_random import MY_RANDOM as random
+from main_tools.housekeeping import debugPrint
 
 
 class SeqInfo():
@@ -22,7 +23,7 @@ class SeqInfo():
         return self.name
 
 def create_sequences(processedData, args):
-    
+    debugPrint(2,"Running create_sequences:")
     sequences = []
     ### Initialize all discovery type sequence data
     for i, ind in enumerate(processedData.get('discovery')):
