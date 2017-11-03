@@ -84,16 +84,16 @@ Run as
 python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v]
 ```
 ##### Required 
-`-p PARAM`, `--param PARAM` = The location of the parameter file
-`-m MODEL`, `--model MODEL` = The location of the model file
-`-i ID`, `--id ID` = The unique identifier of the job
-`-o OUT`, `--out OUT` = The location of the output directory
+`-p PARAM` or `--param PARAM` = The location of the parameter file  
+`-m MODEL` or `--model MODEL` = The location of the model file  
+`-i ID` or `--id ID` = The unique identifier of the job  
+`-o OUT` or `--out OUT` = The location of the output directory  
  
 ##### Optional
 `-h` or `--help` = shows a help message and exists  
-`-v` = increase output verbosity. This includes 3 levels, `-v`, `-vv`, and `-vvv`
-`-g MAP`, `--map MAP` = The location of the genetic map file
-`-a ARRAY`, `--array ARRAY` = The location of the array template file, in bed form
+`-v` = increase output verbosity. This includes 3 levels, `-v`, `-vv`, and `-vvv`  
+`-g MAP` or `--map MAP` = The location of the genetic map file  
+`-a ARRAY` or `--array ARRAY` = The location of the array template file, in bed form  
 
 #### Output
 Three subdirectories are created in the directory specified in the `output_dir` argument.  
