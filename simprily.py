@@ -27,7 +27,7 @@ def main(args):
     # Use dictionary keys instead of index keys for args
     args = process_args(args)
     job = str(args['job'])  # must be a number
-    print('JOB', job)
+    print('JOB {}'.format(job))
 
     sim_option = args['sim option']
 
