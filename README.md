@@ -45,7 +45,7 @@ pip install --upgrade pip
 pip install pip-tools
 cd /vagrant
 pip-sync
-~/simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs array_template/ill_650_test.bed 1 output_dir
+~/simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
 If not using Vagrant:
@@ -60,7 +60,7 @@ cd SimPrily
 pip install --upgrade pip
 pip install pip-tools
 pip-sync
-simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs array_template/ill_650_test.bed 1 output_dir
+simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
 
@@ -68,24 +68,32 @@ simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1
 
 e.g. One Test simulation:  
 ```
-python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs array_template/ill_650_test.bed 1 output_dir
+python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
+For quick help:
+```
+python simprily.py --help
+```
 
 #### Input  
-`simprily.py` takes 6 arguments.   
+`simprily.py` takes 4 required arguments and 2 optional arguments, and help and verbose options.   
 
 Run as  
 ```
-python simprily.py param_file.txt model_file.csv genetic_map array_template jobID output_dir
+python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v]
 ```
-1. `param_file.txt` = full path to file containing parameter values or priors
-2. `model_file.csv` = full path to file containing model commands
-3. `genetic_map` = genetic map
-4. `array_template` = array template
-5. `jobID` = can be any unique value to identify the output  
-6. `output_dir` = path to the directory to output to. No argument will use the default of current dir `.` 
-
+##### Required 
+`-p PARAM`, `--param PARAM` = The location of the parameter file
+`-m MODEL`, `--model MODEL` = The location of the model file
+`-i ID`, `--id ID` = The unique identifier of the job
+`-o OUT`, `--out OUT` = The location of the output directory
+ 
+##### Optional
+`-h` or `--help` = shows a help message and exists  
+`-v` = increase output verbosity. This includes 3 levels, `-v`, `-vv`, and `-vvv`
+`-g MAP`, `--map MAP` = The location of the genetic map file
+`-a ARRAY`, `--array ARRAY` = The location of the array template file, in bed form
 
 #### Output
 Three subdirectories are created in the directory specified in the `output_dir` argument.  
