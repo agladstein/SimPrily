@@ -2,6 +2,7 @@ import sys
 from bisect import bisect_right
 
 from main_tools.my_random import MY_RANDOM as random
+from main_tools.housekeeping import debugPrint
 
 def find2(a, x):
     """This function receives the array with available sites (sites that passed the frequency cut-off)"""
@@ -100,13 +101,13 @@ def pseudo_array(asc_panel, daf, pos, snps):
             index_avail_sites.append(n)
     nb_avail_sites = len(avail_sites)
     if (len(avail_sites) == len(snps)):
-        print( "number of avail_sites is equal to the number of Array snps")
+        debugPrint(3,"number of avail_sites is equal to the number of Array snps")
         pos_asc = []
         pos_asc = index_avail_sites
         nbss_asc = len(pos_asc)
         flag_nb_asc_snps = 1
     elif (len(avail_sites) > len(snps)):
-        print( "number of avail_sites greater than number of Array snps")
+        debugPrint(3,"number of avail_sites greater than number of Array snps")
         pos_asc = [None] * int(len(snps))  ##indexes of the SNPs that pass the frequency cut-off and position
         for i in range(len(snps)):  # each snp on the snp array on a chromosome
             ## y is the position of the SNPs in the array
@@ -143,11 +144,11 @@ def pseudo_array(asc_panel, daf, pos, snps):
 
         if (len(snps) == nbss_asc):
             flag_nb_asc_snps = 1
-            print( 'nb of asc snps equal to nb array snps')
+            debugPrint(3,'Number of asc snps equal to nb array snps')
 
         if (len(snps) != len(pos_asc)):
             flag_nb_asc_snps = 0
-            print( 'nb of asc snps not equal to nb array snps')
+            debugPrint(3,'Number of asc snps not equal to nb array snps')
             diff = int(len(snps) - len(pos_asc))
             for m in range(1, diff + 1):
                 pos_asc2 = []
@@ -213,14 +214,14 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
         sys.exit()
 
     if (len(avail_sites) == len(snps)):
-        print( "number of avail_sites is equal to the number of Array snps")
+        debugPrint(3,"Number of avail_sites is equal to the number of Array snps")
         pos_asc = []
         pos_asc = index_avail_sites
         nbss_asc = len(pos_asc)
         flag_nb_asc_snps = 1
 
     elif (len(avail_sites) > len(snps)):
-        print( "number of avail_sites greater than number of Array snps")
+        debugPrint(3,"Number of avail_sites greater than number of Array snps")
         pos_asc = [None] * int(len(snps))  ##indexes of the SNPs that pass the frequency cut-off and position
         for i in range(len(snps)):  # each snp on the snp array on a chromosome
             ## y is the position of the SNPs in the array
@@ -260,11 +261,11 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
 
         if (len(snps) == nbss_asc):
             flag_nb_asc_snps = 1
-            print( 'nb of asc snps equal to nb array snps')
+            debugPrint(3,'nb of asc snps equal to nb array snps')
 
         if (len(snps) != len(pos_asc)):
             flag_nb_asc_snps = 0
-            print( 'nb of asc snps not equal to nb array snps')
+            debugPrint(3,'nb of asc snps not equal to nb array snps')
             diff = int(len(snps) - len(pos_asc))
             for m in range(1, diff + 1):
                 pos_asc2 = []
@@ -286,5 +287,5 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
                     pos_asc.append(rand_numb)
             pos_asc.sort()
             nbss_asc = len(pos_asc)
-    print( 'finished making pseudo array')
+    debugPrint(2,'finished making pseudo array')
     return pos_asc, nbss_asc, index_avail_sites, avail_sites

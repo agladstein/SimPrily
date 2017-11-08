@@ -4,7 +4,7 @@
 -t,2.5e-8,
 -r,1e-8,
 -h,1e5,
--R,genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs,
+#-R,genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs,
 -I,6,36,36,10,28,28,24,
 -n,1,NAF,
 -n,2,NCEU,
@@ -26,5 +26,6 @@
 -discovery,1,2,3
 -sample,4,5,6
 -daf,daf
--array, array_template/ill_650_test.bed
+#-array, array_template/ill_650_test.bed
 -random_discovery, True
+-pedmap

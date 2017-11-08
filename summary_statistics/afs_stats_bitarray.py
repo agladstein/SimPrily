@@ -53,6 +53,8 @@ def Tajimas(p,S,n):
 
 def FST2(seq1_bits,pi1,n1,seq2_bits,pi2,n2):
     """FST based on pi within populations and between populations"""
+
+
     k3=0
     #Pi within populations
     pw=(pi1+pi2)/2
