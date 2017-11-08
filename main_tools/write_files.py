@@ -1,6 +1,7 @@
 import os
 
 def create_sim_directories(path_name):
+    print("THIS IS THE PARAMETER FOR create_sim_directories: " + str(path_name))
     sim_data_dir     = str(path_name)+'/sim_data'
     germline_out_dir = str(path_name)+'/germline_out'
     sim_results_dir  = str(path_name)+'/results'
@@ -13,10 +14,12 @@ def create_sim_directories(path_name):
         except OSError:
             if not os.path.isdir(d):
                 raise
+    print("THESE ARE THE RETURNS FOR create_sim_directories: " + str(dir_list))
     return dir_list
 
 
 def write_sim_results_file(dir, job, param_dict, res_list, header):
+    print("THESE ARE THE PARAMETERS FOR write_sim_results_file: " + str(dir),str(job), str(param_dict), str(res_list), str(header))
     result = '{}/results_{}.txt'.format(dir, job)
     out_file = open(result, 'w')
 

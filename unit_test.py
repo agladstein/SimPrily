@@ -4,7 +4,6 @@ from main_tools.housekeeping import process_args
 from summary_statistics.afs_stats_bitarray import Pi2, Tajimas, FST2, count_bit_differences, base_S_ss
 from alleles_generator.seqInfo import create_sequences, SeqInfo
 from ascertainment.pseudo_array import find2, add_snps, pseudo_array_bits
-#from ascertainment.asc_tools import get_snp_sites, set_asc_bits, make_ped_file, write_ped, make_map_file 
 from bitarray import bitarray
 import random
 
@@ -17,11 +16,6 @@ macs_swig_alles and macs_file from alleles_generator were
  statements at the top did not affect the program. 
 '''
 
-
-
-
-
-
 class TestFns(unittest.TestCase):
 
     '''
@@ -31,14 +25,36 @@ class TestFns(unittest.TestCase):
         args = process_args(new_list)
         self.assertEquals(args["command"], "python2")
     '''
-
-    def test_seq_set_bits(self):
+    def test_process_args(self):
         '''
-        This can only be tested in real_data_ss.py in the main folder
-        because it is only called there and in main (simprily). 
-        '''
-        print()
+        This function 
 
+        Parameters: ['simprily.py', 'examples/eg1/param_file_eg1.txt',
+         'examples/eg1/model_file_eg1.csv', '1', 'output_dir']
+
+        '''
+
+    def test_argsFromModelCSV(self):
+        '''
+        This function returns a dictionary for the arguments of the 
+        program
+
+        Parameters: filename, which is a csv file that has: 
+         [['-macs', './bin/macs', ''],
+         ['-length', '1000000', ''], ['-t', '2.5e-8', ''], ['-s', 
+         '1231', ''], ['-r', '1e-8', ''], ['-h', '1e5', ''], ['-R', 
+         'genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs', ''], 
+         ['-I', '2', '20', '140', ''], ['-n', '1', 'A', ''], ['-n', 
+         '2', 'B', ''], ['-ej_1', 'AB_t', '2', '1', ''], ['-en', 
+         'AN_t', '1', 'AN'], ['-discovery', '1'], ['-sample', '2'], 
+         ['-daf', 'daf'], ['-array', ' array_template/ill_650_test.bed'], 
+         ['-random_discovery', ' True']] 
+
+
+        Returns:  a dictionary, which has: 
+        {'SNP file': 'array_template/ill_650_test.bed', 'random discovery':
+         True, 'sim option': 'macs', 'germline': 1}
+        '''
 
 
     def test___init__seqInfo(self):

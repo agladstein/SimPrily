@@ -7,7 +7,7 @@ def get_SNP_sites(snp_file):
     # print "read SNP file"
     SNP = [line for line in fileSNP]
     fileSNP.close()
-    print("THIS IS GET_SNP_SITES : " + str([int(line.split('\t')[2]) for line in SNP]))
+   # print("THIS IS GET_SNP_SITES : " + str([int(line.split('\t')[2]) for line in SNP]))
     return [int(line.split('\t')[2]) for line in SNP]
 
 def set_asc_bits(seq_list, n_asc, pos, site_inds):
