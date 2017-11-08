@@ -22,6 +22,15 @@ class SeqInfo():
         return self.name
 
 def create_sequences(processedData, args):
+
+    '''
+    Parameters: args is a dictionary that maps the SNP file to 
+    array_template
+    args: a dictionary (seen below in the args parameter)
+    processedData: a dictionary (seen below in the args parameter)
+    
+    Returns: instance types named [d1, s1] 
+    '''
     
     sequences = []
     ### Initialize all discovery type sequence data
@@ -44,5 +53,4 @@ def create_sequences(processedData, args):
         seq.panel = seq.tot
         seq.genotyped = seq.tot
         sequences.append(seq)
-
     return sequences

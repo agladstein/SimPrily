@@ -2,10 +2,37 @@
 import unittest
 from main_tools.housekeeping import process_args
 from summary_statistics.afs_stats_bitarray import Pi2, Tajimas, FST2, count_bit_differences, base_S_ss
-from alleles_generator.seqInfo import create_sequences
+from alleles_generator.seqInfo import create_sequences, SeqInfo
+#from alleles_generator.real_file import make_list_seq, make bit_array_seq
 from ascertainment.pseudo_array import find2, add_snps, pseudo_array_bits
+#from ascertainment.asc_tools import get_snp_sites, set_asc_bits, make_ped_file, write_ped, make_map_file 
 from bitarray import bitarray
 import random
+
+
+# real file from alleles_generator is not called in the main program
+
+'''
+Did you guys know this program as a (simple) debugging log 
+built in? When running the program:
+`python3 simprily.py examples/eg1/param_file_eg1.txt
+examples/eg1/model_file_eg1.csv 1 output_dir`
+You simply need to add `-v[vv]`to the end of the command:
+`python3 simprily.py examples/eg1/param_file_eg1.txt 
+examples/eg1/model_file_eg1.csv 1 output_dir -vvv`
+This will enable debugging logging level 3. Which means 
+all the debug prints level 3 or lower will be printer. 
+`-vv` will be level 2, and `-v` is level 1.
+You might have noticed in the code lines looking like:
+`debugPrint(1,"debug message")`
+This is how the debug statements are made, with an int
+getting the debugging level and the string being the 
+message printed. You'll notice there is some common sense
+formatting done. But one of them is coloring the output. 
+This is untested in Windows so please, if your output looks
+crazy let me know and I'll edit it to at least remove the
+craziness. 
+'''
 
 
 class TestFns(unittest.TestCase):
@@ -17,18 +44,45 @@ class TestFns(unittest.TestCase):
         args = process_args(new_list)
         self.assertEquals(args["command"], "python2")
     '''
+    def test___init__seqInfo(self):
+        '''
+        Simple class reference test
+        '''
 
-    def create_sequences(self):
+        name = "string"
+        total = 12
+        seq_type = "sample"
+        a = SeqInfo(name, total, seq_type)
+        self.assertEquals(a.tot, total)
+
+        name = []
+        total = 12
+        seq_type = "sample"
+        a = SeqInfo(name, total, seq_type)
+        self.assertEquals(a.name, name)
+
+        name = "string"
+        total = 12.0
+        seq_type = bitarray()
+        a = SeqInfo(name, total, seq_type)
+        self.assertEquals(a.tot, total)
+        
+    def test_create_sequences(self):
         '''
         Parameters: args is a dictionary that maps the SNP file to 
         array_template
-        args: {'SNP file': 'array_template/ill_650_test.bed', 
+        args: a dictionary (seen below in the args parameter)
+        processedData: a dictionary (seen below in the args parameter)
+        
+        Returns: instance types named [d1, s1] 
+        '''
+        args = {'SNP file': 'array_template/ill_650_test.bed', 
         'sim option': 'macs', 'germline': 1, 'model file': 
         'examples/eg1/model_file_eg1.csv', 'job': '1', 
         'command': 'simprily.py', 'param file': 
         'examples/eg1/param_file_eg1.txt', 'random discovery': 
         True, 'path': 'output_dir'}
-        processedData: {'param_dict': {'A': '44499.7180488', 
+        processed_data = {'param_dict': {'A': '44499.7180488', 
         'daf': '0.0264139586625', 'B': '40008.4616861', 'AB_t': 
         '(1600:4100)', 'AN': '10000.0', 'AN_t': '2113.43905612'}, 
         'daf': 0.0264139586625, 'macs': './bin/macs', 'macs_args': 
@@ -38,10 +92,18 @@ class TestFns(unittest.TestCase):
           '-n', '1', '1.0', '-n', '2', '0.899072251249', '-en', 
           '0.0118708617304', '1', '0.224720524949', '-ej', '0.0143090794261',
            '2', '1'], 'I': [20, 140], 'sample': [2], 'length': '1000000', 
-           'seed': '1231', 'discovery': [1]}
-        Returns: sequences contains [d1, s1] every time for example 1. 
-        It is an instance type
-        '''
+           'seed': '1231', 'discovery': [1]}        
+        check = create_sequences(processed_data, args)
+        values1 = {'pi_CGI': [], 'name': 'D1', 'asc_bits': bitarray(), 
+        'type': 'discovery', 'genotyped': 20, 'tot': 26, 'CGI_bits': 
+        bitarray(), 'pi_asc': None, 'bits': bitarray(), 'panel': 6}
+        values2 = {'pi_CGI': None, 'name': 'S1', 'asc_bits': 
+        bitarray(), 'type': 'sample', 'genotyped': 140, 'tot':
+         140, 'CGI_bits': None, 'pi_asc': None, 'bits': 
+         bitarray(), 'panel': 140}
+        self.assertEquals(check[0].__dict__, values1)
+        self.assertEquals(check[1].__dict__, values2)
+
 
     def test_base_S_ss(self):
         '''
@@ -84,7 +146,6 @@ class TestFns(unittest.TestCase):
         n = 16
         check = base_S_ss(bits1, n)
         self.assertEquals(check, [0, 0, 0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-
 
 
     def test_Pi2(self):
@@ -306,7 +367,7 @@ class TestFns(unittest.TestCase):
         def test_pseudo_array(self):
         Parameters: asc_panel, daf, pos, snps 
 
-        Cannot make test yet because the function does
+        This function does
         not appear to be called by any of the examples (verified by 
         print statements and commenting out the function)
         '''     
@@ -381,7 +442,7 @@ class TestFns(unittest.TestCase):
 def main():
     test = unittest.defaultTestLoader.loadTestsFromTestCase(TestFns)
     results = unittest.TextTestRunner().run(test)
-   ''' print('Correctness score = ', str((results.testsRun - len(results.errors) - len(results.failures)) / results.testsRun * 100) + ' / 100')'''
+    print('Correctness score = ', str((results.testsRun - len(results.errors) - len(results.failures)) / results.testsRun * 100) + ' / 100')
     
 if __name__ == "__main__":
     main()
