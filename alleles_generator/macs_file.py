@@ -1,3 +1,4 @@
+'''
 import re
 from bitarray import bitarray
 
@@ -21,6 +22,7 @@ class AllelesMacsFile(object):
                 alleles.append(site_alleles)
                 position.append(columns[2])
         macs_file.close()
+        print("THIS IS MAKE_LISTS RETURN: " + str(alleles) + "\n POSITION: " + str(position))
         return [alleles,position]
 
     def make_bitarray(self):
@@ -37,12 +39,14 @@ class AllelesMacsFile(object):
                 alleles_bits.extend(site_alleles)
                 position.append(columns[2])
         macs_file.close()
+        print("THIS IS MAKE_BITARRAY RETURN: " + str(alleles_bits) + "\n POSITION: " + str(position))
         return [alleles_bits,position]
 
     def make_bitarray_seq(self, n_0, n_m):
         """Make bitarray containing alleles from macs sites output file for one population (equivalent of seq lists).
         macs sites output file is made by
         macs 20 1000 -t 0.001 -r 0.0004 -s 100000 -h 1e5 -I 2 10 10 -ej 0.0025 1 2 >trees.txt 1> sites.txt"""
+        print("THESE ARE THE PARAMETERS OF MAKE_BITARRAY_SEQ: " + str(n_0), str(n_m))
         macs_file = open(self.macs_file_name, 'r')
         seq_bits = bitarray()
         for line in macs_file:
@@ -52,4 +56,6 @@ class AllelesMacsFile(object):
                 for i in xrange(n_0, n_m):
                     seq_bits.extend(site_alleles[i])
         macs_file.close()
+        print("THIS IS MAKE_BITARRAY_SEQ RETURN: " + str(seq_bits))
         return seq_bits
+'''

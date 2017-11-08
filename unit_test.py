@@ -3,36 +3,23 @@ import unittest
 from main_tools.housekeeping import process_args
 from summary_statistics.afs_stats_bitarray import Pi2, Tajimas, FST2, count_bit_differences, base_S_ss
 from alleles_generator.seqInfo import create_sequences, SeqInfo
-#from alleles_generator.real_file import make_list_seq, make bit_array_seq
 from ascertainment.pseudo_array import find2, add_snps, pseudo_array_bits
 #from ascertainment.asc_tools import get_snp_sites, set_asc_bits, make_ped_file, write_ped, make_map_file 
 from bitarray import bitarray
 import random
 
-
-# real file from alleles_generator is not called in the main program
-
 '''
-Did you guys know this program as a (simple) debugging log 
-built in? When running the program:
-`python3 simprily.py examples/eg1/param_file_eg1.txt
-examples/eg1/model_file_eg1.csv 1 output_dir`
-You simply need to add `-v[vv]`to the end of the command:
-`python3 simprily.py examples/eg1/param_file_eg1.txt 
-examples/eg1/model_file_eg1.csv 1 output_dir -vvv`
-This will enable debugging logging level 3. Which means 
-all the debug prints level 3 or lower will be printer. 
-`-vv` will be level 2, and `-v` is level 1.
-You might have noticed in the code lines looking like:
-`debugPrint(1,"debug message")`
-This is how the debug statements are made, with an int
-getting the debugging level and the string being the 
-message printed. You'll notice there is some common sense
-formatting done. But one of them is coloring the output. 
-This is untested in Windows so please, if your output looks
-crazy let me know and I'll edit it to at least remove the
-craziness. 
+Notes: realfile and seq from all  alleles_generator are not
+called in the main program
+
+macs_swig_alles and macs_file from alleles_generator were
+ called in SimPrily, but removing the class in the import 
+ statements at the top did not affect the program. 
 '''
+
+
+
+
 
 
 class TestFns(unittest.TestCase):
@@ -44,6 +31,16 @@ class TestFns(unittest.TestCase):
         args = process_args(new_list)
         self.assertEquals(args["command"], "python2")
     '''
+
+    def test_seq_set_bits(self):
+        '''
+        This can only be tested in real_data_ss.py in the main folder
+        because it is only called there and in main (simprily). 
+        '''
+        print()
+
+
+
     def test___init__seqInfo(self):
         '''
         Simple class reference test
