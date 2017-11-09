@@ -93,6 +93,7 @@ def findScaleValue(flags = {}, variables = {}):
     debugPrint(2,"Scaling factor found: {0}".format(Ne))
     return Ne
 
+
 def populateFlags(variables, modelData):
     '''
     This will fill a dictionary with keys that equal the flags, and values that
@@ -229,6 +230,8 @@ def processModelData(variables, modelData):
                 if flag == "-macsswig":
                     processedData['macsswig'] = tempLine[0]
                     continue
+                if flag == "-n":
+                    processedData['name'] = tempLine[1]
                 
                 #----------------------- For Added Arguments from Model_CSV
                 ignoredFlags = ["-germline",
@@ -236,6 +239,7 @@ def processModelData(variables, modelData):
                                 "-nonrandom_discovery",
                                 "-random_discovery",
                                 "-pedmap"]
+
                 if flag in ignoredFlags:
                     continue
 
