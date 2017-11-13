@@ -1,34 +1,25 @@
-import sys
 from collections import OrderedDict
 from sys import argv
 
 import numpy as np
 import os
 
-from alleles_generator.bit_structure import set_seq_bits, set_discovery_bits, set_real_genome_bits, set_real_array_bits
+from alleles_generator.bit_structure import set_real_genome_bits, set_real_array_bits
 from alleles_generator.real_file import AllelesReal
+from main_tools.write_files import write_stats_file
 from alleles_generator.seqInfo import create_sequences
-from main_tools import global_vars
-from main_tools.housekeeping import debugPrint, prettyPrintDict
-from main_tools.write_files import create_sim_directories, write_stats_file
+from main_tools.write_files import create_sim_directories
+from processInput import processInputFiles
 from summary_statistics import stat_tools
 from summary_statistics.germline_tools import run_germline, process_germline_file
-from processInput import processInputFiles
-
+from main_tools import global_vars
 
 verbos = 0
 
 
 def main(args):
-    print ''
-
-    # Enable David's debugging thing
     global_vars.init()
-    if(len(sys.argv)>1):
-        for arg in sys.argv:
-            if arg.startswith("-v"):
-                global_vars.verbos = arg.count("v")
-    debugPrint(1,"Debug on: Level " + str(global_vars.verbos))
+    print ''
 
     model_file = argv[1]
     param_file = argv[2]
@@ -41,8 +32,6 @@ def main(args):
     using_pseudo_array = True
     if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):
         using_pseudo_array = False
-
-    debugPrint(3,"#"*22+"param_dict:\n{}".format(prettyPrintDict(processedData['param_dict']))+"#"*22)
 
     ### Create a list of Sequence class instances. These will contain the bulk of all sequence-based data
     sequences = create_sequences(processedData, args)
