@@ -18,3 +18,4 @@
 -discovery, 1, 2, 3
 -sample, 4
 -daf, daf
+-random_discovery,False
