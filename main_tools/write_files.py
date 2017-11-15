@@ -30,8 +30,8 @@ def write_sim_results_file(dir, job, param_dict, res_list, header):
     header = '\t'.join(header)+'\n'
     out = '\t'.join([str(r) for r in res_list]) + '\n'
 
-    out_file.write('\t'.join(params) + header)
-    out_file.write('\t'.join(vals) + out)
+    out_file.write('\t'.join(params) + '\t' + header)
+    out_file.write('\t'.join(vals) + '\t' + out)
 
 
 def write_stats_file(res_dir, job, res_list, header):
