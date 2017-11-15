@@ -259,9 +259,9 @@ def main(args):
     
 
     print('')
-    print('######################################')
-    print('### PROGRAM COMPLETED SUCCESSFULLY ###')
-    print('######################################')
+    print('#########################')
+    print('### PROGRAM COMPLETED ###')
+    print('#########################')
     print('')
 
     profile(prof_option, path, job, "COMPLETE")
