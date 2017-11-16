@@ -230,7 +230,9 @@ def processModelData(variables, modelData):
                     processedData['macsswig'] = tempLine[0]
                     continue
                 if flag == "-n":
-                    processedData['name'] = tempLine[1]
+                    tmp = processedData.get('name', [])
+                    tmp.append(tempLine[1])
+                    processedData['name'] = tmp
                 
                 #----------------------- For Added Arguments from Model_CSV
                 ignoredFlags = ["-germline",
@@ -300,6 +302,10 @@ def processModelData(variables, modelData):
                 print("There was an index error!\nThis most likely means your input file has a malformed flag.")
                 print("Try running with -vv argument for last flag ran")
                 sys.exit()
+
+    if '-n' not in flags:
+        tmp = list(range(1,int(flags['-I'][0][0])+1))
+        processedData['name'] = tmp
 
     if not processedData.get('discovery') or not processedData.get('sample') or not processedData.get('daf'):
         if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):

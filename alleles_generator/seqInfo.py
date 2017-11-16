@@ -29,7 +29,7 @@ def create_sequences(processedData, args):
     for i, ind in enumerate(processedData.get('discovery')):
         tot_index = processedData['macs_args'].index("-I") + 1 + ind
         tot = int(processedData['macs_args'][tot_index]) # total number of individuals used in simulation
-        name = processedData.get('name')
+        name = processedData.get('name').pop(0)
         seq = SeqInfo(name, tot, seq_type = 'discovery')
 
         seq.genotyped = processedData['I'][ind - 1]
@@ -39,7 +39,7 @@ def create_sequences(processedData, args):
     ### Initialize all sample type sequence data
     for i, ind in enumerate(processedData.get('sample')):
         tot = processedData['I'][ind-1]
-        name = processedData.get('name')
+        name = processedData.get('name').pop(0)
         seq = SeqInfo(name, tot, seq_type = 'sample')
 
         seq.panel = seq.tot
