@@ -75,7 +75,9 @@ def main(args):
         # add genetic map to macs_args list
         macs_args = []
         macs_args = processedData['macs_args']
-        macs_args.extend(['-R',args['genetic map']])
+
+        if args['genetic map']:
+            macs_args.extend(['-R',args['genetic map']])
 
         if sim_option == 'macsswig':
             print('Run macsswig simulation')
