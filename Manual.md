@@ -99,36 +99,36 @@ python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.c
 ```
 
 ## Usage
+
 e.g. One Test simulation:  
 ```
-python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 output_dir
+python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
-If using Vagrant (if you are on a Mac you should use Vagrant),  
-Start and enter vagrant, and go to working directory
-```bash
-vagrant up
-vagrant ssh
-cd /vagrant
+For quick help:
 ```
-
-Run SimPrily using the virtual environment
-```bash
-~/simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 output_dir
+python simprily.py --help
 ```
-
 
 #### Input  
-`simprily.py` takes 4 arguments.   
+`simprily.py` takes 4 required arguments and 2 optional arguments, and help, verbose, and profile options.   
 
 Run as  
 ```
-python simprily.py param_file.txt model_file.csv jobID output_dir
+python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] [--profile]
 ```
-1. `param_file.txt` = full path to file containing parameter values or priors
-2. `model_file.csv` = full path to file containing model commands
-3. `jobID` = can be any unique value to identify the output  
-4. `output_dir` = path to the directory to output to. No argument will use the default of current dir `.` 
+##### Required 
+`-p PARAM` or `--param PARAM` = The location of the parameter file  
+`-m MODEL` or `--model MODEL` = The location of the model file  
+`-i ID` or `--id ID` = The unique identifier of the job  
+`-o OUT` or `--out OUT` = The location of the output directory  
+ 
+##### Optional
+`-h` or `--help` = shows a help message and exists  
+`-v` = increase output verbosity. This includes 3 levels, `-v`, `-vv`, and `-vvv`  
+`--profile` = Print a log file containing the time in seconds and memory use in Mb for main functions  
+`-g MAP` or `--map MAP` = The location of the genetic map file  
+`-a ARRAY` or `--array ARRAY` = The location of the array template file, in bed form  
 
 ### Additional information on input arguments
 
@@ -416,6 +416,13 @@ For example, the output file with the summary statistics is named `ms_output_{jo
 
 #### output_dir
 
+## Notes for developers
+* If you use import a new Python package make sure you add it to the requirements.txt file then create the requirements.in. This will insure that the package installed in the virtual environment and Docker image.
+
+ ```
+ pip-compile --output-file requirements.txt requirements.in
+ ```
+__________________________________________________________________
 
 ## Pegasus workflow on the Open Science Grid
 
@@ -465,6 +472,8 @@ It also defines how to handle output files.
 
 `wrappers/run-sim.sh` is the wrapper that runs in the container. It modifies the environment, and runs SimPrily.
 
+__________________________________________________________________
+
 ## Calculating summary statistics on real data
 
 ### Data format
@@ -499,6 +508,8 @@ e.g.
 ```bash
 python real_data_ss.py examples/eg1/model_file_eg1.csv examples/eg1/param_file_eg1.txt out_dir ~/data/HapMap_example/test_10_YRI_CEU_CHB.tped ~/data/HapMap_example/test_10_YRI_CEU_CHB_KHV_hg18_ill_650.tped
 ```
+
+__________________________________________________________________
 
 ## Common Errors
 Number of simulated segregating sites less than number of sites on template array. Increase size of simulated locus.
