@@ -328,7 +328,7 @@ def processModelData(variables, modelData):
     return processedData
 
 
-def processInputFiles(paramFile, modelFile):
+def processInputFiles(paramFile, modelFile, args):
     '''
     This is the function that takes links to two files and outputs a dictionay (processedData)
     With all the (useful) data in the two files
@@ -351,43 +351,7 @@ def processInputFiles(paramFile, modelFile):
 
     processedData['param_dict'] = variables
 
-
+    if args['genetic map']:
+        processedData['macs_args'].extend(['-R', args['genetic map']])
 
     return processedData
-
-def main():
-    # adding simply verbos flag, be sure to change
-    # how you read this in later.
-    if(len(sys.argv)>1):
-        global verbos
-        verbos = sys.argv[1].count("v")
-    global variables
-    
-    processedData = processInputFiles("macsswig_examples/eg6/param_file_eg6.txt","macsswig_examples/eg6/model_file_eg6.csv")
-    
-    # for data in processedData:
-    #     print(data, processedData[data])
-
-
-    # for v in processedData["variables"]:
-    #     print(v, processedData["variables"][v])
-        # print()
-        # for d in processedData[data]:
-        #     print("\t\t"+str(d))
-    # print(processedData)
-
-    # tempOutput = "Formated macs_args\n"
-    # for arg in macs_args:
-    #     if arg.startswith("-"):
-    #         tempOutput+="\n"
-    #     tempOutput+= arg + " "
-    # debugPrint(2,tempOutput)
-
-    # debugPrint(3,"Raw macs_args:\n" + str(macs_args))
-    # sim = macsSwig.swigMain(len(macs_args), macs_args)
-    # nbss = sim.getNumSites()
-    # print(nbss)
-    # return sim
-
-if __name__ == '__main__':
-    main()

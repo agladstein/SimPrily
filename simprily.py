@@ -35,7 +35,7 @@ def main(args):
     path = args['path']
     [sim_data_dir, germline_out_dir, sim_results_dir] = create_sim_directories(path)
 
-    processedData =  processInputFiles(args['param file'], args['model file'])
+    processedData =  processInputFiles(args['param file'], args['model file'], args)
 
     using_pseudo_array = True
     if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):
@@ -75,9 +75,6 @@ def main(args):
         # add genetic map to macs_args list
         macs_args = []
         macs_args = processedData['macs_args']
-
-        if args['genetic map']:
-            macs_args.extend(['-R',args['genetic map']])
 
         if sim_option == 'macsswig':
             print('Run macsswig simulation')

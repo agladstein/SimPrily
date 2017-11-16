@@ -41,9 +41,6 @@ def process_args(arguments):
     parser.add_argument("-g","--map", help="The location of the genetic map file")
     parser.add_argument("-a","--array", help="The location of the array template file, in bed form")
     parser.add_argument("-v", help="increase output verbosity", action="count",default=0)
-    # parser.add_argument("--profile", type=bool, nargs='?',
-    #                     const=True, default=False,
-    #                     help="Print a log file containing the time in seconds and memory use in Mb for main functions")
     parser.add_argument('--profile', action='store_true', default=False, help="Print a log file containing the time in seconds and memory use in Mb for main functions")
     tmpArgs = parser.parse_args()
 
