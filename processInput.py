@@ -406,10 +406,3 @@ def processInputFiles(paramFile, modelFile, args):
     return processedData
 
 
-def function(a):
-    b = a+1
-    return b
-
-a = function(a)
-
-function(a)
