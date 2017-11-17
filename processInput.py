@@ -46,17 +46,17 @@ def readParamsFile(in_file):
     :return: a list with each line as a single string object 
     '''
     fl = open(in_file, "r")
-    variables = {}
+    modelParamsDict = {}
     for line in fl:
         if "=" in line:
-            variables[line.split("=")[0].strip()] = line.split("=")[1].strip()
-    return variables
+            modelParamsDict[line.split("=")[0].strip()] = line.split("=")[1].strip()
+    return modelParamsDict
 
-def getUnscaledValue(variables, tempNum, tempLow=False):
+def getParamValueBounded(modelParamsDict, tempNum, tempLow=False):
     tempVar = ""
-    if tempNum in variables.keys():
+    if tempNum in modelParamsDict.keys():
         tempVar = tempNum 
-        tempNum = variables[tempNum]
+        tempNum = modelParamsDict[tempNum]
 
     tempNum = tempNum.strip()
     if ":" not in tempNum:
@@ -67,9 +67,52 @@ def getUnscaledValue(variables, tempNum, tempLow=False):
         tempLow = max(float(sci_to_float(tempNum.split(":")[0][1:])),float(tempLow))
         tempHigh = sci_to_float(tempNum.split(":")[1][:-1])
         returnValue = str(random.uniform(float(tempLow),float(tempHigh)))
-    if tempVar in variables.keys():
-        variables[tempVar] = returnValue
+    if tempVar in modelParamsDict.keys():
+        modelParamsDict[tempVar] = returnValue
     return returnValue
+
+def priorToParamValue(inputParamStr):
+    '''
+    priorToParamValue:
+    This is a helper function that takes a string in the form (###:###)
+    Numbers are allowed to be either scientfic notation or base 10
+    And returns a random value in that range, in the form of a string
+    '''
+    assert(type(inputParamStr) == type("")),"priorToParamValue called without a string"
+
+    tempLow = float(sci_to_float(inputParamStr.split(":")[0][1:]))
+    tempHigh = float(sci_to_float(inputParamStr.split(":")[1][:-1]))
+    returnValue = str(random.uniform(tempLow,tempHigh))
+    return returnValue
+
+
+def getParamValueUnBounded(modelParamsDict, paramKey):
+    '''
+    getParamValueUnBounded:
+    This is a function that searches the model dictionary for the value 
+    and replace the param name with the matching param value in the param file
+    If there is a value that is a given range it will pick a float in that range
+    '''
+    # TODO, add assert for that if later
+    if paramKey in modelParamsDict.keys():
+        # tempVar = paramKey 
+        paramRawValue = modelParamsDict[paramKey]
+        # Strip is here to remove any whitespace that might be in param file
+        # TODO: This strip should be done when we make the dictionary
+        paramRawValueStriped = paramRawValue.strip()
+        if ":" in paramRawValueStriped:
+            # This means you want range
+            unscaledParamValue = priorToParamValue(paramRawValueStriped)
+        else:
+            unscaledParamValue = str(sci_to_float(paramRawValueStriped))
+        # Updating the Params dict with the chosen value 
+        modelParamsDict[paramKey] = unscaledParamValue
+    else:
+        # TODO, this else needs to be removed...if it goes
+        # into this else, this function shouldn't have been called
+        print("paramKey: {}".format(paramKey))
+        unscaledParamValue = paramKey
+    return unscaledParamValue
 
 def sci_to_float(s):
     """
@@ -81,89 +124,94 @@ def sci_to_float(s):
         return float(s[0]) * 10**float(s[1])
     return s
 
-def findScaleValue(flags = {}, variables = {}):
+def findScaleValue(flags, modelParamsDict):
     # used for scaling
     debugPrint(2, "Finding scaling value")
     Ne=10000
     if "-Ne" not in flags.keys():
         if "-n" in flags.keys():
-            Ne=float(getUnscaledValue(variables, flags["-n"][0][1]))
+            Ne=float(getParamValueUnBounded(modelParamsDict, flags["-n"][0][1]))
     else:
-        Ne = float(getUnscaledValue(variables, flags['-Ne'][0][0]))
+        Ne = float(getParamValueUnBounded(modelParamsDict, flags['-Ne'][0][0]))
     debugPrint(2,"Scaling factor found: {0}".format(Ne))
     return Ne
 
+def processTimeData(flag, lastTime, modelParamsDictRaw, timeDataRaw):
+    '''
+    This is a helper function that takes the raw time data from the model
+    file and replaces it with the correct value in the params file.
 
-def populateFlags(variables, modelData):
+    '''
+    if "_" in flag: 
+        if int(flag.split("_")[1]) == 1:
+            # First time through, no bounds outside of given in param Value
+            lowTime = False
+        else:
+            # There is a low time bound on the random range
+            lowTime = True
+    else:
+        # There is no time constrant
+        lowTime = False
+
+    if "inst" in timeDataRaw:
+        tempTime = str(float(lastTime) + 1)
+        while tempTime in times:
+            tempTime += 1
+        timeData = tempTime
+    else:
+        if lowTime:
+            timeData = getParamValueBounded(modelParamsDictRaw, timeDataRaw, lastTime)
+        else:
+            timeData = getParamValueUnBounded(modelParamsDictRaw, timeDataRaw)
+
+    return timeData
+
+def populateFlags(modelParamsDictRaw, modelDataRaw):
     '''
     This will fill a dictionary with keys that equal the flags, and values that
-    is a list of every time (in order) the flag is used
+    is a list of every time (in order) the flag is used.
     '''
     debugPrint(2, "Starting: populateFlags ")
+    modelData = []
     flags = OrderedDict()
-    orderedEvents = []
     lowTime = False
-    # loops through all items in data
-    for i, line in enumerate(modelData):
+    # loops through all items in modelDataRaw
+    for i, line in enumerate(modelDataRaw):
         lineSplit = line.split(',')
 
         flag = lineSplit[0]
         # if flag starts with -e it will be an event flag, thus, the order must be preserved
-        if flag.startswith("-e") and "_" in flag:
-            if len(lineSplit)>1:
-                # striping any random whitepace
-                lineSplit[1] = lineSplit[1].strip()
-                if int(flag.split("_")[1]) > 1:
-                    lowTime = modelData[i-1].split(',')[1]
-                    if lineSplit[1] in variables:
-                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
-                else:
-                    if lineSplit[1] in variables:
-                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
-                if lineSplit[1] not in times and "inst" not in lineSplit[1]:
-                    if lowTime:
-                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
-                    else:
-                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
-                else:
-                    Ne = findScaleValue(flags, variables)
-                    lastTime = getUnscaledValue(variables, modelData[i-1].split(',')[1])
-                    tempTime = str(float(lastTime) + 1)
-                    while tempTime in times:
-                        tempTime += 1
-                    lineSplit[1] = tempTime
-                times.append(lineSplit[1])
-                flag = lineSplit[0].split("_")[0]
+        if flag.startswith("-e"):
+            # striping any random whitepace
+            # TODO: The line spit should be done before this part
+            timeDataRaw = lineSplit[1].strip()
+            lastTimeValue = modelData[i-1].split(',')[1]
+            timeData = processTimeData(flag, lastTime, modelParamsDictRaw, timeDataRaw)
 
+            times.append(timeData)
+            lineSplit[1] = timeData
+            flag = lineSplit[0].split("_")[0]
 
-
-        if flag == "-t":
-            flag.replace("Nachman","2.5e-8").replace("Other",'1.65e-8')
-
-        if flag == "-F":
-            my_file = Path(lineSplit[1:])
-            if not my_file.is_file():
-                raise ValueError("The file for -F is not in your file path.")
-
-        if flag not in flags.keys():
-            flags[flag] = [[x.strip() for x in lineSplit[1:] if x]]
-        else:
+        if flag in flags.keys():
             flags[flag].append([x.strip() for x in lineSplit[1:] if x])
+        else:
+            flags[flag] = [[x.strip() for x in lineSplit[1:] if x]]
 
-        modelData[i] = ",".join(lineSplit)
+        modelData.append(",".join(lineSplit))
 
-    return flags
+    modelParamsDict = modelParamsDictRaw
 
-def processModelData(variables, modelData):
+    return flags, modelParamsDict, modelData
+
+def processModelData(modelParamsDictRaw, modelDataRaw):
     """
     """
     debugPrint(2, "Starting: processModelData")
     processedData = {}
     
-    flags = populateFlags(variables, modelData)
+    flags, modelParamsDict, modelData = populateFlags(modelParamsDictRaw, modelDataRaw)
+    Ne = findScaleValue(flags, modelParamsDictRaw)
 
-    # random_discovery = True
-    # if random_discovery:
     if flags['-random_discovery']:
         if '-macs_file' in flags:
             macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
@@ -196,14 +244,16 @@ def processModelData(variables, modelData):
     # seasons is all the time based events
     seasons = []
 
-    Ne = findScaleValue(flags, variables)
-    # processOrderedSeasons(flags, variables)
+    # processOrderedSeasons(flags, modelParamsDict)
     debugPrint(3,"Processing flags in for macs_args")
     for flag in flags.keys():
         debugPrint(3,"  {}: {}".format(flag,flags[flag]))
 
         for tempLine in flags[flag]:
             try:
+
+
+                
                 # debugPrint(3,flag + ": " + str(tempLine))
                 if flag == "-discovery":
                     processedData['discovery'] = [int(s.strip()) for s in tempLine if s]
@@ -214,7 +264,7 @@ def processModelData(variables, modelData):
                 if flag == "-s":
                     processedData['seed'] = tempLine[0]
                 if flag == "-daf":
-                    processedData['daf'] = float(getUnscaledValue(variables, tempLine[0]))
+                    processedData['daf'] = float(getParamValueUnBounded(modelParamsDictRaw, tempLine[0]))
                     continue
                 if flag == "-length":
                     processedData['length'] = tempLine[0]
@@ -244,53 +294,53 @@ def processModelData(variables, modelData):
                     continue
 
                 if flag == "-Ne":
-                    tempLine[0] = getUnscaledValue(variables, tempLine[0])
+                    tempLine[0] = getParamValueUnBounded(modelParamsDictRaw, tempLine[0])
                 if flag == "-em":
-                    tempLine[3] = getUnscaledValue(variables, tempLine[3])
+                    tempLine[3] = getParamValueUnBounded(modelParamsDictRaw, tempLine[3])
                     tempLine[3] = str(float(4*(float(tempLine[3])*Ne)))
                 
                 elif flag == "-eM" or flag == "-g":
-                    tempLine[1] = getUnscaledValue(variables, tempLine[1])
+                    tempLine[1] = getParamValueUnBounded(modelParamsDictRaw, tempLine[1])
                     tempLine[1] = str(float(4*(float(tempLine[1])*Ne)))
 
                 elif flag == "-ema":
                     for i in range(2,len(tempLine)):
-                        tempLine[i] = getUnscaledValue(variables, tempLine[i])
+                        tempLine[i] = getParamValueUnBounded(modelParamsDictRaw, tempLine[i])
                         tempLine[i] = str(float(4*(float(tempLine[i])*Ne)))
 
                 elif flag == "-eN" or flag == "-n":
-                    tempLine[1] = getUnscaledValue(variables, tempLine[1])
+                    tempLine[1] = getParamValueUnBounded(modelParamsDictRaw, tempLine[1])
                     tempLine[1] = str(float((float(tempLine[1])/Ne)))
 
                 elif flag == "-en":
-                    tempLine[2] = getUnscaledValue(variables, tempLine[2])
+                    tempLine[2] = getParamValueUnBounded(modelParamsDictRaw, tempLine[2])
                     tempLine[2] = str(float((float(tempLine[2])/Ne)))
 
                 elif flag == "-eg":
-                    tempLine[2] = getUnscaledValue(variables, tempLine[2])
+                    tempLine[2] = getParamValueUnBounded(modelParamsDictRaw, tempLine[2])
                     tempLine[2] = str(float(4*(float(tempLine[2])*Ne)))
 
                 elif flag == "-es":
-                    tempLine[2] = getUnscaledValue(variables, tempLine[2])
+                    tempLine[2] = getParamValueUnBounded(modelParamsDictRaw, tempLine[2])
 
                 elif flag == "-m":
-                    tempLine[2] = getUnscaledValue(variables, tempLine[2])
+                    tempLine[2] = getParamValueUnBounded(modelParamsDictRaw, tempLine[2])
                     tempLine[2] = str(float(4*(float(tempLine[2])*Ne)))
 
                 elif flag == "-ma":
                     for i in range(len(tempLine)):
-                        tempLine[i] = getUnscaledValue(variables, tempLine[i])
+                        tempLine[i] = getParamValueUnBounded(modelParamsDictRaw, tempLine[i])
                         tempLine[i]=str(float(4*(float(tempLine[i])*Ne)))
 
                 elif flag == "-t" or flag == "-r" or flag == "-G":
                     # both <m> <r> <alpha> have same scaling factor
-                    tempLine[0] = getUnscaledValue(variables, tempLine[0])
+                    tempLine[0] = getParamValueUnBounded(modelParamsDictRaw, tempLine[0])
                     tempLine[0] = str(float(4*(float(tempLine[0])*Ne)))
 
                 if flag.startswith('-e'):
                     # all <t>'s are scaled
                     pass
-                    tempLine[0] = getUnscaledValue(variables, tempLine[0])
+                    tempLine[0] = getParamValueUnBounded(modelParamsDictRaw, tempLine[0])
                     tempLine[0]=str(round(float(tempLine[0]))/(4*Ne))
                     seasons.append([flag] + tempLine)
                 else:
@@ -338,19 +388,28 @@ def processInputFiles(paramFile, modelFile, args):
     debugPrint(2, "Finished reading " + str(modelFile))
     debugPrint(3, "Raw input data into make_args", modelData)
 
-    variables = readParamsFile(paramFile)
+    modelParamsDict = readParamsFile(paramFile)
     debugPrint(2, "Finished reading " + str(paramFile))
     
-    debugPrint(3,"Raw Output for variables", variables)
+    debugPrint(3,"Raw Output for modelParamsDict", modelParamsDict)
 
 
 
-    processedData = processModelData(variables, modelData) # creates the input for macsSwig
-    debugPrint(3,"Priting variables:", variables)
+    processedData = processModelData(modelParamsDict, modelData) # creates the input for macsSwig
+    debugPrint(3,"Priting modelParamsDict:", modelParamsDict)
 
-    processedData['param_dict'] = variables
+    processedData['param_dict'] = modelParamsDict
 
     if args['genetic map']:
         processedData['macs_args'].extend(['-R', args['genetic map']])
 
     return processedData
+
+
+def function(a):
+    b = a+1
+    return b
+
+a = function(a)
+
+function(a)
