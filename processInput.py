@@ -110,15 +110,16 @@ def populateFlags(variables, modelData):
         flag = lineSplit[0]
         # if flag starts with -e it will be an event flag, thus, the order must be preserved
         if flag.startswith("-e") and "_" in flag:
-            print("Flag: {}-- {}".format(flag,lineSplit))
             if len(lineSplit)>1:
                 # striping any random whitepace
                 lineSplit[1] = lineSplit[1].strip()
-                # if a varibles is used, replace it with the value defined in variables
-                if lineSplit[1] in variables:
-                    lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
                 if int(flag.split("_")[1]) > 1:
                     lowTime = modelData[i-1].split(',')[1]
+                    if lineSplit[1] in variables:
+                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
+                else:
+                    if lineSplit[1] in variables:
+                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
                 if lineSplit[1] not in times and "inst" not in lineSplit[1]:
                     if lowTime:
                         lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
@@ -130,12 +131,9 @@ def populateFlags(variables, modelData):
                     tempTime = str(float(lastTime) + 1)
                     while tempTime in times:
                         tempTime += 1
-                    print("Time '{}' has been used before: adding {} to time, changing to {}".format(lineSplit[1], str(0.00001*Ne),tempTime))
                     lineSplit[1] = tempTime
                 times.append(lineSplit[1])
                 flag = lineSplit[0].split("_")[0]
-                print("times: {}".format(times))
-                print("After:{} ".format(i+1)+",".join(lineSplit))
 
 
 
