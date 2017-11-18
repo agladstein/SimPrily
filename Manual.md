@@ -128,7 +128,8 @@ python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] 
 `-v` = increase output verbosity. This includes 3 levels, `-v`, `-vv`, and `-vvv`  
 `--profile` = Print a log file containing the time in seconds and memory use in Mb for main functions  
 `-g MAP` or `--map MAP` = The location of the genetic map file  
-`-a ARRAY` or `--array ARRAY` = The location of the array template file, in bed form  
+`-a ARRAY` or `--array ARRAY` = The location of the array template file, in [bed format](http://bedtools.readthedocs.io/en/latest/content/general-usage.html).
+The third column is used as the physical positions of the SNP for the pseudo array. 
 
 ### Additional information on input arguments
 
@@ -332,9 +333,6 @@ When calculating summary statistics, summary statistics based on whole genome si
 
 `-daf`, followed by the parameter name for daf.  
 
-`-array`, followed by the full path of file to use as template for the SNP array in [bed format](http://bedtools.readthedocs.io/en/latest/content/general-usage.html).
-The third column is used as the physical positions of the SNP for the pseudo array. 
-
 `-random_discovery`, followed by `True`. 
 This will add a random number of individuals to the discovery populations to use as the "panel" to create the pseudo array.
 When this option is True, the total number of simulated discovery populations is equal to the number "genotyped" and in the "panel".  
@@ -349,7 +347,6 @@ For example:
 -t,2.5e-8,
 -r,1e-8,
 -h,1e5,
--R,genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs,
 -I, 2, 50, 50
 -n, 1, A
 -n, 2, B
@@ -357,7 +354,6 @@ For example:
 -discovery, 1
 -sample, 2
 -daf, daf
--array, array_template/ill_650_test.bed
 -random_discovery, True
 ```
 
@@ -377,9 +373,6 @@ chr22	0	18180154
 chr22	0	18217275
 chr22	0	18220413
 ```
-
-[//]: <> (The option `-nonrandom_discovery` can also be included in the model_file.
-`True` to randomly pick number of individuals for SNP discovery, or `False` to use all discovery individuals.)
 
 
 ##### Ordering of time-specific events
@@ -409,6 +402,10 @@ Runs GERMLINE as:
 ```
 bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ped_name map_name out_name "-bits 10 -min_m min_m"
 ```
+
+##### pedmap
+
+The option `-pedmap` can be included in the model_file to print a ped and map file of the pseudo array data.
 
 #### jobID
 This is a unique identifier for the job. It is used in the names of the output files.
