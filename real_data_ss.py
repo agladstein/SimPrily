@@ -51,7 +51,7 @@ def main(args):
 
     [sim_data_dir, germline_out_dir, sim_results_dir] = create_sim_directories(path)
 
-    processedData =  processInputFiles(param_file, model_file)
+    processedData =  processInputFiles(param_file, model_file, args)
     debugPrint(3, "Finished processing input\nprocessedData: ", processedData)
 
     using_pseudo_array = True

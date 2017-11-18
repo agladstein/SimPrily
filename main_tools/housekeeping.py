@@ -1,4 +1,5 @@
 import argparse
+import psutil
 
 from main_tools import global_vars
 from main_tools.my_random import MY_RANDOM as random
@@ -31,8 +32,6 @@ def debugPrint(verbosLevel, string, dictionary=None):
                 else:
                     prettyPrintSet(1, prefix, element)
 
-
-
 def process_args(arguments):
     parser = argparse.ArgumentParser()
     parser.add_argument("-p","--param",help="REQUIRED!: The location of the parameter file",required=True)
@@ -42,6 +41,7 @@ def process_args(arguments):
     parser.add_argument("-g","--map", help="The location of the genetic map file")
     parser.add_argument("-a","--array", help="The location of the array template file, in bed form")
     parser.add_argument("-v", help="increase output verbosity", action="count",default=0)
+    parser.add_argument('--profile', action='store_true', default=False, help="Print a log file containing the time in seconds and memory use in Mb for main functions")
     tmpArgs = parser.parse_args()
 
     args = {
@@ -50,7 +50,8 @@ def process_args(arguments):
             'genetic map':tmpArgs.map,
             'SNP file':tmpArgs.array,
             'job':tmpArgs.id,
-            'path':tmpArgs.out
+            'path':tmpArgs.out,
+            'profile':tmpArgs.profile
         }
     model_args = argsFromModelCSV(tmpArgs.model)
     args['sim option'] = model_args['sim option']
@@ -110,4 +111,17 @@ def argsFromModelCSV(filename):
     if 'pedmap' not in model_args:
         model_args['pedmap'] = False
     return model_args
-        
+
+
+def profile(prof_option, path, job, func):
+    if(prof_option == True):
+        fprof = open(str(path) + '/profile' + str(job) + '.log', 'a')
+        p = psutil.Process()
+        with p.oneshot():
+            p.cpu_times()  # return cached value
+            p.memory_full_info()
+
+        time = p.cpu_times().user
+        mem = (float(p.memory_full_info().uss) / 1048576)
+        fprof.write(str(func) + '\t' + str(time) + '\t' + str(mem) + '\t' + str(job) + '\n')
+    return

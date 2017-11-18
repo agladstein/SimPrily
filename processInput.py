@@ -93,6 +93,7 @@ def findScaleValue(flags = {}, variables = {}):
     debugPrint(2,"Scaling factor found: {0}".format(Ne))
     return Ne
 
+
 def populateFlags(variables, modelData):
     '''
     This will fill a dictionary with keys that equal the flags, and values that
@@ -112,11 +113,13 @@ def populateFlags(variables, modelData):
             if len(lineSplit)>1:
                 # striping any random whitepace
                 lineSplit[1] = lineSplit[1].strip()
-                # if a varibles is used, replace it with the value defined in variables
-                if lineSplit[1] in variables:
-                    lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
                 if int(flag.split("_")[1]) > 1:
                     lowTime = modelData[i-1].split(',')[1]
+                    if lineSplit[1] in variables:
+                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
+                else:
+                    if lineSplit[1] in variables:
+                        lineSplit[1] = getUnscaledValue(variables, lineSplit[1])
                 if lineSplit[1] not in times and "inst" not in lineSplit[1]:
                     if lowTime:
                         lineSplit[1] = getUnscaledValue(variables, lineSplit[1], lowTime)
@@ -128,12 +131,9 @@ def populateFlags(variables, modelData):
                     tempTime = str(float(lastTime) + 1)
                     while tempTime in times:
                         tempTime += 1
-                    # print("Time '{}' has been used before: adding {} to time, changing to {}".format(lineSplit[1], str(0.00001*Ne),tempTime))
                     lineSplit[1] = tempTime
                 times.append(lineSplit[1])
                 flag = lineSplit[0].split("_")[0]
-                # print("times: {}".format(times))
-                # print("After:{} ".format(i+1)+",".join(lineSplit))
 
 
 
@@ -228,6 +228,10 @@ def processModelData(variables, modelData):
                 if flag == "-macsswig":
                     processedData['macsswig'] = tempLine[0]
                     continue
+                if flag == "-n":
+                    tmp = processedData.get('name', [])
+                    tmp.append(tempLine[1])
+                    processedData['name'] = tmp
                 
                 #----------------------- For Added Arguments from Model_CSV
                 ignoredFlags = ["-germline",
@@ -235,6 +239,7 @@ def processModelData(variables, modelData):
                                 "-nonrandom_discovery",
                                 "-random_discovery",
                                 "-pedmap"]
+
                 if flag in ignoredFlags:
                     continue
 
@@ -297,6 +302,10 @@ def processModelData(variables, modelData):
                 print("Try running with -vv argument for last flag ran")
                 sys.exit()
 
+    if '-n' not in flags:
+        tmp = list(range(1,int(flags['-I'][0][0])+1))
+        processedData['name'] = tmp
+
     if not processedData.get('discovery') or not processedData.get('sample') or not processedData.get('daf'):
         if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):
             print("discovery, sample, and daf are all missing")
@@ -318,7 +327,7 @@ def processModelData(variables, modelData):
     return processedData
 
 
-def processInputFiles(paramFile, modelFile):
+def processInputFiles(paramFile, modelFile, args):
     '''
     This is the function that takes links to two files and outputs a dictionay (processedData)
     With all the (useful) data in the two files
@@ -341,43 +350,7 @@ def processInputFiles(paramFile, modelFile):
 
     processedData['param_dict'] = variables
 
-
+    if args['genetic map']:
+        processedData['macs_args'].extend(['-R', args['genetic map']])
 
     return processedData
-
-def main():
-    # adding simply verbos flag, be sure to change
-    # how you read this in later.
-    if(len(sys.argv)>1):
-        global verbos
-        verbos = sys.argv[1].count("v")
-    global variables
-    
-    processedData = processInputFiles("macsswig_examples/eg6/param_file_eg6.txt","macsswig_examples/eg6/model_file_eg6.csv")
-    
-    # for data in processedData:
-    #     print(data, processedData[data])
-
-
-    # for v in processedData["variables"]:
-    #     print(v, processedData["variables"][v])
-        # print()
-        # for d in processedData[data]:
-        #     print("\t\t"+str(d))
-    # print(processedData)
-
-    # tempOutput = "Formated macs_args\n"
-    # for arg in macs_args:
-    #     if arg.startswith("-"):
-    #         tempOutput+="\n"
-    #     tempOutput+= arg + " "
-    # debugPrint(2,tempOutput)
-
-    # debugPrint(3,"Raw macs_args:\n" + str(macs_args))
-    # sim = macsSwig.swigMain(len(macs_args), macs_args)
-    # nbss = sim.getNumSites()
-    # print(nbss)
-    # return sim
-
-if __name__ == '__main__':
-    main()

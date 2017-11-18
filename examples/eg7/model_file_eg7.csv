@@ -4,7 +4,6 @@
 -s,1231,
 -r,1e-8,
 -h,1e5,
--R,genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs,
 -I, 5, 20, 20, 20, 20, 20
 -n, 1, NA
 -n, 2, NB
@@ -18,5 +17,4 @@
 -discovery, 1
 -sample, 2, 3, 4, 5
 -daf,daf
--array, array_template/ill_650_test.bed
 -random_discovery, True

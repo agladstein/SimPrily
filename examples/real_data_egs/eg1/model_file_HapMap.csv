@@ -4,7 +4,6 @@
 -t,2.5e-8,
 -r,1e-8,
 -h,1e5,
--R,genetic_map_GRCh37_chr1.txt.macshs,
 -I, 4, 20, 20, 20, 10
 -n, 1, NYRI
 -n, 2, NCEU

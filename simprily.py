@@ -1,10 +1,8 @@
 #!/usr/local/bin/python
-import sys
 from collections import OrderedDict
 from sys import argv
 import numpy as np
 import os
-import psutil
 
 from alleles_generator.bit_structure import set_seq_bits, set_discovery_bits, set_panel_bits
 from alleles_generator.macs_file import AllelesMacsFile
@@ -12,8 +10,7 @@ from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 from alleles_generator.seqInfo import create_sequences
 from ascertainment.asc_tools import set_asc_bits, make_ped_file, make_map_file, get_SNP_sites
 from ascertainment.pseudo_array import pseudo_array_bits
-from main_tools import global_vars
-from main_tools.housekeeping import process_args, debugPrint, prettyPrintSet
+from main_tools.housekeeping import process_args, debugPrint, profile
 from main_tools.write_files import create_sim_directories, write_sim_results_file
 from processInput import processInputFiles
 from simulation.run_sim import run_macs
@@ -23,35 +20,22 @@ from summary_statistics.germline_tools import run_germline, process_germline_fil
 
 verbos = 0
 
-def profile(prof_option, path, job, func):
-    if(prof_option == "True"):
-        fprof = open(str(path) + '/profile' + str(job) + '.log', 'a')
-        p = psutil.Process()
-        with p.oneshot():
-            p.cpu_times()  # return cached value
-            p.memory_full_info()
-
-        time = p.cpu_times().user
-        mem = (float(p.memory_full_info().uss) / 1048576)
-        fprof.write(str(func) + '\t' + str(time) + '\t' + str(mem) + '\t' + str(job) + '\n')
-    return
-
 def main(args):
 
-    prof_option = "True"
-    
     chr_number = 1
     # Use dictionary keys instead of index keys for args
     args = process_args(args)
     job = str(args['job'])  # must be a number
     print('JOB {}'.format(job))
 
+    prof_option = args['profile']
+
     sim_option = args['sim option']
 
     path = args['path']
     [sim_data_dir, germline_out_dir, sim_results_dir] = create_sim_directories(path)
 
-    processedData =  processInputFiles(args['param file'], args['model file'])
+    processedData =  processInputFiles(args['param file'], args['model file'], args)
 
     using_pseudo_array = True
     if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):
@@ -91,7 +75,6 @@ def main(args):
         # add genetic map to macs_args list
         macs_args = []
         macs_args = processedData['macs_args']
-        macs_args.extend(['-R',args['genetic map']])
 
         if sim_option == 'macsswig':
             print('Run macsswig simulation')
