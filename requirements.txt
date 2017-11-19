@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
+argparse==1.4.0
 bitarray==0.8.1
 j2cli==0.3.1.post0
 jinja2==2.9.5             # via j2cli

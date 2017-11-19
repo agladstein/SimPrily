@@ -12,7 +12,7 @@ def store_segregating_site_stats(seq_list, results, head_list):
             current_res.append( afs_stats_bitarray.Tajimas( seq.pi_CGIs, current_res[0], seq.genotyped ) )
 
             results.extend(current_res)
-            head_list.extend([c+seq.name+'_CGI' for c in ['SegS_', 'Sing_', 'Dupl_', 'TajD_']])
+            head_list.extend([c+str(seq.name)+'_CGI' for c in ['SegS_', 'Sing_', 'Dupl_', 'TajD_']])
 
 def store_pairwise_FSTs(seq_list, n, results, head_list):
     for i in range(n-1):
@@ -24,7 +24,7 @@ def store_pairwise_FSTs(seq_list, n, results, head_list):
             size2 = seq2.genotyped if seq2.type == 'discovery' else seq2.tot
 
             results.append(afs_stats_bitarray.FST2( seq1.CGI_bits, seq1.pi_CGIs, size1, seq2.CGI_bits, seq2.pi_CGIs, size2 ))
-            head_list.append('FST_' + seq1.name + seq2.name + '_CGI')
+            head_list.append('FST_' + str(seq1.name) + str(seq2.name) + '_CGI')
 
 def store_IBD_stats(stat_dict, pair_list, pair_dict, results, head_list, min_val=0):
     """Stores IBD statistics specifically for IBD exceeding min_val Mb"""
