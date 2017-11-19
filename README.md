@@ -77,11 +77,11 @@ python simprily.py --help
 ```
 
 #### Input  
-`simprily.py` takes 4 required arguments and 2 optional arguments, and help and verbose options.   
+`simprily.py` takes 4 required arguments and 2 optional arguments, and help, verbose, and profile options.   
 
 Run as  
 ```
-python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v]
+python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] [--profile]
 ```
 ##### Required 
 `-p PARAM` or `--param PARAM` = The location of the parameter file  
@@ -92,6 +92,7 @@ python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v]
 ##### Optional
 `-h` or `--help` = shows a help message and exists  
 `-v` = increase output verbosity. This includes 3 levels, `-v`, `-vv`, and `-vvv`  
+`--profile` = Print a log file containing the time in seconds and memory use in Mb for main functions  
 `-g MAP` or `--map MAP` = The location of the genetic map file  
 `-a ARRAY` or `--array ARRAY` = The location of the array template file, in bed form  
 

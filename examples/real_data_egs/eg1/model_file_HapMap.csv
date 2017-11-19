@@ -1,0 +1,20 @@
+-macs,/app/bin/macs,
+#-length,249163442,
+-length, 10000,
+-t,2.5e-8,
+-r,1e-8,
+-h,1e5,
+-I, 4, 20, 20, 20, 10
+-n, 1, NYRI
+-n, 2, NCEU
+-n, 3, NCHB
+-n, 4, 10000
+-ej_1, T, 4, 3
+-ej_2, TEU_AS, 3, 2
+-en_2, inst, 2, NEU_AS 
+-ej_3, TAF, 2, 1
+-en, T_growth, 1, NANC
+-discovery, 1, 2, 3
+-sample, 4
+-daf, daf
+-random_discovery,False

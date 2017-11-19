@@ -38,7 +38,7 @@ def write_ped(fped, sequence, n):
     n = int(n)
 
     for indiv in range(0, n, 2):
-        fped.write(name + ' ' + name + str(indiv / 2 + 1) + '_' + name  + ' 0 0 1 -9 ')
+        fped.write(str(name) + ' ' + str(name) + str(indiv / 2 + 1) + '_' + str(name) + ' 0 0 1 -9 ')
         for bit in itertools.chain.from_iterable( [sequence.asc_bits[i : i+2] for i in range(indiv, sequence.asc_bits.length(), n)] ):
             if bit:
                 fped.write('2 ')

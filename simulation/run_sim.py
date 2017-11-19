@@ -8,6 +8,7 @@ def run_macs(macs_args, sequences):
     position = []
     null = open(os.devnull, 'w')
     proc = subprocess.Popen(macs_args,stdout=subprocess.PIPE,stderr=null)
+    debugPrint(3,"macs command: {}".format(" ".join(macs_args)))
     while True:
         line = proc.stdout.readline()
         line = line.rstrip()
