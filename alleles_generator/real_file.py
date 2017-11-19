@@ -3,13 +3,11 @@ from bitarray import bitarray
 
 class AllelesReal(object):
 
-    '''
+
     def __init__(self, real_file_name):
         self.real_file_name = real_file_name
 
-    
-    I commented this out because it is not called in the program.
-    def make_lists(self):
+        def make_lists(self):
         """Make list of lists containing alleles from real data modified .tped file (from Consuelo's bash code)
         haploid individuals in rows, sites in columns
         no whitespace"""
@@ -22,9 +20,7 @@ class AllelesReal(object):
         alleles = zip(*talleles)
         debugPrint(3, "THIS IS THE RETURN OF MAKE_LISTS " + map(list,alleles))
         return map(list,alleles)
-        '''
 
-        '''
     def make_list_seq(self, n_0, n_m):
         """Make list containing alleles from real data PLINK .tped file.
         sites in rows, individuals in columns (first 4 columns chr, rsnumber, site_begin, site_end).
@@ -38,8 +34,7 @@ class AllelesReal(object):
                 seq_bits.extend(columns[i])
         real_file.close()
         return seq_bits
-        '''
-        '''
+
     def make_bitarray_seq(self, n_0, n_m):
         """Make bitarray containing alleles from real data PLINK .tped file.
         sites in rows, individuals in columns (first 4 columns chr, rsnumber, site_begin, site_end).
@@ -61,4 +56,3 @@ class AllelesReal(object):
         real_file.close()
         print("THESE ARE SEQ_BITS RETURNS " + str(seq_bits))
         return seq_bits
-    '''

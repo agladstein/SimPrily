@@ -4,6 +4,8 @@ from main_tools import global_vars
 from main_tools.my_random import MY_RANDOM as random
 import sys
 
+verbos =  0
+
 
 def prettyPrintSet(level, prefix, element, dictionary=None):
     if dictionary:
@@ -72,7 +74,6 @@ def process_args(arguments):
 
     global_vars.init()   
     global_vars.verbos = tmpArgs.v
-    debugPrint(3, "PROCESS ARGS RETURNS: " + str(args))
     debugPrint(1,"Debug on: Level " + str(global_vars.verbos))
     return args
 
@@ -137,6 +138,5 @@ def argsFromModelCSV(filename):
         model_args['random discovery'] = True
     if 'pedmap' not in model_args:
         model_args['pedmap'] = False
-    debugPrint(3, "MODELS ARGS RETURNS:  " + str(model_args))
     return model_args
         

@@ -1,7 +1,11 @@
 import os
 
 def create_sim_directories(path_name):
-    print("THIS IS THE PARAMETER FOR create_sim_directories: " + str(path_name))
+    '''
+    Parameter: pathname, which is currently output_dir
+
+    Returns: dir_list (['output_dir/sim_data', 'output_dir/germline_out', 'output_dir/results'])
+    '''
     sim_data_dir     = str(path_name)+'/sim_data'
     germline_out_dir = str(path_name)+'/germline_out'
     sim_results_dir  = str(path_name)+'/results'
@@ -14,12 +18,18 @@ def create_sim_directories(path_name):
         except OSError:
             if not os.path.isdir(d):
                 raise
-    print("THESE ARE THE RETURNS FOR create_sim_directories: " + str(dir_list))
     return dir_list
 
 
 def write_sim_results_file(dir, job, param_dict, res_list, header):
-    print("THESE ARE THE PARAMETERS FOR write_sim_results_file: " + str(dir),str(job), str(param_dict), str(res_list), str(header))
+    '''
+    Parameters:
+    dir = output_dir/results
+    job = 1
+    param_dict = {'A': '44499.7180488', 'daf': '0.0264139586625', 'B': '40008.4616861', 'AB_t': '2546.95287896', 'AN': '10000.0', 'AN_t': '2113.43905612'}
+    res_list = [4372, 1724, 590, -0.40890634648504526, 165, 27, 11, 57.40526315789474, 0.970678370998841, 158, 4, 1, 49.15632065775952, 2.3175661604382545, 0.03793034448167276]
+    header = ['SegS_D1_CGI', 'Sing_D1_CGI', 'Dupl_D1_CGI', 'TajD_D1_CGI', 'SegS_D1_ASC', 'Sing_D1_ASC', 'Dupl_D1_ASC', 'Pi_D1_ASC', 'TajD_D1_ASC', 'SegS_S1_ASC', 'Sing_S1_ASC', 'Dupl_S1_ASC', 'Pi_S1_ASC', 'TajD_S1_ASC', 'FST_D1_S1_ASC']
+    '''
     result = '{}/results_{}.txt'.format(dir, job)
     out_file = open(result, 'w')
 

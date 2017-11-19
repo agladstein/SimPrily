@@ -4,7 +4,7 @@ from main_tools.housekeeping import debugPrint
 
 
 def run_macs(macs_args, sequences):
-    debugPrint(2,"running macs simulation:")
+  #  debugPrint(2,"running macs simulation:")
     position = []
     null = open(os.devnull, 'w')
     proc = subprocess.Popen(macs_args,stdout=subprocess.PIPE,stderr=null)
@@ -25,5 +25,7 @@ def run_macs(macs_args, sequences):
             #     debugPrint(3,line)
         else:
             break
-    debugPrint(2,"Finished macs simulation")
+ #   debugPrint(2,"Finished macs simulation")
+    print("THIS IS THE RETURN: " + str(sequences))
+    print("THIS IS THE RETURN: " + str(position))
     return [sequences,position]

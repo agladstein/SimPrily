@@ -7,7 +7,8 @@ import os
 import psutil
 
 from alleles_generator.bit_structure import set_seq_bits, set_discovery_bits, set_panel_bits
-#from alleles_generator.macs_file import AllelesMacsFile
+from alleles_generator.macs_file import AllelesMacsFile
+from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 from alleles_generator.seqInfo import create_sequences
 from ascertainment.asc_tools import set_asc_bits, make_ped_file, make_map_file, get_SNP_sites
 from ascertainment.pseudo_array import pseudo_array_bits
@@ -155,7 +156,6 @@ def main(args):
             asc_panel_bits = set_panel_bits(nbss, sequences)
 
             profile(prof_option, path, job, "end_set_panel_bits")
-            debugPrint(1,'Number of chromosomes in asc_panel: {}'.format(asc_panel_bits.length()/nbss))
 
             ### Get pseudo array sites
             debugPrint(2,'Making pseudo array')

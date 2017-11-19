@@ -1,4 +1,4 @@
-'''
+
 from bitarray import bitarray
 
 class AllelesMacsSwig(object):
@@ -34,4 +34,3 @@ class AllelesMacsSwig(object):
                 seq_bits.extend(self.sim.getSite(site,indiv))
         print("THIS IS THE RETURN OF make_bitarray_seq: " + str(seq_bits))
         return seq_bits
-'''

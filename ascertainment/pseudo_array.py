@@ -79,9 +79,6 @@ def add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps):
                 pos_asc.insert(0,first_index-1)
     return pos_asc
 
-'''
-This is commented out because it is never used when running the program. 
-
 def pseudo_array(asc_panel, daf, pos, snps):
     Tasc_panel = zip(*asc_panel)
     print( 'number of sites in Tasc_panel:', len(Tasc_panel))
@@ -172,7 +169,7 @@ def pseudo_array(asc_panel, daf, pos, snps):
             nbss_asc = len(pos_asc)
     print( 'finished making pseudo array')
     return pos_asc, nbss_asc, index_avail_sites, avail_sites
-    '''
+
 
 def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
     '''
@@ -214,14 +211,14 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
         sys.exit()
 
     if (len(avail_sites) == len(snps)):
-        debugPrint(3,"Number of avail_sites is equal to the number of Array snps")
+        #debugPrint(3,"Number of avail_sites is equal to the number of Array snps")
         pos_asc = []
         pos_asc = index_avail_sites
         nbss_asc = len(pos_asc)
         flag_nb_asc_snps = 1
 
     elif (len(avail_sites) > len(snps)):
-        debugPrint(3,"Number of avail_sites greater than number of Array snps")
+        #debugPrint(3,"Number of avail_sites greater than number of Array snps")
         pos_asc = [None] * int(len(snps))  ##indexes of the SNPs that pass the frequency cut-off and position
         for i in range(len(snps)):  # each snp on the snp array on a chromosome
             ## y is the position of the SNPs in the array
@@ -265,7 +262,7 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
 
         if (len(snps) != len(pos_asc)):
             flag_nb_asc_snps = 0
-            debugPrint(3,'nb of asc snps not equal to nb array snps')
+           #debugPrint(3,'nb of asc snps not equal to nb array snps')
             diff = int(len(snps) - len(pos_asc))
             for m in range(1, diff + 1):
                 pos_asc2 = []
@@ -287,5 +284,5 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
                     pos_asc.append(rand_numb)
             pos_asc.sort()
             nbss_asc = len(pos_asc)
-    debugPrint(2,'finished making pseudo array')
+    #debugPrint(2,'finished making pseudo array')
     return pos_asc, nbss_asc, index_avail_sites, avail_sites
