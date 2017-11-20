@@ -7,7 +7,7 @@ class AllelesReal(object):
     def __init__(self, real_file_name):
         self.real_file_name = real_file_name
 
-        def make_lists(self):
+    def make_lists(self):
         """Make list of lists containing alleles from real data modified .tped file (from Consuelo's bash code)
         haploid individuals in rows, sites in columns
         no whitespace"""

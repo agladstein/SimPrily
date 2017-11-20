@@ -34,6 +34,7 @@ try:
 except NameError:
     pass # Python < 2.2 doesn't have 'property'.
 def _swig_setattr_nondynamic(self,class_type,name,value,static=1):
+    #print("CLASS TYPE FOR MACSSWIG NONDYNAMIC FUNCTION : " + str(class_type))
     #print("THIS IS CLASS TYPE PARAMETER FROM MACSWIG: " + str(class_type))
     if (name == "thisown"): return self.this.own(value)
     if (name == "this"):
