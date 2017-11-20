@@ -176,37 +176,126 @@ def populateFlags(modelParamsDictRaw, modelDataRaw):
     flags = OrderedDict()
     lowTime = False
     # loops through all items in modelDataRaw
-    for i, line in enumerate(modelDataRaw):
-        lineSplit = line.split(',')
+    for i, argument in enumerate(modelDataRaw):
+        argSplit = argument.split(',')
 
-        flag = lineSplit[0]
+        flag = argSplit[0]
         # if flag starts with -e it will be an event flag, thus, the order must be preserved
         if flag.startswith("-e"):
             # striping any random whitepace
             # TODO: The line spit should be done before this part
-            timeDataRaw = lineSplit[1].strip()
+            timeDataRaw = argSplit[1].strip()
             lastTimeValue = modelData[i-1].split(',')[1]
-            timeData = processTimeData(flag, lastTime, modelParamsDictRaw, timeDataRaw)
+            timeData = processTimeData(flag, lastTimeValue, modelParamsDictRaw, timeDataRaw)
 
             times.append(timeData)
-            lineSplit[1] = timeData
-            flag = lineSplit[0].split("_")[0]
+            argSplit[1] = timeData
+            flag = argSplit[0].split("_")[0]
 
         if flag in flags.keys():
-            flags[flag].append([x.strip() for x in lineSplit[1:] if x])
+            flags[flag].append([x.strip() for x in argSplit[1:] if x])
         else:
-            flags[flag] = [[x.strip() for x in lineSplit[1:] if x]]
+            flags[flag] = [[x.strip() for x in argSplit[1:] if x]]
 
-        modelData.append(",".join(lineSplit))
+        modelData.append(",".join(argSplit))
 
     modelParamsDict = modelParamsDictRaw
 
     return flags, modelParamsDict, modelData
 
-def processModelData(modelParamsDictRaw, modelDataRaw):
-    """
-    """
-    debugPrint(2, "Starting: processModelData")
+def processType1Flags(flag, argument, processedData, modelParamsDictRaw):
+    '''
+    This is a helper function fpr processing input files. 
+    It takes a flag, arguments, and returns an updated processedData
+    '''
+
+    if flag == "-discovery":
+        processedData['discovery'] = [int(s.strip()) for s in argument if s]
+    if flag == "-sample":
+        processedData['sample'] = [int(s.strip()) for s in argument if s]
+    if flag == "-s":
+        processedData['seed'] = argument[0]
+    if flag == "-daf":
+        processedData['daf'] = float(getParamValueUnBounded(modelParamsDictRaw, argument[0]))
+    if flag == "-length":
+        processedData['length'] = argument[0]
+    if flag == "-macs":
+        processedData['macs'] = argument[0]
+    if flag == "-I":
+        processedData["I"] = [int(s.strip()) for s in argument[1:] if s]
+    if flag == "-macsswig":
+        processedData['macsswig'] = argument[0]
+    if flag == "-n":
+        tmp = processedData.get('name', [])
+        tmp.append(argument[1])
+        processedData['name'] = tmp
+
+    return processedData
+
+
+def scaleArgument(flag, argumentRaw, Ne, modelParamsDictRaw):
+    '''
+    A helper function that scaled one index in the arguhemt. 
+    It returns the scaled number and the index the scaled numbers goes to. 
+    To add more flags to this, add it to the matching index group and matching scale group
+    '''
+
+    # Get the index for the value you are changing
+    index0 = ["-t","-r","-G"]
+    if flag in index0:
+        index = 0
+    index1 = ["-eM","-g","-eN","-n"]
+    if flag in index1:
+        index = 1
+
+    index2 = ["-en","-eg","-es","-m", "-em"]
+    if flag in index2:
+        index = 2
+
+    index3 = ["-em"]
+    if flag in index3:
+        index = 3
+
+    # Get the param value if needed
+    if argumentRaw[index] in modelParamsDictRaw:
+        param = getParamValueUnBounded(modelParamsDictRaw, argumentRaw[index])
+    else:
+        # If the flag isn't in param, no need to call it
+        param = argumentRaw[index]
+
+    # scale the number when we have it
+    scaleFactor1 = [
+        "-em","-eM","-g","-eg","-m","-t","-r","-G",
+    ]
+    scaleFactor2 = ["-eN", "-n", "-en"]
+
+    if flag in scaleFactor1:
+        scaledParam = str(float(4*(float(param)*Ne)))
+    elif flag in scaleFactor2:
+        scaledParam = str(float((float(param)/Ne)))
+    else:
+        scaledParam = param
+
+    return scaledParam, index
+
+
+def processInputFiles(paramFile, modelFile, args):
+    '''
+    This is the function that takes links to two files and outputs a dictionay (processedData)
+    With all the (useful) data in the two files
+    '''
+    debugPrint(2, "Starting processInputFiles")
+    
+    modelDataRaw = readModelFile(modelFile)
+    debugPrint(2, "Finished reading " + str(modelFile))
+    debugPrint(3, "Raw input data into make_args", modelDataRaw)
+
+    modelParamsDictRaw = readParamsFile(paramFile)
+    debugPrint(2, "Finished reading " + str(paramFile))
+    
+    debugPrint(3,"Raw Output for modelParamsDict", modelParamsDictRaw)
+
+
     processedData = {}
     
     flags, modelParamsDict, modelData = populateFlags(modelParamsDictRaw, modelDataRaw)
@@ -247,43 +336,13 @@ def processModelData(modelParamsDictRaw, modelDataRaw):
     # processOrderedSeasons(flags, modelParamsDict)
     debugPrint(3,"Processing flags in for macs_args")
     for flag in flags.keys():
-        debugPrint(3,"  {}: {}".format(flag,flags[flag]))
-
-        for tempLine in flags[flag]:
+        # Looping through every key
+        debugPrint(3,"FLAG:  {}: {}".format(flag,flags[flag]))
+        for argumentRaw in flags[flag]:
+            print("argumentRaw: {}".format(argumentRaw))
+            # Looping through every argumentRaw
             try:
-
-
-                
-                # debugPrint(3,flag + ": " + str(tempLine))
-                if flag == "-discovery":
-                    processedData['discovery'] = [int(s.strip()) for s in tempLine if s]
-                    continue
-                if flag == "-sample":
-                    processedData['sample'] = [int(s.strip()) for s in tempLine if s]
-                    continue
-                if flag == "-s":
-                    processedData['seed'] = tempLine[0]
-                if flag == "-daf":
-                    processedData['daf'] = float(getParamValueUnBounded(modelParamsDictRaw, tempLine[0]))
-                    continue
-                if flag == "-length":
-                    processedData['length'] = tempLine[0]
-                    continue
-                if flag == "-macs":
-                    processedData['macs'] = tempLine[0]
-                    continue
-                if flag == "-I":
-                    processedData["I"] = [int(s.strip()) for s in tempLine[1:] if s]
-                    continue
-                if flag == "-macsswig":
-                    processedData['macsswig'] = tempLine[0]
-                    continue
-                if flag == "-n":
-                    tmp = processedData.get('name', [])
-                    tmp.append(tempLine[1])
-                    processedData['name'] = tmp
-                
-                #----------------------- For Added Arguments from Model_CSV
+                debugPrint(3,flag + ": " + str(argumentRaw))
                 ignoredFlags = ["-germline",
                                 "-array",
                                 "-nonrandom_discovery",
@@ -293,59 +352,46 @@ def processModelData(modelParamsDictRaw, modelDataRaw):
                 if flag in ignoredFlags:
                     continue
 
-                if flag == "-Ne":
-                    tempLine[0] = getParamValueUnBounded(modelParamsDictRaw, tempLine[0])
-                if flag == "-em":
-                    tempLine[3] = getParamValueUnBounded(modelParamsDictRaw, tempLine[3])
-                    tempLine[3] = str(float(4*(float(tempLine[3])*Ne)))
-                
-                elif flag == "-eM" or flag == "-g":
-                    tempLine[1] = getParamValueUnBounded(modelParamsDictRaw, tempLine[1])
-                    tempLine[1] = str(float(4*(float(tempLine[1])*Ne)))
+                type1Flags = [
+                    "-discovery", "-sample", "-s", "-daf", "-length", "-macs", "-I", "-macsswig", "-n",
+                ]
+                if flag in type1Flags:
+                    processedData = processType1Flags(flag, argumentRaw, processedData, modelParamsDictRaw)
+                    continue
 
-                elif flag == "-ema":
-                    for i in range(2,len(tempLine)):
-                        tempLine[i] = getParamValueUnBounded(modelParamsDictRaw, tempLine[i])
-                        tempLine[i] = str(float(4*(float(tempLine[i])*Ne)))
+                type2Flags = [
+                    "-em","-eM","-g","-eN","-n","-en","-eg","-es","-m","-t","-r","-G"
+                ]
 
-                elif flag == "-eN" or flag == "-n":
-                    tempLine[1] = getParamValueUnBounded(modelParamsDictRaw, tempLine[1])
-                    tempLine[1] = str(float((float(tempLine[1])/Ne)))
+                if flag in type2Flags:
+                    scaledParam, index = scaleArgument(flag, argumentRaw, Ne, modelParamsDictRaw)
+                    argumentRaw[index] = scaledParam
+                    argument = argumentRaw
 
-                elif flag == "-en":
-                    tempLine[2] = getParamValueUnBounded(modelParamsDictRaw, tempLine[2])
-                    tempLine[2] = str(float((float(tempLine[2])/Ne)))
-
-                elif flag == "-eg":
-                    tempLine[2] = getParamValueUnBounded(modelParamsDictRaw, tempLine[2])
-                    tempLine[2] = str(float(4*(float(tempLine[2])*Ne)))
-
-                elif flag == "-es":
-                    tempLine[2] = getParamValueUnBounded(modelParamsDictRaw, tempLine[2])
-
-                elif flag == "-m":
-                    tempLine[2] = getParamValueUnBounded(modelParamsDictRaw, tempLine[2])
-                    tempLine[2] = str(float(4*(float(tempLine[2])*Ne)))
-
+                # These scales are difference since they scale all possible values in list
+                if flag == "-ema":
+                    scaledParams = argumentRaw[:1]
+                    for i in range(2,len(argumentRaw)):
+                        param = getParamValueUnBounded(modelParamsDictRaw, argumentRaw[i])
+                        scaledParams.append(str(float(4*(float(param)*Ne))))
+                    argument = scaledParams
                 elif flag == "-ma":
-                    for i in range(len(tempLine)):
-                        tempLine[i] = getParamValueUnBounded(modelParamsDictRaw, tempLine[i])
-                        tempLine[i]=str(float(4*(float(tempLine[i])*Ne)))
-
-                elif flag == "-t" or flag == "-r" or flag == "-G":
-                    # both <m> <r> <alpha> have same scaling factor
-                    tempLine[0] = getParamValueUnBounded(modelParamsDictRaw, tempLine[0])
-                    tempLine[0] = str(float(4*(float(tempLine[0])*Ne)))
+                    scaledParams = argumentRaw[0]
+                    for i in range(len(argumentRaw)):
+                        param = getParamValueUnBounded(modelParamsDictRaw, argumentRaw[i])
+                        scaledParams.append(str(float(4*(float(param)*Ne))))
+                    argument = scaledParams
 
                 if flag.startswith('-e'):
                     # all <t>'s are scaled
                     pass
-                    tempLine[0] = getParamValueUnBounded(modelParamsDictRaw, tempLine[0])
-                    tempLine[0]=str(round(float(tempLine[0]))/(4*Ne))
-                    seasons.append([flag] + tempLine)
+                    argumentRaw[0] = getParamValueUnBounded(modelParamsDictRaw, argumentRaw[0])
+                    argumentRaw[0]=str(round(float(argumentRaw[0]))/(4*Ne))
+                    seasons.append([flag] + argumentRaw)
+                
                 else:
                     macs_args.append(flag.strip())
-                    for subLine in tempLine:
+                    for subLine in argumentRaw:
                         macs_args.append(subLine.strip())
             except IndexError as e:
                 print("There was an index error!\nThis most likely means your input file has a malformed flag.")
@@ -374,28 +420,7 @@ def processModelData(modelParamsDictRaw, modelDataRaw):
         macs_args.extend(season)
 
     processedData["macs_args"] = macs_args
-    return processedData
 
-
-def processInputFiles(paramFile, modelFile, args):
-    '''
-    This is the function that takes links to two files and outputs a dictionay (processedData)
-    With all the (useful) data in the two files
-    '''
-    debugPrint(2, "Starting processInputFiles")
-    
-    modelData = readModelFile(modelFile)
-    debugPrint(2, "Finished reading " + str(modelFile))
-    debugPrint(3, "Raw input data into make_args", modelData)
-
-    modelParamsDict = readParamsFile(paramFile)
-    debugPrint(2, "Finished reading " + str(paramFile))
-    
-    debugPrint(3,"Raw Output for modelParamsDict", modelParamsDict)
-
-
-
-    processedData = processModelData(modelParamsDict, modelData) # creates the input for macsSwig
     debugPrint(3,"Priting modelParamsDict:", modelParamsDict)
 
     processedData['param_dict'] = modelParamsDict
