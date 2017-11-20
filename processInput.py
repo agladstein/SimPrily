@@ -164,33 +164,56 @@ def processModelData(variables, modelData):
 
     # random_discovery = True
     # if random_discovery:
-    if flags['-random_discovery']:
-        if '-macs_file' in flags:
-            macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
-        elif '-macsswig' in flags:
-              macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
-        elif '-macs' in flags:
-            macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
-        sizes = map(int, flags["-I"][0][1:])
-        if (sys.version_info > (3, 0)):
-            sizes = list(sizes)
-        for discovery_pop_str in flags["-discovery"][0]:
-            discovery_pop = int(discovery_pop_str)-1
+    # if "True" in flags['-random_discovery'][0]:
+    #     if '-macs_file' in flags:
+    #         macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    #     elif '-macsswig' in flags:
+    #           macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    #     elif '-macs' in flags:
+    #         macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    #     sizes = map(int, flags["-I"][0][1:])
+    #     if (sys.version_info > (3, 0)):
+    #         sizes = list(sizes)
+    #     for discovery_pop_str in flags["-discovery"][0]:
+    #         discovery_pop = int(discovery_pop_str)-1
+    #         sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
+    #     total = float(sum(sizes))
+    #     macs_args.insert(1,str(total))
+    #     sizes_str = map(str, sizes)
+    #     if (sys.version_info > (3, 0)):
+    #         sizes_str = list(sizes_str)
+    #     macs_args.extend(sizes_str)
+    #
+    # else:
+    #     # creates a total value from the <n_n> values (from -I)
+    #     numlist = [float(x) for x in flags['-I'][0][1:]]
+    #     total = sum(numlist)
+    #     macs_args = [flags['-macs'][0][0], str(total), flags['-length'][0][0], "-I"]
+    #     for genotyped_size in flags["-I"][0]:
+    #         macs_args.append(genotyped_size)
+
+
+    if '-macs_file' in flags:
+        macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    elif '-macsswig' in flags:
+          macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    elif '-macs' in flags:
+        macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    sizes = map(int, flags["-I"][0][1:])
+    if (sys.version_info > (3, 0)):
+        sizes = list(sizes)
+    for discovery_pop_str in flags["-discovery"][0]:
+        discovery_pop = int(discovery_pop_str)-1
+        if "True" in flags['-random_discovery'][0]:
             sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
-        total = float(sum(sizes))
-        macs_args.insert(1,str(total))
-        sizes_str = map(str, sizes)
-        if (sys.version_info > (3, 0)):
-            sizes_str = list(sizes_str)
-        macs_args.extend(sizes_str)
-        
-    else:
-        # creates a total value from the <n_n> values (from -I)
-        numlist = [float(x) for x in flags['-I'][0][1:]]
-        total = sum(numlist)
-        macs_args = [flags['-macs'][0][0], str(total), flags['-length'][0][0], "-I"]
-        for genotyped_size in flags["-I"][0]:
-            macs_args.append(genotyped_size)
+        else:
+            sizes[discovery_pop] += sizes[discovery_pop]
+    total = float(sum(sizes))
+    macs_args.insert(1,str(total))
+    sizes_str = map(str, sizes)
+    if (sys.version_info > (3, 0)):
+        sizes_str = list(sizes_str)
+    macs_args.extend(sizes_str)
 
 
     # seasons is all the time based events
