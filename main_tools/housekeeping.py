@@ -85,6 +85,9 @@ def set_seed(seed_option):
     if seed_option > int(0):
         random.seed(seed_option)
 
+def str2bool(v):
+  return v.lower() in ("yes", "true", "t", "1")
+
 def argsFromModelCSV(filename):
     '''
     This function returns a dictionary for the arguments of the 
@@ -117,16 +120,14 @@ def argsFromModelCSV(filename):
         if line.startswith("-macsswig"):
             x = line.strip().split(",")
             model_args['sim option']= x[0][1:]
-        # if line.startswith("-array"):
-        #     x = line.strip().split(",")
-        #     if x[1].startswith(" "):
-        #         model_args['SNP file']= x[1][1:]
-        #     else:
-        #         model_args['SNP file']= x[1]
         if line.startswith("-germline"):
             model_args['germline']= True
         if line.startswith("-nonrandom_discovery"):
             model_args['random discovery'] = False
+        if line.startswith("-random_discovery"):
+            x = line.strip().split(",")
+            # model_args['random discovery'] = str2bool(x[1])
+            model_args['random discovery'] = x[1]
         if line.startswith("-pedmap"):
             model_args['pedmap'] = True
         
