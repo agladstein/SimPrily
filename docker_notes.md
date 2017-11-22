@@ -110,12 +110,12 @@ sudo docker pull agladstein/simprily
 
 Run program:
 ```bash
-sudo docker run -t -i --mount type=bind,src=/home/agladstein/docker_test/SimPrily,dst=/app agladstein/simprily python /app/simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv 1 /app/out_dir
+docker run -t -i --mount type=bind,src=/home/agladstein/docker_test/SimPrily,dst=/app agladstein/simprily_autobuild:version1 python /app/simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
 or Run Docker container interactively to poke around
 ```bash
-docker run --rm -it --entrypoint=/bin/bash agladstein/simprily
+docker run --rm -it --entrypoint=/bin/bash agladstein/simprily_autobuild:version1
 ```
 
 ## Cheat sheet
