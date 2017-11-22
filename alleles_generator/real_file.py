@@ -18,7 +18,7 @@ class AllelesReal(object):
             talleles.append(line.strip())
         real_file.close()
         alleles = zip(*talleles)
-        debugPrint(3, "THIS IS THE RETURN OF MAKE_LISTS " + map(list,alleles))
+        debugPrint(3, "THIS IS THE RETURN OF MAKE_LISTS " + str(map(list,alleles)))
         return map(list,alleles)
 
     def make_list_seq(self, n_0, n_m):
@@ -54,5 +54,5 @@ class AllelesReal(object):
                     columns[i] = '0'
                 seq_bits.extend(columns[i])
         real_file.close()
-        print("THESE ARE SEQ_BITS RETURNS " + str(seq_bits))
+        #print("THESE ARE SEQ_BITS RETURNS " + str(seq_bits))
         return seq_bits

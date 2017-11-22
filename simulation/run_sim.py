@@ -24,7 +24,7 @@ def run_macs(macs_args, sequences):
     position = []
     null = open(os.devnull, 'w')
     proc = subprocess.Popen(macs_args,stdout=subprocess.PIPE,stderr=null)
-    debugPrint(3,"macs command: {}".format(" ".join(macs_args)))
+    #debugPrint(3,"macs command: {}".format(" ".join(macs_args)))
     while True:
         line = proc.stdout.readline()
         line = line.rstrip()
@@ -43,6 +43,4 @@ def run_macs(macs_args, sequences):
         else:
             break
  #   debugPrint(2,"Finished macs simulation")
-    print("THIS IS THE RETURN type of sequences ([A]): " + str((sequences[0].__dict__)))
-    print("THIS IS THE RETURN type of sequences ([B]): " + str((sequences[1].__dict__)))
     return [sequences,position]

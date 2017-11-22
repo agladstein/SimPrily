@@ -33,6 +33,7 @@ def create_sequences(processedData, args):
     Returns: instance types named [d1, s1] 
     '''
     #debugPrint(2,"Running create_sequences:")
+
     sequences = []
     ### Initialize all discovery type sequence data
     for i, ind in enumerate(processedData.get('discovery')):
