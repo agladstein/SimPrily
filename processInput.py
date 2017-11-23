@@ -171,12 +171,13 @@ def processModelData(variables, modelData):
     sizes = map(int, flags["-I"][0][1:])
     if (sys.version_info > (3, 0)):
         sizes = list(sizes)
-    for discovery_pop_str in flags["-discovery"][0]:
-        discovery_pop = int(discovery_pop_str)-1
-        if "True" in flags['-random_discovery'][0]:
-            sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
-        else:
-            sizes[discovery_pop] += sizes[discovery_pop]
+    if '-discovery' in flags:
+        for discovery_pop_str in flags["-discovery"][0]:
+            discovery_pop = int(discovery_pop_str)-1
+            if "True" in flags['-random_discovery'][0]:
+                sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
+            else:
+                sizes[discovery_pop] += sizes[discovery_pop]
     total = float(sum(sizes))
     macs_args.insert(1,str(total))
     sizes_str = map(str, sizes)
