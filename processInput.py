@@ -213,8 +213,6 @@ def processType1Flags(flag, argument, processedData, modelParamsDictRaw):
         processedData['discovery'] = [int(s.strip()) for s in argument if s]
     if flag == "-sample":
         processedData['sample'] = [int(s.strip()) for s in argument if s]
-    if flag == "-s":
-        processedData['seed'] = argument[0]
     if flag == "-daf":
         processedData['daf'] = float(getParamValueUnBounded(modelParamsDictRaw, argument[0]))
     if flag == "-length":
@@ -353,11 +351,15 @@ def processInputFiles(paramFile, modelFile, args):
                     continue
 
                 type1Flags = [
-                    "-discovery", "-sample", "-s", "-daf", "-length", "-macs", "-I", "-macsswig", "-n",
+                    "-discovery", "-sample", "-daf", "-length", "-macs", "-I", "-macsswig", "-n",
                 ]
                 if flag in type1Flags:
                     processedData = processType1Flags(flag, argumentRaw, processedData, modelParamsDictRaw)
                     continue
+
+                # Seed is a specal case. 
+                if flag == "-s":
+                    processedData['seed'] = argumentRaw[0]
 
                 type2Flags = [
                     "-em","-eM","-g","-eN","-n","-en","-eg","-es","-m","-t","-r","-G"
