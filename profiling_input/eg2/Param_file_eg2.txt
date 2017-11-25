@@ -1,0 +1,17 @@
+AN = (1e3:1e6)
+BN = (1e3:1e6)
+CN = (1e3:1e6)
+DN = (1e3:1e6)
+EN = (1e3:1e6)
+FN = (1e3:1e6)
+Ftp = (0:5000)
+Fp = (0:1)
+EGt = inst
+FDt = inst
+DCt = (0:5000)
+EBt = (0:5000)
+CBt = (0:5000)
+EN2t = inst
+EN2 = (1e3:1e6)
+BAt = (0:5000)
+daf = (0.01:0.1)

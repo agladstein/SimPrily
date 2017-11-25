@@ -1,0 +1,18 @@
+-macs, ./bin/macs
+-length,1000000,
+-t,2.5e-8,
+-r,1e-8,
+-h,1e5,
+-I, 5, 100, 100, 100, 100, 104
+-n, 1, NA
+-n, 2, NB
+-n, 3, NC
+-n, 4, ND
+-n, 5, NE
+-ej_1, T4, 5, 4
+-ej_2, T3, 4, 3
+-ej_3, T2, 3, 2
+-ej_4, T1, 2, 1
+-discovery, 1
+-sample, 2, 3, 4, 5
+-daf,daf

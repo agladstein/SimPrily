@@ -1,0 +1,27 @@
+-macs,./bin/macs,
+-length,1000000,
+-t,2.5e-8,
+-r,1e-8,
+-h,1e5,
+-I,6,168,168,168,336,336,336,
+-n,1,NAF,
+-n,2,NCEU,
+-n,3,NCHB,
+-n,4,NJ,
+-n,5,NM,
+-n,6,NA,
+-eg_1,0,6,rA,
+-eg_1,inst,4,rMJ,
+-eg_1,inst,5,rMJ,
+-em_2,Tm,6,3,m,
+-em_2,inst,6,3,0,
+-ej_3,TA,6,4,
+-ej_4,TMJ,5,4,
+-ej_5,TEM,4,3,
+-ej_6,Teu_as,3,2,
+-ej_7,Taf,2,1,
+-en,Tgrowth,1,NANC
+-discovery,1,2,3
+-sample,4,5,6
+-daf,daf
+-random_discovery, False

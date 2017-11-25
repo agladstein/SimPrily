@@ -1,0 +1,23 @@
+#!/bin/bash
+#PBS -N profile3_4
+#PBS -W group_list=mfh
+#PBS -q standard
+#PBS -J 1-2
+#PBS -l cput=6720:00:00
+#PBS -l walltime=240:00:00
+#PBS -l select=1:ncpus=28:mem=168gb
+#PBS -m abe
+#PBS -M agladstein@email.arizona.edu
+#PBS -l place=pack:shared
+#PBS -j oe
+
+module load python/2/2.7.11
+module load parallel
+
+cd $PBS_O_WORKDIR
+echo PBS_ARRAY_INDEX=$PBS_ARRAY_INDEX
+NOW=$(date +%m%d%y%s)
+MODEL="3_4"
+ID=${NOW}"_"${PBS_ARRAY_INDEX}"_"${MODEL}
+
+seq 1 50 | parallel -j 28 /home/u15/agladstein/env/macss_env_ocelote_2.7.11/bin/python simprily.py -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/Axiom_LAT_chr1.bed -o /rsgrps/mfh4/Ariella/SimPrily_profiling -vv -p /home/u15/agladstein/SimPrily/profiling_input/eg3/param_file_eg3.txt -m /home/u15/agladstein/SimPrily/profiling_input/eg3/model_file_eg${MODEL}.csv -i ${ID}_{} --profile

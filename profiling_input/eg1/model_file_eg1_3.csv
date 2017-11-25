@@ -1,0 +1,13 @@
+-macs,./bin/macs,
+-length,1000000,
+-t,2.5e-8,
+-r,1e-8,
+-h,1e5,
+-I,2,1008,1008,
+-n,1,A,
+-n,2,B,
+-ej_1,AB_t,2,1,
+-en,AN_t,1,AN
+-discovery,1
+-sample,2
+-daf,daf
