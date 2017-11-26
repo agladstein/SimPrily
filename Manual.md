@@ -153,7 +153,7 @@ This is where all the output goes.
 Within the output_dir the directory `results` will always be created. The `results` directory contains the results file `results_{jobid}.txt` with the parameter values and summary statistics.  
 Additionally, the directories `germline_out` and `sim_data` are also created, but will be empty if the `germline` or `pedmap` arguments in the model file are not included.
 
-*Be careful when running large numbers of jobs (>2000). It is bad practice to run large numbers of jobs and direct all the output to the same directory. Instead, we recommend creating directory "buckets". See section Recommendations for other HTC workflows*.
+*Be careful when running large numbers of jobs (>2000). It is bad practice to run large numbers of jobs and direct all the output to the same directory, because listing the contents of the directory becomes very slow. Instead, we recommend creating directory "buckets". See section Recommendations for other HTC workflows*.
 
 #### param_file.txt
 Examples of param_file.txt can be found in examples.
@@ -421,6 +421,13 @@ Does not use the genetic map to run GERMLINE.
 Runs GERMLINE as:  
 ```
 bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ped_name map_name out_name "-bits 10 -min_m min_m"
+```
+
+If GERMLINE does not run, try rebuilding it on the machine you are trying to run on:
+```
+cd ./bin/germline-1-5-1
+make clean
+make
 ```
 
 ##### pedmap
