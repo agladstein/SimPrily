@@ -63,8 +63,8 @@ run_dir = sys.argv[2]
 job_num = int(sys.argv[3])
 param_file = sys.argv[4]
 model_file = sys.argv[5]
-array_file = sys.argv[6]
-map_file = sys.argv[7]
+array_file = sys.argv[6] # these can be empty strings
+map_file = sys.argv[7] # these can be empty strings
 
 
 # Give all jobs a priority based on the current time. We do this as we want
@@ -96,13 +96,15 @@ input_model = File(model_file)
 input_model.addPFN(PFN("file://" + run_dir + "/" + model_file, "local"))
 dax.addFile(input_model)
 
-input_array = File(array_file)
-input_array.addPFN(PFN("file://" + run_dir + "/" + array_file, "local"))
-dax.addFile(input_array)
+if array_file:
+    input_array = File(array_file)
+    input_array.addPFN(PFN("file://" + run_dir + "/" + array_file, "local"))
+    dax.addFile(input_array)
 
-input_map = File(map_file)
-input_map.addPFN(PFN("file://" + run_dir + "/" + map_file, "local"))
-dax.addFile(input_map)
+if map_file:
+    input_map = File(map_file)
+    input_map.addPFN(PFN("file://" + run_dir + "/" + map_file, "local"))
+    dax.addFile(input_map)
 
 current_outputs = []
 input_id = 0
@@ -111,9 +113,18 @@ for job_id in range(1,job_num + 1):
     sim_job = Job(name="run-sim.sh")
     sim_job.uses(param_file, link=Link.INPUT) #transfers file so they are available for the job
     sim_job.uses(model_file, link=Link.INPUT)
-    sim_job.uses(array_file, link=Link.INPUT)
-    sim_job.uses(map_file, link=Link.INPUT)
-    sim_job.addArguments(str(job_id), param_file, model_file, array_file, map_file)
+    if array_file and map_file:
+        sim_job.uses(array_file, link=Link.INPUT)
+        sim_job.uses(map_file, link=Link.INPUT)
+        sim_job.addArguments(str(job_id), param_file, model_file, array_file, map_file)
+    if array_file and not map_file:
+        sim_job.uses(array_file, link=Link.INPUT)
+        sim_job.addArguments(str(job_id), param_file, model_file, array_file, '""')
+    if map_file and not array_file:
+        sim_job.uses(map_file, link=Link.INPUT)
+        sim_job.addArguments(str(job_id), param_file, model_file, '""', map_file)
+    else:
+        sim_job.addArguments(str(job_id), param_file, model_file, '""', '""')
 
     # output files
     f1 = File("results_" + str(job_id) + ".txt")

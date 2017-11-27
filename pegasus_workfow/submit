@@ -1,6 +1,12 @@
 #!/bin/bash
 
-set -euo pipefail
+# PARAM_FILE=$1 #required. takes a path name
+# MODEL_FILE=$2 #required. takes a path name
+# ARRAY_FILE=$3 #optional. takes a path name
+# REC_MAP=$4 #optional. takes a path name
+# JOB_NUM=$5 #required. takes an integer
+
+set -euox pipefail
 
 # make sure we are in the correct dir
 if [ ! -e sites.xml.template ]; then
@@ -8,23 +14,44 @@ if [ ! -e sites.xml.template ]; then
     exit 1
 fi
 
-# did the user specify the number of jobs
-if [ -z "$1" -o -z "$2" -o -z "$3" -o -z "$4" -o -z "$5" ]; then
-    echo "Please specify parameter file, model file, array template, recombination map, number of jobs."
-    echo "Example: ./submit param_file.txt model_file.csv ill_650.bed genetic_map.macshs 1000"
-    exit 1
+PARAM_FILE=""
+MODEL_FILE=""
+JOB_NUM=0
+REC_MAP=""
+ARRAY_FILE=""
+OPTIND=1
+while getopts ':p:m:a:r:j:' opt; do
+  case "$opt" in
+    p) PARAM_FILE="$OPTARG" ;;
+    m) MODEL_FILE="$OPTARG"   ;;
+    a) ARRAY_FILE="$OPTARG" ;;
+    r) REC_MAP="$OPTARG" ;;
+    j) JOB_NUM="$OPTARG" ;;
+    \?)
+      echo "Invalid option: -$OPTARG"
+      exit 1
+      ;;
+  esac
+done
+
+
+if [ -z "$PARAM_FILE" ]; then
+  echo "Please specify parameter file, model file, number of jobs. array template and recombination map are optional."
+  echo "Example: ./submit -p param_file.txt -m model_file.csv -a ill_650.bed -r genetic_map.macshs -j 1000"
+  exit 1
+fi
+if [ -z "$MODEL_FILE" ]; then
+  echo "Please specify parameter file, model file, number of jobs. array template and recombination map are optional."
+  echo "Example: ./submit -p param_file.txt -m model_file.csv -a ill_650.bed -r genetic_map.macshs -j 1000"
+  exit 1
+fi
+if [ "$JOB_NUM" -eq 0 ]; then
+  echo "Please specify parameter file, model file, number of jobs. array template and recombination map are optional."
+  echo "Example: ./submit -p param_file.txt -m model_file.csv -a ill_650.bed -r genetic_map.macshs -j 1000"
+  exit 1
+  # exit if $JOB_NUM not an integer
 fi
 
-#if [ "x$1" == "x" -o "x$2" == "x" -o "x$3" == "x" -o "x$4" == "x" -o "x$5" == "x" ]; then
-#    echo "Please specify parameter file, model file, array template, recombination map, number of jobs."
-#    echo "Example: ./submit param_file.txt model_file.csv ill_650.bed genetic_map.macshs 1000"
-#    exit 1
-#fi
-PARAM_FILE=$1
-MODEL_FILE=$2
-ARRAY_FILE=$3
-REC_MAP=$4
-JOB_NUM=$5
 
 module load pegasus
 module load stashcp
@@ -36,18 +63,43 @@ export RUN_ID=simprily_"$(date +'%s')"
 export RUN_DIR="/local-scratch/$USER/workflows/$RUN_ID"
 mkdir -p "$RUN_DIR"
 
+echo "$PARAM_FILE"
+echo "$MODEL_FILE"
+
 cp "$PARAM_FILE" "$RUN_DIR"/
 cp "$MODEL_FILE" "$RUN_DIR"/
-cp "$ARRAY_FILE" "$RUN_DIR"/
-cp "$REC_MAP" "$RUN_DIR"/
+
+
+if [ -n "$ARRAY_FILE" ]; then
+  echo "$ARRAY_FILE"
+  cp "$ARRAY_FILE" "$RUN_DIR"/
+fi
+
+if [ -n "$REC_MAP" ]; then
+  echo "$REC_MAP"
+  cp "$REC_MAP" "$RUN_DIR"/
+fi
 
 # generate the site catalog
 SC="$RUN_DIR"/sites.xml
-envsubst <sites.xml.template >"$SC"
+echo envsubst <sites.xml.template >"$SC"
+
 
 # generate the dax
 export PYTHONPATH="$(pegasus-config --python)"
-./tools/dax-generator "$RUN_ID" "$RUN_DIR" "$JOB_NUM" "$(basename "$PARAM_FILE")" "$(basename "$MODEL_FILE")" "$(basename "$ARRAY_FILE")" "$(basename "$REC_MAP")"
+if [ -n "$REC_MAP" -a -n "$ARRAY_FILE" ]; then
+  echo 1
+  ./tools/dax-generator "$RUN_ID" "$RUN_DIR" "$JOB_NUM" "$(basename "$PARAM_FILE")" "$(basename "$MODEL_FILE")" "$(basename "$ARRAY_FILE")" "$(basename "$REC_MAP")"
+elif [ -n "$REC_MAP" -a -z "$ARRAY_FILE" ]; then
+  echo 2
+  ./tools/dax-generator "$RUN_ID" "$RUN_DIR" "$JOB_NUM" "$(basename "$PARAM_FILE")" "$(basename "$MODEL_FILE")" "" "$(basename "$REC_MAP")"
+elif [ -z "$REC_MAP" -a -n "$ARRAY_FILE" ]; then
+  echo 3
+  ./tools/dax-generator "$RUN_ID" "$RUN_DIR" "$JOB_NUM" "$(basename "$PARAM_FILE")" "$(basename "$MODEL_FILE")" "$(basename "$ARRAY_FILE")" ""
+else
+  echo 4
+  ./tools/dax-generator "$RUN_ID" "$RUN_DIR" "$JOB_NUM" "$(basename "$PARAM_FILE")" "$(basename "$MODEL_FILE")" "" ""
+fi
 mv dax.xml "$RUN_DIR"/
 
 echo
@@ -66,4 +118,3 @@ pegasus-plan \
     --dir "$RUN_DIR"/workflow \
     --dax "$RUN_DIR"/dax.xml \
     --submit
-
