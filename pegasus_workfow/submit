@@ -20,7 +20,7 @@ JOB_NUM=0
 REC_MAP=""
 ARRAY_FILE=""
 OPTIND=1
-while getopts ':p:m:a:r:j:' opt; do
+while getopts ':p:m:a:g:j:' opt; do
   case "$opt" in
     p) PARAM_FILE="$OPTARG" ;;
     m) MODEL_FILE="$OPTARG"   ;;
