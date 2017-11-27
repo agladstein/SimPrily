@@ -82,7 +82,7 @@ fi
 
 # generate the site catalog
 SC="$RUN_DIR"/sites.xml
-echo envsubst <sites.xml.template >"$SC"
+envsubst <sites.xml.template >"$SC"
 
 
 # generate the dax
