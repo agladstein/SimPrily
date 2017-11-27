@@ -9,3 +9,7 @@
 -n,2,B,
 -ej_1,AB_t,2,1,
 -en,AN_t,1,AN
+-discovery,1
+-sample,2
+-daf,daf
+-random_discovery, True

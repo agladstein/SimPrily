@@ -45,7 +45,7 @@ pip install --upgrade pip
 pip install pip-tools
 cd /vagrant
 pip-sync
-~/simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+~/simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
 If not using Vagrant:
@@ -60,7 +60,7 @@ cd SimPrily
 pip install --upgrade pip
 pip install pip-tools
 pip-sync
-simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
 
@@ -68,7 +68,7 @@ simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1.txt -m exampl
 
 e.g. One Test simulation:  
 ```
-python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
 For quick help:
@@ -136,7 +136,7 @@ Submit a Pegasus workflow (must be in `pegasus_workflow`)
 
 e.g.  
 ```bash
-./submit -p ../examples/eg2/param_file_eg2.txt -m ../examples/eg2/model_file_eg2.csv -j 10 -a ../array_template/ill_650_test.bed -g ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs
+./submit -p ../examples/eg2/param_file_eg2_asc.txt -m ../examples/eg2/model_file_eg2_asc.csv -j 10 -a ../array_template/ill_650_test.bed -g ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs
 ``` 
 
 The results will appear in 
