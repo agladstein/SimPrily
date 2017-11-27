@@ -55,9 +55,4 @@ def create_sequences(processedData, args):
           #  seq.panel = seq.tot #pretty sure it can be deleted
             seq.genotyped = seq.tot
             sequences.append(seq)
-            print(tot, '= tot')
-            print(name, '= name')
-            print(seq.genotyped, '= genotyped')
-            print(seq.panel, '= panel')
-            print(seq.type, '= type')
     return sequences

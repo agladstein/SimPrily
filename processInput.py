@@ -301,7 +301,7 @@ def processModelData(variables, modelData):
 
     if not processedData.get('discovery') or not processedData.get('sample') or not processedData.get('daf'):
         if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):
-            print("discovery, sample, and daf are all missing")
+            debugPrint(2, "discovery, sample, and daf are all missing")
         else:
             print("discovery, sample, or daf is missing")
             quit()

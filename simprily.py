@@ -168,7 +168,6 @@ def main(args):
 
     ### Calculate summary stats from genomes
     if nbss > 0:   # Simulations must contain at least one segregating site
-        print('in the if')
         profile(prof_option, path, job, "start_store_segregating_site_stats")
         stat_tools.store_segregating_site_stats(sequences, res, head)
         profile(prof_option, path, job, "end_store_segregating_site_stats")
