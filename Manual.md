@@ -470,15 +470,39 @@ All components of the Pegasus workflow are located in the directory
 `pegasus_workflow`.
 
 Start the workfow by running `submit` on the command line from the `pegasus_workflow` directory.
+There are 3 required arguments and 2 optional arguments
 ```bash
-./submit param_file.txt model_file.csv array_template genetic_map.macshs number_of_jobs
-
+./submit -p PARAM -m MODEL -j NUM [-g MAP] [-a ARRAY]
+```
+e.g. (No pseudo array and no recombination map) 
+```bash
+./submit -p ../examples/eg2/param_file_eg2.txt -m ../examples/eg2/model_file_eg2.csv -j 10
+```
+e.g. (include pseudo array, but no recombination map) 
+```bash
+./submit -p ../examples/eg2/param_file_eg2.txt -m ../examples/eg2/model_file_eg2.csv -j 10 -a ../array_template/ill_650_test.bed 
+```
+e.g. (recombination map, but no pseudo array) 
+```bash
+./submit -p ../examples/eg2/param_file_eg2.txt -m ../examples/eg2/model_file_eg2.csv -j 10 -g ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs
+```
+e.g. (include pseudo array, and recombination map) 
+```bash
+./submit -p ../examples/eg2/param_file_eg2.txt -m ../examples/eg2/model_file_eg2.csv -j 10 -a ../array_template/ill_650_test.bed -g ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs
 ```
 
-e.g.  
-```bash
-./submit ../examples/eg2/Param_file_eg2.txt ../examples/eg2/model_file_eg2.csv ../array_template/ill_650_test.bed ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs 10
-```
+##### Required 
+`-p PARAM` = The location of the parameter file  
+`-m MODEL` = The location of the model file  
+`-j NUM` = The number of jobs to run. The `ID` will go from 1 to `NUM`.
+ 
+##### Optional
+`-g MAP` = The location of the genetic map file  
+`-a ARRAY` = The location of the array template file, in bed form  
+
+*We recommend that all testing be done before submiting workflows to OSG. 
+Therefore we do not include the verbose options.
+Pegasus provides run information, so we do not include the `profile` option with the OSG workflow.*
 
 ### How the Pegasus workflow works
 

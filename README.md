@@ -131,13 +131,12 @@ Working directory must be `pegasus_workflow`.
 
 Submit a Pegasus workflow (must be in `pegasus_workflow`)
 ```bash
-./submit param_file.txt model_file.csv array_template genetic_map.macshs number_of_jobs
-
+./submit -p PARAM -m MODEL -j NUM [-g MAP] [-a ARRAY]
 ```
 
 e.g.  
 ```bash
-./submit ../examples/eg2/Param_file_eg2.txt ../examples/eg2/model_file_eg2.csv ../array_template/ill_650_test.bed ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs 10
+./submit -p ../examples/eg2/param_file_eg2.txt -m ../examples/eg2/model_file_eg2.csv -j 10 -a ../array_template/ill_650_test.bed -g ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs
 ``` 
 
 The results will appear in 

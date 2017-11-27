@@ -25,7 +25,7 @@ while getopts ':p:m:a:r:j:' opt; do
     p) PARAM_FILE="$OPTARG" ;;
     m) MODEL_FILE="$OPTARG"   ;;
     a) ARRAY_FILE="$OPTARG" ;;
-    r) REC_MAP="$OPTARG" ;;
+    g) REC_MAP="$OPTARG" ;;
     j) JOB_NUM="$OPTARG" ;;
     \?)
       echo "Invalid option: -$OPTARG"
