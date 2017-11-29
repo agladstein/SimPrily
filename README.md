@@ -147,6 +147,32 @@ where `user-name` is specific to the user, and `id` is the workflow id.
 
 -------------------------
 
+## Links
+
+* [Main SimPrily GitHub Repository](https://agladstein.github.io/SimPrily/)
+  * [SimPrily Wiki](https://github.com/agladstein/SimPrily/wiki)
+  * [SimPrily Code](https://github.com/agladstein/SimPrily)
+* [CyVerse Discovery Environment SimPrily Workflow]()
+  1. SimPrily HT File Setup App
+    * [App in the DE]()
+    * [GitHub Repo for App]()
+    * [DockerHub Repo for App]()
+  2. DE SimPrily App
+    * [App in the DE]()
+    * [GitHub Repo for App]()
+    * [DockerHub Repo for App]()
+  3. DE SimPrily Concatenation App
+    * [App in the DE]()
+    * [GitHub Repo for App]()
+    * [DockerHub Repo for App]()
+  4. [DE SimPrily Example Data](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data)
+    * [Randomly Generated Data for App Testing](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data/SimPrily_version1)
+    * [Homo sapiens HapMap Data from 1000 genomes Project](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data/SimPrily_version1)
+    * [Brassica sp. populations](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data/SimPrily_version1)
+    * [SimPrily Benchmarking Data](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data/SimPrily_version1)
+* SimPrily Pegasus Documentation
+  1. [SimPrily Pegasus Workflow Quick Start](https://agladstein.github.io/SimPrily/#open-science-grid)
+  2. [Detailed Pegasus Workflow Documentation](https://github.com/agladstein/SimPrily/wiki#pegasus-workflow-on-the-open-science-grid)
 
 ## Known Issues
 * Seed with macsswig is unstable. 
