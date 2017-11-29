@@ -20,7 +20,7 @@ def run_macs(macs_args, sequences):
     position: list of floats cast as strings, length: 10752
     the floaty strings increase from '0.000178136752' to '     0.99995896'
     '''
-  #  debugPrint(2,"running macs simulation:")
+    debugPrint(2,"running macs simulation:")
     position = []
     null = open(os.devnull, 'w')
     proc = subprocess.Popen(macs_args,stdout=subprocess.PIPE,stderr=null)
@@ -42,5 +42,8 @@ def run_macs(macs_args, sequences):
             #     debugPrint(3,line)
         else:
             break
+    print("THIS IS SEQUENCES zero: " + str(sequences[0].__dict__))
+    print("THIS IS SEQUENCES one: " + str(sequences[1].__dict__))
+    print("THIS IS position:  " + str(position))
  #   debugPrint(2,"Finished macs simulation")
     return [sequences,position]

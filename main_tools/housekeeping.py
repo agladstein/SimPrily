@@ -21,18 +21,22 @@ def prettyPrintSet(level, prefix, element, dictionary=None):
             prettyPrintSet(level + 1, prefix, item)
 
 def debugPrint(verbosLevel, string, dictionary=None):
-    if global_vars.verbos >= verbosLevel: 
-        spacing = "  "*(verbosLevel-1)
-        BLUE_START = "\033[94m"
-        COLOR_END = "\033[0m"
-        prefix = "{}{}debug-{}: {}".format(spacing,BLUE_START,verbosLevel,COLOR_END)
-        print("{}{}".format(prefix,string))
-        if dictionary:
-            for element in dictionary:
-                if type(dictionary) == type({}):
-                    prettyPrintSet(1, prefix, element, dictionary)
-                else:
-                    prettyPrintSet(1, prefix, element)
+    try:
+        if global_vars.verbos >= verbosLevel: 
+            spacing = "  "*(verbosLevel-1)
+            BLUE_START = "\033[94m"
+            COLOR_END = "\033[0m"
+            prefix = "{}{}debug-{}: {}".format(spacing,BLUE_START,verbosLevel,COLOR_END)
+            print("{}{}".format(prefix,string))
+            if dictionary:
+                for element in dictionary:
+                    if type(dictionary) == type({}):
+                        prettyPrintSet(1, prefix, element, dictionary)
+                    else:
+                        prettyPrintSet(1, prefix, element)
+    except Exception as e:
+        pass
+
 
 def process_args(arguments):
 
