@@ -163,7 +163,7 @@ def processModelData(variables, modelData):
     flags = populateFlags(variables, modelData)
 
     if '-macs_file' in flags:
-        macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        macs_args = [flags['-macs_file'][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
     elif '-macsswig' in flags:
           macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
     elif '-macs' in flags:

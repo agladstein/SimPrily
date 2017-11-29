@@ -12,4 +12,4 @@
 -discovery,1
 -sample,2
 -daf,daf
--random_discovery, True
+-random_discovery, False

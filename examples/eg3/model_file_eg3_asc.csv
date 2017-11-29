@@ -24,6 +24,6 @@
 -en,Tgrowth,1,NANC
 -discovery,1,2,3
 -sample,4,5,6
--daf,daf
+-daf,daf_1,daf_2,daf_3
 -random_discovery, True
 -pedmap
