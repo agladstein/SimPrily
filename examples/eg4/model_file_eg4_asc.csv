@@ -1,0 +1,12 @@
+-macs,./bin/macs,
+-length,1000000,
+-t,2.5e-8,
+-s,100000,
+-r,1e-8,
+-h,1e5,
+-I, 2, 100, 100,
+-ej_1, t, 1, 2
+-discovery, 1
+-sample, 2
+-daf, daf
+-random_discovery, True

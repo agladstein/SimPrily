@@ -147,10 +147,11 @@ def main(args):
             [pos_asc, nbss_asc, avail_site_indices, avail_sites] = pseudo_array_bits(asc_panel_bits, processedData['daf'], sim_positions, SNPs)
             profile(prof_option, path, job, "end_pseudo_array_bits")
             nb_avail_sites = len(avail_sites)
+            SNPs_exceed_available_sites = ( len(SNPs) >= nb_avail_sites )
         else:
             SNPs = []
+            SNPs_exceed_available_sites = False
 
-        SNPs_exceed_available_sites = ( len(SNPs) >= nb_avail_sites )
 
     if using_pseudo_array:
         profile(prof_option, path, job, "start_set_asc_bits")

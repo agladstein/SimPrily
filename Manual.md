@@ -27,19 +27,44 @@ git clone https://github.com/agladstein/SimPrily.git
 ```
 
 ## Environment Set up
-Python 2.7.6, 2.7.11, or 2.7.13 is required to run the code, with the requirements installed from requirements.txt. 
+Python 2.7.6, 2.7.11, or 2.7.13 is required to run the code, with the requirements installed from requirements.txt.
+We highly recommend running SimPrily with the Docker image or virtual environment.
 
 ### Docker
 A Docker Image built with Python 2.7.13, the requirements, and the SimPrily code can be found on Docker Hub 
-https://hub.docker.com/r/agladstein/simprily/
+https://hub.docker.com/r/agladstein/simprily_autobuild/
+
+The Docker image can be pulled with
+```
+docker pull agladstein/simprily_autobuild
+```
 
 ### Singularity
+A Singularity Image, built from the Docker Image, is used for the Open Science Grid workflow. The Singularity Image is NOT currently publically available through Singularity Hub.
 
 ### Virtual environment
 The most reliable way to do this is with a virtual environment.
 
+```bash
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python-virtualenv git python-dev
+sudo easy_install -U distribute
+virtualenv simprily_env
+source simprily_env/bin/activate
+cd SimPrily
+pip install --upgrade pip
+pip install pip-tools
+pip-sync
+simprily_env/bin/python simprily.py --help
+```
+If you get an error during `pip-sync` try rebooting the system. 
 
-If using Vagrant (this is recommended if running on non-Linux OS):
+#### Virtual Machine for non-Linux
+
+If you are running on a non-Linux OS, we recommend using the virtual machine, Vagrant (can be used on Mac or PC). In order to run Vagrant, you will also need VirtualBox.  
+Download Vagrant from https://www.vagrantup.com/downloads.html  
+Download VirtualBox from https://www.virtualbox.org/
 
 ```bash
 vagrant up
@@ -58,24 +83,10 @@ pip install --upgrade pip
 pip install pip-tools
 cd /vagrant
 pip-sync
-~/simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 1 False out_dir
+~/simprily_env/bin/python simprily.py --help
 ```
 
-If not using Vagrant:
-```bash
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install python-virtualenv git python-dev
-sudo easy_install -U distribute
-virtualenv simprily_env
-source simprily_env/bin/activate
-cd SimPrily
-pip install --upgrade pip
-pip install pip-tools
-pip-sync
-simprily_env/bin/python simprily.py examples/eg1/param_file_eg1.txt examples/eg1/model_file_eg1.csv macs 1 array_template/ill_650_test.bed 0 True output_dir
-```
-If you an error during `pip-sync` try rebooting the system. 
+
 
 ### Local installation
 
@@ -95,14 +106,19 @@ export PATH=$(pwd)/python/bin:$PATH
 wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py
 pip install -r /home/agladstein/simslg/macsswig_simslg/requirements.txt
-python simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv macsSwig 1 array_template/ill_650_test.bed 0 True output_dir
+python simprily.py --help
 ```
 
 ## Usage
 
-e.g. One Test simulation:  
+e.g. One simulation (with pseudo array and genetic map):  
 ```
-python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+```
+
+e.g. One simulation (genetic map, no pseudo array):  
+```
+python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -i 1 -o output_dir -v
 ```
 
 For quick help:
@@ -132,6 +148,17 @@ python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] 
 The third column is used as the physical positions of the SNP for the pseudo array. 
 
 ### Additional information on input arguments
+
+#### jobID
+This is a unique identifier for the job. It is used in the names of the output files.
+For example, the output file with parameter values and summary statistics is named `results_{jobid}.txt`.
+
+#### output_dir
+This is where all the output goes.
+Within the output_dir the directory `results` will always be created. The `results` directory contains the results file `results_{jobid}.txt` with the parameter values and summary statistics.  
+Additionally, the directories `germline_out` and `sim_data` are also created, but will be empty if the `germline` or `pedmap` arguments in the model file are not included.
+
+*Be careful when running large numbers of jobs (>2000). It is bad practice to run large numbers of jobs and direct all the output to the same directory, because listing the contents of the directory becomes very slow. Instead, we recommend creating directory "buckets". See section Recommendations for other HTC workflows*.
 
 #### param_file.txt
 Examples of param_file.txt can be found in examples.
@@ -189,7 +216,6 @@ For example,
 -t,2.5e-8,
 -r,1e-8,
 -h,1e5,
--R,genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs,
 # define a sample size of 50 haploid individuals for populations 1 and 2
 -I, 2, 50, 50
 # define the effective population size at present for population 1
@@ -323,7 +349,7 @@ populations at time t
 
 ##### SNP array ascertainment arguments
 
-If the user would like to create a pseudo array from the simulation, five additional arguments must be included in the model_file:  
+If the user would like to create a pseudo array from the simulation, the array template must be included in the command line argument with the flag `-a`, and four additional arguments must be included in the model_file:  
 
 `-discovery`, followed by the populations (defined by their numbers from `-n`) that should be used to discover the SNP (e.g. the HapMap populations).
 These are the populations that will be used to create the pseudo array.
@@ -333,10 +359,9 @@ When calculating summary statistics, summary statistics based on whole genome si
 
 `-daf`, followed by the parameter name for daf.  
 
-`-random_discovery`, followed by `True`. 
-This will add a random number of individuals to the discovery populations to use as the "panel" to create the pseudo array.
-When this option is True, the total number of simulated discovery populations is equal to the number "genotyped" and in the "panel".  
-*currently only works with True option*
+`-random_discovery`, followed by `True` or `False`. 
+True will add a random number of individuals to the discovery populations to use as the "panel" to create the pseudo array.
+When this option is False, the total number of simulated discovery populations is equal to the number "genotyped" and in the "panel".  
 
 
 For example:
@@ -403,15 +428,17 @@ Runs GERMLINE as:
 bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ped_name map_name out_name "-bits 10 -min_m min_m"
 ```
 
+If GERMLINE does not run, try rebuilding it on the machine you are trying to run on:
+```
+cd ./bin/germline-1-5-1
+make clean
+make
+```
+
 ##### pedmap
 
 The option `-pedmap` can be included in the model_file to print a ped and map file of the pseudo array data.
 
-#### jobID
-This is a unique identifier for the job. It is used in the names of the output files.
-For example, the output file with the summary statistics is named `ms_output_{jobid}.summary`.
-
-#### output_dir
 
 ## Notes for developers
 * If you use import a new Python package make sure you add it to the requirements.txt file then create the requirements.in. This will insure that the package installed in the virtual environment and Docker image.
@@ -426,12 +453,12 @@ __________________________________________________________________
 
 Run interactively with the Singularity container on the OSG  
 ```bash
-[agladstein@login02 brassica]$ singularity shell --home $PWD:/srv --pwd /srv /cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest
+[agladstein@login02 ~]$ singularity shell --home $PWD:/srv --pwd /srv /cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest
 Singularity: Invoking an interactive shell within container...
 
 $ bash
 agladstein@login02:~$ export PATH=/usr/local/bin:/usr/bin:/bin
-agladstein@login02:~$ python /app/simprily.py examples/eg2/param_file_eg2.txt examples/eg2/model_file_eg2.csv 2 out_dir
+agladstein@login02:~$ python /app/simprily.py examples/eg2/Param_file_eg2.txt examples/eg2/model_file_eg2.csv 2 out_dir
 ```
 
 ### Monitoring and Debugging
@@ -448,15 +475,39 @@ All components of the Pegasus workflow are located in the directory
 `pegasus_workflow`.
 
 Start the workfow by running `submit` on the command line from the `pegasus_workflow` directory.
+There are 3 required arguments and 2 optional arguments
 ```bash
-./submit param_file.txt model_file.csv array_template genetic_map.macshs number_of_jobs
-
+./submit -p PARAM -m MODEL -j NUM [-g MAP] [-a ARRAY]
+```
+e.g. (No pseudo array and no recombination map) 
+```bash
+./submit -p ../examples/eg2/param_file_eg2.txt -m ../examples/eg2/model_file_eg2.csv -j 10
+```
+e.g. (include pseudo array, but no recombination map) 
+```bash
+./submit -p ../examples/eg2/param_file_eg2_asc.txt -m ../examples/eg2/model_file_eg2_asc.csv -j 10 -a ../array_template/ill_650_test.bed 
+```
+e.g. (recombination map, but no pseudo array) 
+```bash
+./submit -p ../examples/eg2/param_file_eg2.txt -m ../examples/eg2/model_file_eg2.csv -j 10 -g ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs
+```
+e.g. (include pseudo array, and recombination map) 
+```bash
+./submit -p ../examples/eg2/param_file_eg2_asc.txt -m ../examples/eg2/model_file_eg2_asc.csv -j 10 -a ../array_template/ill_650_test.bed -g ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs
 ```
 
-e.g.  
-```bash
-./submit ../examples/eg2/Param_file_eg2.txt ../examples/eg2/model_file_eg2.csv ../array_template/ill_650_test.bed ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs 10
-```
+##### Required 
+`-p PARAM` = The location of the parameter file  
+`-m MODEL` = The location of the model file  
+`-j NUM` = The number of jobs to run. The `ID` will go from 1 to `NUM`.
+ 
+##### Optional
+`-g MAP` = The location of the genetic map file  
+`-a ARRAY` = The location of the array template file, in bed form  
+
+*We recommend that all testing be done before submiting workflows to OSG. 
+Therefore we do not include the verbose options.
+Pegasus provides run information, so we do not include the `profile` option with the OSG workflow.*
 
 ### How the Pegasus workflow works
 
@@ -468,6 +519,11 @@ It also tells Pegasus where the local files are and transfers files (from submit
 It also defines how to handle output files.
 
 `wrappers/run-sim.sh` is the wrapper that runs in the container. It modifies the environment, and runs SimPrily.
+
+__________________________________________________________________
+
+## Recommendations for other HTC workflows
+*Coming soon*
 
 __________________________________________________________________
 

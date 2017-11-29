@@ -14,3 +14,7 @@
 -ej, T3, 4, 3
 -ej, T2, 3, 2
 -ej, T1, 2, 1
+-discovery, 1
+-sample, 2, 3, 4, 5
+-daf,daf
+-random_discovery, True
