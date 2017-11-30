@@ -22,6 +22,7 @@ if version_info >= (2,6,0):
                 _mod = imp.load_module('_macsSwig', fp, pathname, description)
             finally:
                 fp.close()
+     #       print("tHIS IS THE SWIG IMPORT HELPED FROM MACSWIG: " + str(mod))
             return _mod
     _macsSwig = swig_import_helper()
     del swig_import_helper
@@ -33,6 +34,8 @@ try:
 except NameError:
     pass # Python < 2.2 doesn't have 'property'.
 def _swig_setattr_nondynamic(self,class_type,name,value,static=1):
+    #print("CLASS TYPE FOR MACSSWIG NONDYNAMIC FUNCTION : " + str(class_type))
+    #print("THIS IS CLASS TYPE PARAMETER FROM MACSWIG: " + str(class_type))
     if (name == "thisown"): return self.this.own(value)
     if (name == "this"):
         if type(value).__name__ == 'SwigPyObject':
@@ -46,9 +49,12 @@ def _swig_setattr_nondynamic(self,class_type,name,value,static=1):
         raise AttributeError("You cannot add attributes to %s" % self)
 
 def _swig_setattr(self,class_type,name,value):
+    #print("THIS IS CLASS TYPE PARAMETER FROM MACSWIG: " + str(class_type))
+    #print("Class typekgsldfgjlksdfg " + str(class_type))
     return _swig_setattr_nondynamic(self,class_type,name,value,0)
 
 def _swig_getattr(self,class_type,name):
+   # print("THIS IS CLASS TYPE PARAMETER FROM MACSWIG: " + str(class_type))
     if (name == "thisown"): return self.this.own()
     method = class_type.__swig_getmethods__.get(name,None)
     if method: return method(self)
@@ -57,6 +63,7 @@ def _swig_getattr(self,class_type,name):
 def _swig_repr(self):
     try: strthis = "proxy of " + self.this.__repr__()
     except: strthis = ""
+  #  print("<%s.%s; %s >" % (self.__class__.__module__, self.__class__.__name__, strthis,))
     return "<%s.%s; %s >" % (self.__class__.__module__, self.__class__.__name__, strthis,)
 
 try:
