@@ -32,8 +32,8 @@ def create_sequences(processedData, args):
     
     Returns: instance types named [d1, s1] 
     '''
-    #debugPrint(2,"Running create_sequences:")
-
+    
+    debugPrint(2,"Running create_sequences:")
     sequences = []
     if 'discovery' in processedData and 'sample' in processedData and 'daf' in processedData:
     ### Initialize all discovery type sequence data
@@ -56,32 +56,13 @@ def create_sequences(processedData, args):
             seq.panel = seq.tot
             seq.genotyped = seq.tot
             sequences.append(seq)
-            for i, ind in enumerate(processedData.get('discovery')):
-                tot_index = processedData['macs_args'].index("-I") + 1 + ind
-                tot = int(processedData['macs_args'][tot_index]) # total number of individuals used in simulation
-                name = processedData.get('name').pop(0)
-                seq = SeqInfo(name, tot, seq_type = 'discovery')
+    else:
+        for ind in range(int(processedData['macs_args'][4])):
+            tot = processedData['I'][ind-1]
+            name = processedData.get('name').pop(0)
+            seq = SeqInfo(name, tot, seq_type = 'discovery')
 
-                seq.genotyped = processedData['I'][ind - 1]
-                seq.panel  = seq.tot - seq.genotyped
-                sequences.append(seq)
-
-            ### Initialize all sample type sequence data
-            for i, ind in enumerate(processedData.get('sample')):
-                tot = processedData['I'][ind-1]
-                name = processedData.get('name').pop(0)
-                seq = SeqInfo(name, tot, seq_type = 'sample')
-
-                seq.panel = seq.tot
-                seq.genotyped = seq.tot
-                sequences.append(seq)
-        else:
-            for ind in range(int(processedData['macs_args'][4])):
-                tot = processedData['I'][ind-1]
-                name = processedData.get('name').pop(0)
-                seq = SeqInfo(name, tot, seq_type = 'discovery')
-
-              #  seq.panel = seq.tot #pretty sure it can be deleted
-                seq.genotyped = seq.tot
-                sequences.append(seq)
+          #  seq.panel = seq.tot #pretty sure it can be deleted
+            seq.genotyped = seq.tot
+            sequences.append(seq)
     return sequences
