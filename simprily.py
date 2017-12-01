@@ -141,6 +141,7 @@ def main(args):
             profile(prof_option, path, job, "end_set_panel_bits")
             debugPrint(1,'Number of chromosomes in asc_panel: {}'.format(asc_panel_bits.length()/nbss))
 
+
             ### Get pseudo array sites
             debugPrint(2,'Making pseudo array')
             profile(prof_option, path, job, "start_pseudo_array_bits")

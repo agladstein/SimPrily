@@ -1,5 +1,5 @@
 -macs,./bin/macs,
--length,1000000,
+-length,100,
 -t,2.5e-8,
 -s,100000,
 -r,1e-8,
