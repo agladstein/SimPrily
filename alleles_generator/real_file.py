@@ -3,7 +3,6 @@ from bitarray import bitarray
 
 class AllelesReal(object):
 
-
     def __init__(self, real_file_name):
         self.real_file_name = real_file_name
 
@@ -18,7 +17,6 @@ class AllelesReal(object):
             talleles.append(line.strip())
         real_file.close()
         alleles = zip(*talleles)
-        debugPrint(3, "THIS IS THE RETURN OF MAKE_LISTS " + str(map(list,alleles)))
         return map(list,alleles)
 
     def make_list_seq(self, n_0, n_m):
@@ -26,6 +24,7 @@ class AllelesReal(object):
         sites in rows, individuals in columns (first 4 columns chr, rsnumber, site_begin, site_end).
         plink --bfile bfile --recode transpose 01 --output-missing-genotype N --out tfile01
         https://www.cog-genomics.org/plink2/formats#tped"""
+
         real_file = open(self.real_file_name, 'r')
         seq_bits = []
         for line in real_file:
@@ -54,5 +53,4 @@ class AllelesReal(object):
                     columns[i] = '0'
                 seq_bits.extend(columns[i])
         real_file.close()
-        #print("THESE ARE SEQ_BITS RETURNS " + str(seq_bits))
         return seq_bits
