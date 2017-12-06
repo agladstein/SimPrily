@@ -5,15 +5,14 @@ from operator import itemgetter
 from main_tools.housekeeping import debugPrint, set_seed
 from main_tools.my_random import MY_RANDOM as random
 
-verbos = 0
+verbose = 0
 times = []
 
 
-def getSampleAndDiscovery(in_file):
-    tempFile = readModelFile(in_file)
-    out = []
+def get_sample_and_discovery(in_file):
+    temp_file = read_model_file(in_file)
     out_dict = dict()
-    for line in tempFile:
+    for line in temp_file:
         if line.startswith("-I"):
             line = line.split(',')
             out_dict["-I"] = [int(s.strip()) for s in line[2:] if s]
@@ -22,231 +21,240 @@ def getSampleAndDiscovery(in_file):
             out_dict[line[0]] = [int(s.strip()) for s in line[1:] if s]
     return out_dict
 
-def readModelFile(in_file):
-    '''
+
+def read_model_file(in_file):
+    """
     reads the file into a list 
     :param in_file: a file name as a string
     :return: a list with each line as a single string object 
-    '''
+    """
     fl = open(in_file, "r")
     info = []
     for line in fl:
         if line.startswith("-"):
             temp = str(line).strip()
             info.append(temp)
-        if line.split(",")[0]== "-s":
+        if line.split(",")[0] == "-s":
             temp = str(line).strip()
             set_seed(temp.split(",")[1])
     return info
 
-def readParamsFile(in_file):
-    '''
-    reads the file into a list 
+
+def read_params_file(in_file):
+    """
+    reads the file into a list
     :param in_file: a file name as a string
-    :return: a list with each line as a single string object 
-    '''
+    :return: a list with each line as a single string object
+    """
     fl = open(in_file, "r")
-    modelParamsDict = {}
+    model_params_dict = {}
     for line in fl:
         if "=" in line:
-            modelParamsDict[line.split("=")[0].strip()] = line.split("=")[1].strip()
-    return modelParamsDict
+            model_params_dict[line.split("=")[0].strip()] = line.split("=")[1].strip()
+    return model_params_dict
 
-def getParamValueBounded(modelParamsDict, tempNum, tempLow=False):
-    tempVar = ""
-    if tempNum in modelParamsDict.keys():
-        tempVar = tempNum 
-        tempNum = modelParamsDict[tempNum]
 
-    tempNum = tempNum.strip()
-    if ":" not in tempNum:
-        tempNum = str(sci_to_float(tempNum))
-        returnValue = str(tempNum)
+def get_param_value_bounded(model_params_dict, temp_num, temp_low=False):
+    temp_var = ""
+    if temp_num in model_params_dict.keys():
+        temp_var = temp_num
+        temp_num = model_params_dict[temp_num]
+
+    temp_num = temp_num.strip()
+    if ":" not in temp_num:
+        temp_num = str(sci_to_float(temp_num))
+        return_value = str(temp_num)
     else:
         # This means you want range
-        tempLow = max(float(sci_to_float(tempNum.split(":")[0][1:])),float(tempLow))
-        tempHigh = sci_to_float(tempNum.split(":")[1][:-1])
-        returnValue = str(random.uniform(float(tempLow),float(tempHigh)))
-    if tempVar in modelParamsDict.keys():
-        modelParamsDict[tempVar] = returnValue
-    return returnValue
+        temp_low = max(float(sci_to_float(temp_num.split(":")[0][1:])), float(temp_low))
+        temp_high = sci_to_float(temp_num.split(":")[1][:-1])
+        return_value = str(random.uniform(float(temp_low), float(temp_high)))
+    if temp_var in model_params_dict.keys():
+        model_params_dict[temp_var] = return_value
+    return return_value
 
-def priorToParamValue(inputParamStr):
-    '''
+
+def prior_to_param_value(input_param_str):
+    """
     priorToParamValue:
     This is a helper function that takes a string in the form (###:###)
     Numbers are allowed to be either scientfic notation or base 10
     And returns a random value in that range, in the form of a string
-    '''
-    assert(type(inputParamStr) == type("")),"priorToParamValue called without a string"
+    """
 
-    tempLow = float(sci_to_float(inputParamStr.split(":")[0][1:]))
-    tempHigh = float(sci_to_float(inputParamStr.split(":")[1][:-1]))
-    returnValue = str(random.uniform(tempLow,tempHigh))
-    return returnValue
+    assert(isinstance(input_param_str, str)), "priorToParamValue called without a string"
+
+    temp_low = float(sci_to_float(input_param_str.split(":")[0][1:]))
+    temp_high = float(sci_to_float(input_param_str.split(":")[1][:-1]))
+    return_value = str(random.uniform(temp_low, temp_high))
+    return return_value
 
 
-def getParamValueUnBounded(modelParamsDict, paramKey):
-    '''
+def get_param_value_un_bounded(model_params_dict, param_key):
+    """
     getParamValueUnBounded:
-    This is a function that searches the model dictionary for the value 
+    This is a function that searches the model dictionary for the value
     and replace the param name with the matching param value in the param file
     If there is a value that is a given range it will pick a float in that range
-    '''
+    """
+
     # TODO, add assert for that if later
-    if paramKey in modelParamsDict.keys():
-        # tempVar = paramKey 
-        paramRawValue = modelParamsDict[paramKey]
+    if param_key in model_params_dict.keys():
+        # tempVar = paramKey
+        param_raw_value = model_params_dict[param_key]
         # Strip is here to remove any whitespace that might be in param file
         # TODO: This strip should be done when we make the dictionary
-        paramRawValueStriped = paramRawValue.strip()
-        if ":" in paramRawValueStriped:
+        param_raw_value_striped = param_raw_value.strip()
+        if ":" in param_raw_value_striped:
             # This means you want range
-            unscaledParamValue = priorToParamValue(paramRawValueStriped)
+            unscaled_param_value = prior_to_param_value(param_raw_value_striped)
         else:
-            unscaledParamValue = str(sci_to_float(paramRawValueStriped))
-        # Updating the Params dict with the chosen value 
-        modelParamsDict[paramKey] = unscaledParamValue
+            unscaled_param_value = str(sci_to_float(param_raw_value_striped))
+        # Updating the Params dict with the chosen value
+        model_params_dict[param_key] = unscaled_param_value
     else:
         # TODO, this else needs to be removed...if it goes
         # into this else, this function shouldn't have been called
-        print("paramKey: {}".format(paramKey))
-        unscaledParamValue = paramKey
-    return unscaledParamValue
+        # print("paramKey: {}".format(param_key))
+        unscaled_param_value = param_key
+    return unscaled_param_value
+
 
 def sci_to_float(s):
     """
     Converts a string of the form 'aEb' into an int given by a*10^b
     """
-    s = s.replace("e","E")
+    s = s.replace("e", "E")
     if 'E' in s:
         s = s.split('E')
         return float(s[0]) * 10**float(s[1])
     return s
 
-def findScaleValue(flags, modelParamsDict):
+
+def find_scale_value(flags, model_params_dict):
     # used for scaling
     debugPrint(2, "Finding scaling value")
-    Ne=10000
+    ne = 10000
     if "-Ne" not in flags.keys():
         if "-n" in flags.keys():
-            Ne=float(getParamValueUnBounded(modelParamsDict, flags["-n"][0][1]))
+            ne = float(get_param_value_un_bounded(model_params_dict, flags["-n"][0][1]))
     else:
-        Ne = float(getParamValueUnBounded(modelParamsDict, flags['-Ne'][0][0]))
-    debugPrint(2,"Scaling factor found: {0}".format(Ne))
-    return Ne
+        ne = float(get_param_value_un_bounded(model_params_dict, flags['-Ne'][0][0]))
+    debugPrint(2, "Scaling factor found: {0}".format(ne))
+    return ne
 
-def processTimeData(flag, lastTime, modelParamsDictRaw, timeDataRaw):
-    '''
+
+def process_time_data(flag, last_time, model_params_dict_raw, time_data_raw):
+    """
     This is a helper function that takes the raw time data from the model
     file and replaces it with the correct value in the params file.
-
-    '''
-    if "_" in flag: 
+    """
+    if "_" in flag:
         if int(flag.split("_")[1]) == 1:
             # First time through, no bounds outside of given in param Value
-            lowTime = False
+            low_time = False
         else:
             # There is a low time bound on the random range
-            lowTime = True
+            low_time = True
     else:
         # There is no time constrant
-        lowTime = False
+        low_time = False
 
-    if "inst" in timeDataRaw:
-        tempTime = str(float(lastTime) + 1)
-        while tempTime in times:
-            tempTime += 1
-        timeData = tempTime
+    if "inst" in time_data_raw:
+        temp_time = str(float(last_time) + 1)
+        while temp_time in times:
+            temp_time += 1
+        time_data = temp_time
     else:
-        if lowTime:
-            timeData = getParamValueBounded(modelParamsDictRaw, timeDataRaw, lastTime)
+        if low_time:
+            time_data = get_param_value_bounded(model_params_dict_raw, time_data_raw, last_time)
         else:
-            timeData = getParamValueUnBounded(modelParamsDictRaw, timeDataRaw)
+            time_data = get_param_value_un_bounded(model_params_dict_raw, time_data_raw)
 
-    return timeData
+    return time_data
 
-def populateFlags(modelParamsDictRaw, modelDataRaw):
-    '''
+
+def populate_flags(model_params_dict_raw, model_data_raw):
+    """
     This will fill a dictionary with keys that equal the flags, and values that
     is a list of every time (in order) the flag is used.
-    '''
+    """
     debugPrint(2, "Starting: populateFlags ")
-    modelData = []
+    model_data = []
     flags = OrderedDict()
-    lowTime = False
     # loops through all items in modelDataRaw
-    for i, argument in enumerate(modelDataRaw):
-        argSplit = argument.split(',')
+    for i, argument in enumerate(model_data_raw):
+        arg_split = argument.split(',')
 
-        flag = argSplit[0]
+        flag = arg_split[0]
         # if flag starts with -e it will be an event flag, thus, the order must be preserved
         if flag.startswith("-e"):
-            # striping any random whitepace
+            # striping any random whitespace
             # TODO: The line spit should be done before this part
-            timeDataRaw = argSplit[1].strip()
-            lastTimeValue = modelData[i-1].split(',')[1]
-            timeData = processTimeData(flag, lastTimeValue, modelParamsDictRaw, timeDataRaw)
+            time_data_raw = arg_split[1].strip()
+            last_time_value = model_data[i-1].split(',')[1]
+            time_data = process_time_data(flag, last_time_value, model_params_dict_raw, time_data_raw)
 
-            times.append(timeData)
-            argSplit[1] = timeData
-            flag = argSplit[0].split("_")[0]
+            times.append(time_data)
+            arg_split[1] = time_data
+            flag = arg_split[0].split("_")[0]
 
         if flag in flags.keys():
-            flags[flag].append([x.strip() for x in argSplit[1:] if x])
+            flags[flag].append([x.strip() for x in arg_split[1:] if x])
         else:
-            flags[flag] = [[x.strip() for x in argSplit[1:] if x]]
+            flags[flag] = [[x.strip() for x in arg_split[1:] if x]]
 
-        modelData.append(",".join(argSplit))
+        model_data.append(",".join(arg_split))
 
-    modelParamsDict = modelParamsDictRaw
+    model_params_dict = model_params_dict_raw
 
-    return flags, modelParamsDict, modelData
+    return flags, model_params_dict, model_data
 
-def processType1Flags(flag, argument, processedData, modelParamsDictRaw):
-    '''
-    This is a helper function fpr processing input files. 
+
+def process_type1_flags(flag, argument, processed_data, model_params_dict_raw):
+    """
+    This is a helper function fpr processing input files.
     It takes a flag, arguments, and returns an updated processedData
-    '''
+    """
 
     if flag == "-discovery":
-        processedData['discovery'] = [int(s.strip()) for s in argument if s]
+        processed_data['discovery'] = [int(s.strip()) for s in argument if s]
     if flag == "-sample":
-        processedData['sample'] = [int(s.strip()) for s in argument if s]
+        processed_data['sample'] = [int(s.strip()) for s in argument if s]
     if flag == "-daf":
-        processedData['daf'] = float(getParamValueUnBounded(modelParamsDictRaw, argument[0]))
+        processed_data['daf'] = float(get_param_value_un_bounded(model_params_dict_raw, argument[0]))
     if flag == "-length":
-        processedData['length'] = argument[0]
+        processed_data['length'] = argument[0]
     if flag == "-macs":
-        processedData['macs'] = argument[0]
+        processed_data['macs'] = argument[0]
     if flag == "-I":
-        processedData["I"] = [int(s.strip()) for s in argument[1:] if s]
+        processed_data["I"] = [int(s.strip()) for s in argument[1:] if s]
     if flag == "-macsswig":
-        processedData['macsswig'] = argument[0]
+        processed_data['macsswig'] = argument[0]
     if flag == "-n":
-        tmp = processedData.get('name', [])
+        tmp = processed_data.get('name', [])
         tmp.append(argument[1])
-        processedData['name'] = tmp
+        processed_data['name'] = tmp
 
-    return processedData
+    return processed_data
 
 
-def scaleArgument(flag, argumentRaw, Ne, modelParamsDictRaw):
-    '''
-    A helper function that scaled one index in the arguhemt. 
-    It returns the scaled number and the index the scaled numbers goes to. 
+def scale_argument(flag, argument_raw, ne, model_params_dict_raw):
+    """
+    A helper function that scaled one index in the arguhemt.
+    It returns the scaled number and the index the scaled numbers goes to.
     To add more flags to this, add it to the matching index group and matching scale group
-    '''
-
+    """
+    index = -1
     # Get the index for the value you are changing
-    index0 = ["-t","-r","-G"]
+    index0 = ["-t", "-r", "-G"]
     if flag in index0:
         index = 0
-    index1 = ["-eM","-g","-eN","-n"]
+    index1 = ["-eM", "-g", "-eN", "-n"]
     if flag in index1:
         index = 1
 
-    index2 = ["-en","-eg","-es","-m", "-em"]
+    index2 = ["-en", "-eg", "-es", "-m", "-em"]
     if flag in index2:
         index = 2
 
@@ -254,164 +262,160 @@ def scaleArgument(flag, argumentRaw, Ne, modelParamsDictRaw):
     if flag in index3:
         index = 3
 
+    assert index != -1, "scale_argument was called with a flag that is not defined in the index lists."
+
     # Get the param value if needed
-    if argumentRaw[index] in modelParamsDictRaw:
-        param = getParamValueUnBounded(modelParamsDictRaw, argumentRaw[index])
+    if argument_raw[index] in model_params_dict_raw:
+        param = get_param_value_un_bounded(model_params_dict_raw, argument_raw[index])
     else:
         # If the flag isn't in param, no need to call it
-        param = argumentRaw[index]
+        param = argument_raw[index]
 
     # scale the number when we have it
-    scaleFactor1 = [
-        "-em","-eM","-g","-eg","-m","-t","-r","-G",
+    scale_factor1 = [
+        "-em", "-eM", "-g", "-eg", "-m", "-t", "-r", "-G",
     ]
-    scaleFactor2 = ["-eN", "-n", "-en"]
+    scale_factor2 = ["-eN", "-n", "-en"]
 
-    if flag in scaleFactor1:
-        scaledParam = str(float(4*(float(param)*Ne)))
-    elif flag in scaleFactor2:
-        scaledParam = str(float((float(param)/Ne)))
+    if flag in scale_factor1:
+        scaled_param = str(float(4 * (float(param) * ne)))
+    elif flag in scale_factor2:
+        scaled_param = str(float((float(param) / ne)))
     else:
-        scaledParam = param
+        scaled_param = param
 
-    return scaledParam, index
+    return scaled_param, index
 
 
-def processInputFiles(paramFile, modelFile, args):
-    '''
-    This is the function that takes links to two files and outputs a dictionay (processedData)
+def process_input_files(param_file, model_file, args):
+    """
+    This is the function that takes links to two files and outputs a dictionary (processedData)
     With all the (useful) data in the two files
-    '''
+    """
     debugPrint(2, "Starting processInputFiles")
+
+    model_data_raw = read_model_file(model_file)
+    debugPrint(2, "Finished reading " + str(model_file))
+    debugPrint(3, "Raw input data into make_args", model_data_raw)
+
+    model_params_dict_raw = read_params_file(param_file)
+    debugPrint(2, "Finished reading " + str(param_file))
+
+    debugPrint(3, "Raw Output for modelParamsDict", model_params_dict_raw)
+
+    processed_data = {}
     
-    modelDataRaw = readModelFile(modelFile)
-    debugPrint(2, "Finished reading " + str(modelFile))
-    debugPrint(3, "Raw input data into make_args", modelDataRaw)
+    flags, model_params_dict, model_data = populate_flags(model_params_dict_raw, model_data_raw)
+    ne = find_scale_value(flags, model_params_dict_raw)
 
-    modelParamsDictRaw = readParamsFile(paramFile)
-    debugPrint(2, "Finished reading " + str(paramFile))
-    
-    debugPrint(3,"Raw Output for modelParamsDict", modelParamsDictRaw)
-
-
-    processedData = {}
-    
-    flags, modelParamsDict, modelData = populateFlags(modelParamsDictRaw, modelDataRaw)
-    Ne = findScaleValue(flags, modelParamsDictRaw)
-
-    if flags['-random_discovery']:
-        if '-macs_file' in flags:
-            macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
-        elif '-macsswig' in flags:
-              macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
-        elif '-macs' in flags:
-            macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
-        sizes = map(int, flags["-I"][0][1:])
-        if (sys.version_info > (3, 0)):
-            sizes = list(sizes)
-        for discovery_pop_str in flags["-discovery"][0]:
-            discovery_pop = int(discovery_pop_str)-1
-            sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
-        total = float(sum(sizes))
-        macs_args.insert(1,str(total))
-        sizes_str = map(str, sizes)
-        if (sys.version_info > (3, 0)):
-            sizes_str = list(sizes_str)
-        macs_args.extend(sizes_str)
-        
+    if '-macs_file' in flags:
+        macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    elif '-macsswig' in flags:
+        macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    elif '-macs' in flags:
+        macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
     else:
-        # creates a total value from the <n_n> values (from -I)
-        numlist = [float(x) for x in flags['-I'][0][1:]]
-        total = sum(numlist)
-        macs_args = [flags['-macs'][0][0], str(total), flags['-length'][0][0], "-I"]
-        for genotyped_size in flags["-I"][0]:
-            macs_args.append(genotyped_size)
-
+        macs_args = None
+        # This option should never be reached since it errors out in housekeeping
+        print("There is no sim option given. Check your model file.")
+        exit(1)
+    sizes = map(int, flags["-I"][0][1:])
+    if sys.version_info > (3, 0):
+        sizes = list(sizes)
+    for discovery_pop_str in flags["-discovery"][0]:
+        discovery_pop = int(discovery_pop_str)-1
+        if "True" in flags['-random_discovery'][0]:
+            sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
+        else:
+            sizes[discovery_pop] += sizes[discovery_pop]
+    total = float(sum(sizes))
+    macs_args.insert(1, str(total))
+    sizes_str = map(str, sizes)
+    if sys.version_info > (3, 0):
+        sizes_str = list(sizes_str)
+    macs_args.extend(sizes_str)
 
     # seasons is all the time based events
     seasons = []
 
     # processOrderedSeasons(flags, modelParamsDict)
-    debugPrint(3,"Processing flags in for macs_args")
+    debugPrint(3, "Processing flags in for macs_args")
     for flag in flags.keys():
         # Looping through every key
-        debugPrint(3,"FLAG:  {}: {}".format(flag,flags[flag]))
-        for argumentRaw in flags[flag]:
-            print("argumentRaw: {}".format(argumentRaw))
+        debugPrint(3, "FLAG:  {}: {}".format(flag, flags[flag]))
+        for argument_raw in flags[flag]:
+            print("argumentRaw: {}".format(argument_raw))
             # Looping through every argumentRaw
             try:
-                debugPrint(3,flag + ": " + str(argumentRaw))
-                ignoredFlags = ["-germline",
-                                "-array",
-                                "-nonrandom_discovery",
-                                "-random_discovery",
-                                "-pedmap"]
+                debugPrint(3, flag + ": " + str(argument_raw))
+                ignored_flags = ["-germline",
+                                 "-array",
+                                 "-nonrandom_discovery",
+                                 "-random_discovery",
+                                 "-pedmap"]
 
-                if flag in ignoredFlags:
+                if flag in ignored_flags:
                     continue
 
-                type1Flags = [
+                type1_flags = [
                     "-discovery", "-sample", "-daf", "-length", "-macs", "-I", "-macsswig", "-n",
                 ]
-                if flag in type1Flags:
-                    processedData = processType1Flags(flag, argumentRaw, processedData, modelParamsDictRaw)
+                if flag in type1_flags:
+                    processed_data = process_type1_flags(flag, argument_raw, processed_data, model_params_dict_raw)
                     continue
 
-                # Seed is a specal case. 
+                # Seed is a special case.
                 if flag == "-s":
-                    processedData['seed'] = argumentRaw[0]
+                    processed_data['seed'] = argument_raw[0]
 
-                type2Flags = [
-                    "-em","-eM","-g","-eN","-n","-en","-eg","-es","-m","-t","-r","-G"
+                type2_flags = [
+                    "-em", "-eM", "-g", "-eN", "-n", "-en", "-eg", "-es", "-m", "-t", "-r", "-G"
                 ]
 
-                if flag in type2Flags:
-                    scaledParam, index = scaleArgument(flag, argumentRaw, Ne, modelParamsDictRaw)
-                    argumentRaw[index] = scaledParam
-                    argument = argumentRaw
+                if flag in type2_flags:
+                    scaled_param, index = scale_argument(flag, argument_raw, ne, model_params_dict_raw)
+                    argument_raw[index] = scaled_param
 
                 # These scales are difference since they scale all possible values in list
                 if flag == "-ema":
-                    scaledParams = argumentRaw[:1]
-                    for i in range(2,len(argumentRaw)):
-                        param = getParamValueUnBounded(modelParamsDictRaw, argumentRaw[i])
-                        scaledParams.append(str(float(4*(float(param)*Ne))))
-                    argument = scaledParams
+                    scaled_params = argument_raw[:1]
+                    for i in range(2, len(argument_raw)):
+                        param = get_param_value_un_bounded(model_params_dict_raw, argument_raw[i])
+                        scaled_params.append(str(float(4*(float(param)*ne))))
+
                 elif flag == "-ma":
-                    scaledParams = argumentRaw[0]
-                    for i in range(len(argumentRaw)):
-                        param = getParamValueUnBounded(modelParamsDictRaw, argumentRaw[i])
-                        scaledParams.append(str(float(4*(float(param)*Ne))))
-                    argument = scaledParams
+                    scaled_params = argument_raw[0]
+                    for i in range(len(argument_raw)):
+                        param = get_param_value_un_bounded(model_params_dict_raw, argument_raw[i])
+                        scaled_params.append(str(float(4*(float(param)*ne))))
 
                 if flag.startswith('-e'):
                     # all <t>'s are scaled
                     pass
-                    argumentRaw[0] = getParamValueUnBounded(modelParamsDictRaw, argumentRaw[0])
-                    argumentRaw[0]=str(round(float(argumentRaw[0]))/(4*Ne))
-                    seasons.append([flag] + argumentRaw)
-                
+                    argument_raw[0] = get_param_value_un_bounded(model_params_dict_raw, argument_raw[0])
+                    argument_raw[0] = str(round(float(argument_raw[0]))/(4*ne))
+                    seasons.append([flag] + argument_raw)
+
                 else:
                     macs_args.append(flag.strip())
-                    for subLine in argumentRaw:
+                    for subLine in argument_raw:
                         macs_args.append(subLine.strip())
-            except IndexError as e:
+            except IndexError:
                 print("There was an index error!\nThis most likely means your input file has a malformed flag.")
                 print("Try running with -vv argument for last flag ran")
                 sys.exit()
 
     if '-n' not in flags:
-        tmp = list(range(1,int(flags['-I'][0][0])+1))
-        processedData['name'] = tmp
+        tmp = list(range(1, int(flags['-I'][0][0])+1))
+        processed_data['name'] = tmp
 
-    if not processedData.get('discovery') or not processedData.get('sample') or not processedData.get('daf'):
-        if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):
-            print("discovery, sample, and daf are all missing")
+    if not processed_data.get('discovery') or not processed_data.get('sample') or not processed_data.get('daf'):
+        if not processed_data.get('discovery') and not processed_data.get('sample') and not processed_data.get('daf'):
+            debugPrint(2, "discovery, sample, and daf are all missing")
         else:
             print("discovery, sample, or daf is missing")
             quit()
             
-
     debugPrint(2, "Adding events data back to flag pool")
     for i in range(len(seasons)):
         seasons[i][1] = float(seasons[i][1])
@@ -421,15 +425,13 @@ def processInputFiles(paramFile, modelFile, args):
     for season in seasons:
         macs_args.extend(season)
 
-    processedData["macs_args"] = macs_args
+    processed_data["macs_args"] = macs_args
 
-    debugPrint(3,"Priting modelParamsDict:", modelParamsDict)
+    debugPrint(3, "Priting modelParamsDict:", model_params_dict)
 
-    processedData['param_dict'] = modelParamsDict
+    processed_data['param_dict'] = model_params_dict
 
     if args['genetic map']:
-        processedData['macs_args'].extend(['-R', args['genetic map']])
+        processed_data['macs_args'].extend(['-R', args['genetic map']])
 
-    return processedData
-
-
+    return processed_data

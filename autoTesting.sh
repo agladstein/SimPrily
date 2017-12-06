@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # total=0
 # bad=0
 # i=6

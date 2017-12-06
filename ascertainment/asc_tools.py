@@ -2,10 +2,12 @@ import itertools
 
 def get_SNP_sites(snp_file):
     """Read SNP positions from .bed file as template for pseudo array"""
+    #print("THIS IS THE PARAMETER FOR GET_SNP_SITES: " + str(snp_file))
     fileSNP = open(snp_file, 'r')
     # print "read SNP file"
     SNP = [line for line in fileSNP]
     fileSNP.close()
+   # print("THIS IS GET_SNP_SITES : " + str([int(line.split('\t')[2]) for line in SNP]))
     return [int(line.split('\t')[2]) for line in SNP]
 
 def set_asc_bits(seq_list, n_asc, pos, site_inds):

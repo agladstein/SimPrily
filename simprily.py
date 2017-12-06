@@ -12,7 +12,7 @@ from ascertainment.asc_tools import set_asc_bits, make_ped_file, make_map_file, 
 from ascertainment.pseudo_array import pseudo_array_bits
 from main_tools.housekeeping import process_args, debugPrint, profile
 from main_tools.write_files import create_sim_directories, write_sim_results_file
-from processInput import processInputFiles
+from processInput import process_input_files
 from simulation.run_sim import run_macs
 from simulation.sim_tools import get_sim_positions, get_sim_positions_old
 from summary_statistics import stat_tools
@@ -35,7 +35,7 @@ def main(args):
     path = args['path']
     [sim_data_dir, germline_out_dir, sim_results_dir] = create_sim_directories(path)
 
-    processedData =  processInputFiles(args['param file'], args['model file'], args)
+    processedData =  process_input_files(args['param file'], args['model file'], args)
 
     using_pseudo_array = True
     if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):
@@ -91,6 +91,7 @@ def main(args):
             profile(prof_option, path, job, "end_set_seq_bits")
 
             if using_pseudo_array:
+
                 ## get position of the simulated sites and scale it to the "real" position in the SNP chip
                 sim_positions = []
                 for i in xrange(nbss):
@@ -141,6 +142,7 @@ def main(args):
             profile(prof_option, path, job, "end_set_panel_bits")
             debugPrint(1,'Number of chromosomes in asc_panel: {}'.format(asc_panel_bits.length()/nbss))
 
+
             ### Get pseudo array sites
             debugPrint(2,'Making pseudo array')
             profile(prof_option, path, job, "start_pseudo_array_bits")
@@ -148,10 +150,11 @@ def main(args):
             [pos_asc, nbss_asc, avail_site_indices, avail_sites] = pseudo_array_bits(asc_panel_bits, processedData['daf'], sim_positions, SNPs)
             profile(prof_option, path, job, "end_pseudo_array_bits")
             nb_avail_sites = len(avail_sites)
+            SNPs_exceed_available_sites = ( len(SNPs) >= nb_avail_sites )
         else:
             SNPs = []
+            SNPs_exceed_available_sites = False
 
-        SNPs_exceed_available_sites = ( len(SNPs) >= nb_avail_sites )
 
     if using_pseudo_array:
         profile(prof_option, path, job, "start_set_asc_bits")

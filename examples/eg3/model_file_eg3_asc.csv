@@ -22,3 +22,8 @@
 -ej_6,Teu_as,3,2,
 -ej_7,Taf,2,1,
 -en,Tgrowth,1,NANC
+-discovery,1,2,3
+-sample,4,5,6
+-daf,daf
+-random_discovery, True
+-pedmap

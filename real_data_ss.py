@@ -9,7 +9,7 @@ from alleles_generator.real_file import AllelesReal
 from main_tools.write_files import write_stats_file
 from alleles_generator.seqInfo import create_sequences
 from main_tools.write_files import create_sim_directories
-from processInput import processInputFiles
+from processInput import process_input_files
 from summary_statistics import stat_tools
 from summary_statistics.germline_tools import run_germline, process_germline_file
 from main_tools import global_vars
@@ -51,7 +51,7 @@ def main(args):
 
     [sim_data_dir, germline_out_dir, sim_results_dir] = create_sim_directories(path)
 
-    processedData =  processInputFiles(param_file, model_file, args)
+    processedData =  process_input_files(param_file, model_file, args)
     debugPrint(3, "Finished processing input\nprocessedData: ", processedData)
 
     using_pseudo_array = True

@@ -45,7 +45,7 @@ pip install --upgrade pip
 pip install pip-tools
 cd /vagrant
 pip-sync
-~/simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+~/simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
 If not using Vagrant:
@@ -60,7 +60,7 @@ cd SimPrily
 pip install --upgrade pip
 pip install pip-tools
 pip-sync
-simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
 
@@ -68,7 +68,7 @@ simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1.txt -m exampl
 
 e.g. One Test simulation:  
 ```
-python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 ```
 
 For quick help:
@@ -131,13 +131,12 @@ Working directory must be `pegasus_workflow`.
 
 Submit a Pegasus workflow (must be in `pegasus_workflow`)
 ```bash
-./submit param_file.txt model_file.csv array_template genetic_map.macshs number_of_jobs
-
+./submit -p PARAM -m MODEL -j NUM [-g MAP] [-a ARRAY]
 ```
 
 e.g.  
 ```bash
-./submit ../examples/eg2/Param_file_eg2.txt ../examples/eg2/model_file_eg2.csv ../array_template/ill_650_test.bed ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs 10
+./submit -p ../examples/eg2/param_file_eg2_asc.txt -m ../examples/eg2/model_file_eg2_asc.csv -j 10 -a ../array_template/ill_650_test.bed -g ../genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs
 ``` 
 
 The results will appear in 
@@ -148,6 +147,32 @@ where `user-name` is specific to the user, and `id` is the workflow id.
 
 -------------------------
 
+## Links
+
+* [Main SimPrily GitHub Repository](https://agladstein.github.io/SimPrily/)
+  * [SimPrily Wiki](https://github.com/agladstein/SimPrily/wiki)
+  * [SimPrily Code](https://github.com/agladstein/SimPrily)
+* [CyVerse Discovery Environment SimPrily Workflow]()
+  1. SimPrily HT File Setup App
+    * [App in the DE]()
+    * [GitHub Repo for App]()
+    * [DockerHub Repo for App]()
+  2. DE SimPrily App
+    * [App in the DE]()
+    * [GitHub Repo for App]()
+    * [DockerHub Repo for App]()
+  3. DE SimPrily Concatenation App
+    * [App in the DE]()
+    * [GitHub Repo for App]()
+    * [DockerHub Repo for App]()
+  4. [DE SimPrily Example Data](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data)
+    * [Randomly Generated Data for App Testing](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data/SimPrily_version1)
+    * [Homo sapiens HapMap Data from 1000 genomes Project](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data/SimPrily_version1)
+    * [Brassica sp. populations](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data/SimPrily_version1)
+    * [SimPrily Benchmarking Data](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data/SimPrily_version1)
+* SimPrily Pegasus Documentation
+  1. [SimPrily Pegasus Workflow Quick Start](https://agladstein.github.io/SimPrily/#open-science-grid)
+  2. [Detailed Pegasus Workflow Documentation](https://github.com/agladstein/SimPrily/wiki#pegasus-workflow-on-the-open-science-grid)
 
 ## Known Issues
 * Seed with macsswig is unstable. 
