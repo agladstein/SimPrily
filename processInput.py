@@ -100,7 +100,6 @@ def get_param_value_un_bounded(model_params_dict, param_key):
 
     # TODO, add assert for that if later
     if param_key in model_params_dict.keys():
-        # tempVar = paramKey
         param_raw_value = model_params_dict[param_key]
         # Strip is here to remove any whitespace that might be in param file
         # TODO: This strip should be done when we make the dictionary
@@ -339,7 +338,41 @@ def process_input_files(param_file, model_file, args):
     # seasons is all the time based events
     seasons = []
 
-    # processOrderedSeasons(flags, modelParamsDict)
+    processed_data = process_flags(flags, macs_args, model_params_dict_raw, ne, processed_data, seasons)
+
+    if '-n' not in flags:
+        tmp = list(range(1, int(flags['-I'][0][0])+1))
+        processed_data['name'] = tmp
+
+    if not processed_data.get('discovery') or not processed_data.get('sample') or not processed_data.get('daf'):
+        if not processed_data.get('discovery') and not processed_data.get('sample') and not processed_data.get('daf'):
+            debugPrint(2, "discovery, sample, and daf are all missing")
+        else:
+            print("discovery, sample, or daf is missing")
+            quit()
+            
+    debugPrint(2, "Adding events data back to flag pool")
+    for i in range(len(seasons)):
+        seasons[i][1] = float(seasons[i][1])
+    seasons = sorted(seasons, key=itemgetter(1))
+    for i in range(len(seasons)):
+        seasons[i][1] = str(seasons[i][1])
+    for season in seasons:
+        macs_args.extend(season)
+
+    processed_data["macs_args"] = macs_args
+
+    debugPrint(3, "Priting modelParamsDict:", model_params_dict)
+
+    processed_data['param_dict'] = model_params_dict
+
+    if args['genetic map']:
+        processed_data['macs_args'].extend(['-R', args['genetic map']])
+
+    return processed_data
+
+
+def process_flags(flags, macs_args, model_params_dict_raw, ne, processed_data, seasons):
     debugPrint(3, "Processing flags in for macs_args")
     for flag in flags.keys():
         # Looping through every key
@@ -382,57 +415,26 @@ def process_input_files(param_file, model_file, args):
                     scaled_params = argument_raw[:1]
                     for i in range(2, len(argument_raw)):
                         param = get_param_value_un_bounded(model_params_dict_raw, argument_raw[i])
-                        scaled_params.append(str(float(4*(float(param)*ne))))
+                        scaled_params.append(str(float(4 * (float(param) * ne))))
 
                 elif flag == "-ma":
                     scaled_params = argument_raw[0]
                     for i in range(len(argument_raw)):
                         param = get_param_value_un_bounded(model_params_dict_raw, argument_raw[i])
-                        scaled_params.append(str(float(4*(float(param)*ne))))
+                        scaled_params.append(str(float(4 * (float(param) * ne))))
 
                 if flag.startswith('-e'):
                     # all <t>'s are scaled
-                    pass
                     argument_raw[0] = get_param_value_un_bounded(model_params_dict_raw, argument_raw[0])
-                    argument_raw[0] = str(round(float(argument_raw[0]))/(4*ne))
+                    argument_raw[0] = str(round(float(argument_raw[0])) / (4 * ne))
                     seasons.append([flag] + argument_raw)
 
                 else:
                     macs_args.append(flag.strip())
-                    for subLine in argument_raw:
-                        macs_args.append(subLine.strip())
+                    for sub_line in argument_raw:
+                        macs_args.append(sub_line.strip())
             except IndexError:
                 print("There was an index error!\nThis most likely means your input file has a malformed flag.")
                 print("Try running with -vv argument for last flag ran")
                 sys.exit()
-
-    if '-n' not in flags:
-        tmp = list(range(1, int(flags['-I'][0][0])+1))
-        processed_data['name'] = tmp
-
-    if not processed_data.get('discovery') or not processed_data.get('sample') or not processed_data.get('daf'):
-        if not processed_data.get('discovery') and not processed_data.get('sample') and not processed_data.get('daf'):
-            debugPrint(2, "discovery, sample, and daf are all missing")
-        else:
-            print("discovery, sample, or daf is missing")
-            quit()
-            
-    debugPrint(2, "Adding events data back to flag pool")
-    for i in range(len(seasons)):
-        seasons[i][1] = float(seasons[i][1])
-    seasons = sorted(seasons, key=itemgetter(1))
-    for i in range(len(seasons)):
-        seasons[i][1] = str(seasons[i][1])
-    for season in seasons:
-        macs_args.extend(season)
-
-    processed_data["macs_args"] = macs_args
-
-    debugPrint(3, "Priting modelParamsDict:", model_params_dict)
-
-    processed_data['param_dict'] = model_params_dict
-
-    if args['genetic map']:
-        processed_data['macs_args'].extend(['-R', args['genetic map']])
-
     return processed_data
