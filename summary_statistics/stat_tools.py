@@ -4,6 +4,7 @@ if (sys.version_info > (3, 0)):
 else:
     import afs_stats_bitarray
 
+
 def store_segregating_site_stats(seq_list, results, head_list):
     for seq in seq_list:
         if seq.type == 'discovery':

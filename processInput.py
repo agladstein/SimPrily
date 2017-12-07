@@ -233,8 +233,9 @@ def process_type1_flags(flag, argument, processed_data, model_params_dict_raw):
         processed_data['macsswig'] = argument[0]
     if flag == "-n":
         tmp = processed_data.get('name', [])
-        tmp.append(get_param_value_un_bounded(model_params_dict_raw, argument[1]))
+        tmp.append(argument[1])
         processed_data['name'] = tmp
+        argument[1] = get_param_value_un_bounded(model_params_dict_raw, argument[1])
 
     return processed_data
 
