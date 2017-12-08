@@ -69,8 +69,8 @@ def get_param_value_bounded(model_params_dict, temp_num, temp_low=False):
         temp_low = max(float(sci_to_float(temp_num.split(":")[0][1:])), float(temp_low))
         temp_high = sci_to_float(temp_num.split(":")[1][:-1])
         return_value = str(random.uniform(float(temp_low), float(temp_high)))
-    if temp_var in model_params_dict.keys():
-        model_params_dict[temp_var] = return_value
+    # if temp_var in model_params_dict.keys():
+    #     model_params_dict[temp_var] = return_value
     return return_value
 
 
@@ -78,7 +78,7 @@ def prior_to_param_value(input_param_str):
     """
     priorToParamValue:
     This is a helper function that takes a string in the form (###:###)
-    Numbers are allowed to be either scientfic notation or base 10
+    Numbers are allowed to be either scientific notation or base 10
     And returns a random value in that range, in the form of a string
     """
 
@@ -111,7 +111,7 @@ def get_param_value_un_bounded(model_params_dict, param_key):
         else:
             unscaled_param_value = str(sci_to_float(param_raw_value_striped))
         # Updating the Params dict with the chosen value
-        model_params_dict[param_key] = unscaled_param_value
+        # model_params_dict[param_key] = unscaled_param_value
     else:
         # TODO, this else needs to be removed...if it goes
         # into this else, this function shouldn't have been called
@@ -167,6 +167,36 @@ def process_time_data(flag, last_time, model_params_dict_raw, time_data_raw):
         time_data = temp_time
     else:
         if low_time:
+            time_data = get_param_value_bounded(model_params_dict_raw, time_data_raw, last_time)
+        else:
+            time_data = get_param_value_un_bounded(model_params_dict_raw, time_data_raw)
+
+    return time_data
+
+
+def process_time_data_copy(flag, last_time, model_params_dict_raw, time_data_raw):
+    """
+    This is a helper function that takes the raw time data from the model
+    file and replaces it with the correct value in the params file.
+    """
+    if "_" not in flag:
+        # There is no time constraint
+        low_time_used = False
+    else:
+        if int(flag.split("_")[1]) == 1:
+            # First time through, no bounds outside of given in param Value
+            low_time_used = False
+        else:
+            # There is a low time bound on the random range
+            low_time_used = True
+
+    if "inst" in time_data_raw:
+        temp_time = str(float(last_time) + 1)
+        while temp_time in times:
+            temp_time += 10
+        time_data = temp_time
+    else:
+        if low_time_used:
             time_data = get_param_value_bounded(model_params_dict_raw, time_data_raw, last_time)
         else:
             time_data = get_param_value_un_bounded(model_params_dict_raw, time_data_raw)
@@ -287,6 +317,124 @@ def scale_argument(flag, argument_raw, ne, model_params_dict_raw):
 
     return scaled_param, index
 
+def define_non_timed_prior(model_param):
+    """
+
+    :param model_param:
+    :return:
+    """
+    # Quickly return value if it is timed
+    if model_param[-2:].lower() == "_t":
+        return model_param
+
+    # if it's not in the dictionary, also return
+    # if model_param not in model_params_dict.keys():
+    #     # TODO: This might need to throw some assert, or error
+    #     return model_param
+
+    if ":" in model_param:
+        # This means you want range
+        unscaled_param_value = prior_to_param_value(model_param)
+    else:
+        unscaled_param_value = str(sci_to_float(model_param))
+    return unscaled_param_value
+
+
+def define_non_timed_priors(model_params_dict_raw):
+    """
+
+    :param model_params_dict_raw:
+    :return:
+    :TODO: This is the section of code where variables can relate to each other, issue #8
+    """
+    # model_params_dict = map(define_non_timed_prior, model_params_dict_raw)
+
+    model_params_dict = {}
+    for param_raw_value in model_params_dict_raw:
+        # if it has _t in it, ignore for now
+        if param_raw_value[-2:].lower() == "_t":
+            model_params_dict[param_raw_value] = model_params_dict_raw[param_raw_value]
+            continue
+        # TODO: check to make sure value is stripped before here
+        prior =  model_params_dict_raw[param_raw_value]
+        if ":" in prior:
+            # This means you want range
+            unscaled_param_value = prior_to_param_value(prior)
+        else:
+            unscaled_param_value = str(sci_to_float(prior))
+
+        model_params_dict[param_raw_value] = unscaled_param_value
+
+    return model_params_dict
+
+
+def filterOutTimedParams(model_params_dict_raw):
+    model_params_dict = {}
+    for param in model_params_dict_raw:
+        if not param.endswith("_t"):
+            model_params_dict[param] = model_params_dict_raw[param]
+    return model_params_dict
+
+
+def define_timed_priors(model_params_dict_raw, model_data_raw):
+    """
+
+    :param model_params_dict:
+    :return:
+    """
+    timed_flags = []
+    model_params_dict = filterOutTimedParams(model_params_dict_raw)
+    for i, argument in enumerate(model_data_raw):
+        arg_split = argument.split(',')
+        flag = arg_split[0]
+        # ignoring all other flags for now
+        if not flag.startswith("-e"):
+            continue
+
+        # TODO: Confirm that the line is stripped before this
+        time_data_raw = arg_split[1]
+        if timed_flags:
+            last_time_value = timed_flags[-1].split(',')[1]
+            time_data = process_time_data_copy(flag, last_time_value, model_params_dict_raw, time_data_raw)
+        else:
+            time_data = get_param_value_un_bounded(model_params_dict_raw, time_data_raw)
+
+        # find time variable
+        for tmp in arg_split:
+            if tmp.lower().endswith("_t"):
+                break
+        print(tmp)
+        if tmp in model_params_dict_raw:
+            model_params_dict[tmp] = time_data
+        tmp = [argument.split(",")[0],time_data]
+        tmp.extend(argument.split(",")[2:])
+        argument = ",".join(tmp)
+        timed_flags.append(argument)
+
+    return model_params_dict
+
+
+
+
+def define_priors(model_params_dict_raw, model_data_raw):
+    """
+    :param model_params_dict_raw:
+    :param model_data_raw:
+    :return:
+    """
+
+    model_params_dict = define_non_timed_priors(model_params_dict_raw)
+
+    model_params_dict = define_timed_priors(model_params_dict, model_data_raw)
+
+    return model_params_dict
+
+
+
+
+
+
+
 
 def process_input_files(param_file, model_file, args):
     """
@@ -301,12 +449,11 @@ def process_input_files(param_file, model_file, args):
 
     model_params_dict_raw = read_params_file(param_file)
     debugPrint(2, "Finished reading " + str(param_file))
-
     debugPrint(3, "Raw Output for modelParamsDict", model_params_dict_raw)
 
-    processed_data = {}
-    
-    flags, model_params_dict, model_data = populate_flags(model_params_dict_raw, model_data_raw)
+    model_params_variables = define_priors(model_params_dict_raw, model_data_raw)
+
+    flags, model_params_dict, model_data = populate_flags(model_params_variables, model_data_raw)
     ne = find_scale_value(flags, model_params_dict_raw)
 
     macs_args = generate_macs_args(flags)
@@ -332,7 +479,7 @@ def process_input_files(param_file, model_file, args):
     # seasons is all the time based events
     seasons = []
 
-    processed_data = process_flags(flags, macs_args, model_params_dict_raw, ne, processed_data, seasons)
+    processed_data = process_flags(flags, macs_args, model_params_dict_raw, ne, seasons)
 
     if '-n' not in flags:
         tmp = list(range(1, int(flags['-I'][0][0])+1))
@@ -387,10 +534,34 @@ def generate_macs_args(flags):
     return macs_args
 
 
-def process_flags(flags, macs_args, model_params_dict_raw, ne, processed_data, seasons):
+def remove_ignored_flags(flags_bloated):
+    """
+
+    :param flags_bloated:
+    :return:
+    """
+    assert isinstance(flags_bloated,OrderedDict), "Given flag value was not a OrderedDict"
+
+    flags = OrderedDict()
+    ignored_flags = ["-germline",
+                     "-array",
+                     "-nonrandom_discovery",
+                     "-random_discovery",
+                     "-pedmap"]
+
+    # if flag in ignored_flags:
+    #     continue
+    for flag in flags_bloated:
+        if flag not in ignored_flags:
+            flags[flag] = flags_bloated[flag]
+    return flags
+
+
+def process_flags(flags, macs_args, model_params_dict_raw, ne, seasons):
     debugPrint(3, "Processing flags in for macs_args")
 
     # take out ignored flags
+    flags = remove_ignored_flags(flags)
 
     # process all variables (not ending in _t) (there shouldn't be any ending in _t now)
 
@@ -402,22 +573,14 @@ def process_flags(flags, macs_args, model_params_dict_raw, ne, processed_data, s
 
     # add to macs_args
 
+    processed_data = {}
     for flag in flags.keys():
         # Looping through every key
         debugPrint(3, "FLAG:  {}: {}".format(flag, flags[flag]))
         for argument_raw in flags[flag]:
-            print("argumentRaw: {}".format(argument_raw))
             # Looping through every argumentRaw
             try:
                 debugPrint(3, flag + ": " + str(argument_raw))
-                ignored_flags = ["-germline",
-                                 "-array",
-                                 "-nonrandom_discovery",
-                                 "-random_discovery",
-                                 "-pedmap"]
-
-                if flag in ignored_flags:
-                    continue
 
                 type1_flags = ["-discovery",
                                "-sample",
