@@ -82,11 +82,12 @@ def prior_to_param_value(input_param_str):
     And returns a random value in that range, in the form of a string
     """
 
-    assert(isinstance(input_param_str, str)), "priorToParamValue called without a string"
+    assert isinstance(input_param_str, str), "priorToParamValue called without a string"
 
     temp_low = float(sci_to_float(input_param_str.split(":")[0][1:]))
     temp_high = float(sci_to_float(input_param_str.split(":")[1][:-1]))
     return_value = str(random.uniform(temp_low, temp_high))
+
     return return_value
 
 
@@ -308,17 +309,8 @@ def process_input_files(param_file, model_file, args):
     flags, model_params_dict, model_data = populate_flags(model_params_dict_raw, model_data_raw)
     ne = find_scale_value(flags, model_params_dict_raw)
 
-    if '-macs_file' in flags:
-        macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
-    elif '-macsswig' in flags:
-        macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
-    elif '-macs' in flags:
-        macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
-    else:
-        macs_args = None
-        # This option should never be reached since it errors out in housekeeping
-        print("There is no sim option given. Check your model file.")
-        exit(1)
+    macs_args = generate_macs_args(flags)
+
     sizes = map(int, flags["-I"][0][1:])
     if sys.version_info > (3, 0):
         sizes = list(sizes)
@@ -329,6 +321,7 @@ def process_input_files(param_file, model_file, args):
                 sizes[discovery_pop] += random.randint(2, sizes[discovery_pop])
             else:
                 sizes[discovery_pop] += sizes[discovery_pop]
+
     total = float(sum(sizes))
     macs_args.insert(1, str(total))
     sizes_str = map(str, sizes)
@@ -373,8 +366,42 @@ def process_input_files(param_file, model_file, args):
     return processed_data
 
 
+def generate_macs_args(flags):
+    """
+    This is a helper function that takes the sim options and outputs the start the macs_args
+
+    :param flags:
+    :return macs_args:
+    """
+    macs_args = None
+    if '-macs_file' in flags:
+        macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    elif '-macsswig' in flags:
+        macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    elif '-macs' in flags:
+        macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+    else:
+        # This option should never be reached since it errors out in housekeeping
+        print("There is no sim option given. Check your model file.")
+        exit(1)
+    return macs_args
+
+
 def process_flags(flags, macs_args, model_params_dict_raw, ne, processed_data, seasons):
     debugPrint(3, "Processing flags in for macs_args")
+
+    # take out ignored flags
+
+    # process all variables (not ending in _t) (there shouldn't be any ending in _t now)
+
+    # take out process data )type 1
+
+    # scale values if needed
+
+    # add events to seasons
+
+    # add to macs_args
+
     for flag in flags.keys():
         # Looping through every key
         debugPrint(3, "FLAG:  {}: {}".format(flag, flags[flag]))
@@ -392,9 +419,15 @@ def process_flags(flags, macs_args, model_params_dict_raw, ne, processed_data, s
                 if flag in ignored_flags:
                     continue
 
-                type1_flags = [
-                    "-discovery", "-sample", "-daf", "-length", "-macs", "-I", "-macsswig", "-n",
-                ]
+                type1_flags = ["-discovery",
+                               "-sample",
+                               "-daf",
+                               "-length",
+                               "-macs",
+                               "-I",
+                               "-macsswig",
+                               "-n"]
+
                 if flag in type1_flags:
                     processed_data = process_type1_flags(flag, argument_raw, processed_data, model_params_dict_raw)
                     continue
@@ -404,7 +437,8 @@ def process_flags(flags, macs_args, model_params_dict_raw, ne, processed_data, s
                     processed_data['seed'] = argument_raw[0]
 
                 type2_flags = [
-                    "-em", "-eM", "-g", "-eN", "-n", "-en", "-eg", "-es", "-m", "-t", "-r", "-G"
+                    "-em", "-eM", "-g", "-eN", "-n", "-en",
+                    "-eg", "-es", "-m", "-t",  "-r", "-G"
                 ]
 
                 if flag in type2_flags:

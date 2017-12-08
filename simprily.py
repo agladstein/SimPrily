@@ -57,7 +57,6 @@ def main(args):
     total = sum([seq.tot for seq in sequences])
     debugPrint(1, 'total samples: {}'.format(sum([seq.genotyped for seq in sequences if seq.type=='discovery'] + [seq.tot for seq in sequences if seq.type=='sample'])))
 
-
     ### Define simulation size
     length = processedData['length']
     debugPrint(1, 'Perform simulation and get sequences')
@@ -91,7 +90,6 @@ def main(args):
             profile(prof_option, path, job, "end_set_seq_bits")
 
             if using_pseudo_array:
-
                 ## get position of the simulated sites and scale it to the "real" position in the SNP chip
                 sim_positions = []
                 for i in xrange(nbss):
