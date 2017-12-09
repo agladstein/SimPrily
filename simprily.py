@@ -126,6 +126,8 @@ def main(args):
 
         debugPrint(1, 'Number of sites in simulation: {}'.format(nbss))
 
+        assert nbss > 10, "Number of sites is less than 10"
+
         ##########################################################################
         ### Create pseudo array according to ascertainment scheme and template ###
         ##########################################################################
