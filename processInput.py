@@ -9,6 +9,7 @@ verbose = 0
 times = []
 
 
+# TODO: Make sure this is actually not used anywhere then delete
 def get_sample_and_discovery(in_file):
     temp_file = read_model_file(in_file)
     out_dict = dict()
@@ -54,11 +55,7 @@ def read_params_file(in_file):
     return model_params_dict
 
 
-def get_param_value_bounded(model_params_dict, temp_num, temp_low=False):
-    temp_var = ""
-    if temp_num in model_params_dict.keys():
-        temp_var = temp_num
-        temp_num = model_params_dict[temp_num]
+def get_param_value_bounded(temp_num, temp_low=False):
 
     temp_num = temp_num.strip()
     if ":" not in temp_num:
@@ -69,8 +66,7 @@ def get_param_value_bounded(model_params_dict, temp_num, temp_low=False):
         temp_low = max(float(sci_to_float(temp_num.split(":")[0][1:])), float(temp_low))
         temp_high = sci_to_float(temp_num.split(":")[1][:-1])
         return_value = str(random.uniform(float(temp_low), float(temp_high)))
-    # if temp_var in model_params_dict.keys():
-    #     model_params_dict[temp_var] = return_value
+
     return return_value
 
 
@@ -91,6 +87,7 @@ def prior_to_param_value(input_param_str):
     return return_value
 
 
+# TODO: Confirm that this code doesn't break when you use a range without attaching it to a variable
 def get_param_value_un_bounded(model_params_dict, param_key):
     """
     getParamValueUnBounded:
@@ -112,11 +109,12 @@ def get_param_value_un_bounded(model_params_dict, param_key):
             unscaled_param_value = str(sci_to_float(param_raw_value_striped))
         # Updating the Params dict with the chosen value
         # model_params_dict[param_key] = unscaled_param_value
+        print("paramKey: {}".format(param_key))
+
     else:
         # TODO, this else needs to be removed...if it goes
-        # into this else, this function shouldn't have been called
-        # print("paramKey: {}".format(param_key))
         unscaled_param_value = param_key
+        # into this else, this function shouldn't have been called
     return unscaled_param_value
 
 
@@ -149,36 +147,6 @@ def process_time_data(flag, last_time, model_params_dict_raw, time_data_raw):
     This is a helper function that takes the raw time data from the model
     file and replaces it with the correct value in the params file.
     """
-    if "_" in flag:
-        if int(flag.split("_")[1]) == 1:
-            # First time through, no bounds outside of given in param Value
-            low_time = False
-        else:
-            # There is a low time bound on the random range
-            low_time = True
-    else:
-        # There is no time constraint
-        low_time = False
-
-    if "inst" in time_data_raw:
-        temp_time = str(float(last_time) + 1)
-        while temp_time in times:
-            temp_time += 1
-        time_data = temp_time
-    else:
-        if low_time:
-            time_data = get_param_value_bounded(model_params_dict_raw, time_data_raw, last_time)
-        else:
-            time_data = get_param_value_un_bounded(model_params_dict_raw, time_data_raw)
-
-    return time_data
-
-
-def process_time_data_copy(flag, last_time, model_params_dict_raw, time_data_raw):
-    """
-    This is a helper function that takes the raw time data from the model
-    file and replaces it with the correct value in the params file.
-    """
     low_time_used = False
     if "_" in flag and int(flag.split("_")[1]) == 1:
         # There is no time constraint
@@ -191,7 +159,7 @@ def process_time_data_copy(flag, last_time, model_params_dict_raw, time_data_raw
         time_data = temp_time
     else:
         if low_time_used:
-            time_data = get_param_value_bounded(model_params_dict_raw, time_data_raw, last_time)
+            time_data = get_param_value_bounded(time_data_raw, last_time)
         else:
             time_data = get_param_value_un_bounded(model_params_dict_raw, time_data_raw)
 
@@ -220,30 +188,6 @@ def populate_flags(model_data_raw):
 
     return flags
 
-
-# def process_type1_flags(flag, argument, processed_data):
-#     """
-#     This is a helper function fpr processing input files.
-#     It takes a flag, arguments, and returns an updated processedData
-#     """
-#
-#     if flag == "-discovery":
-#         processed_data['discovery'] = [int(s.strip()) for s in argument if s]
-#     if flag == "-sample":
-#         processed_data['sample'] = [int(s.strip()) for s in argument if s]
-#     if flag == "-daf":
-#         processed_data['daf'] = float(argument[0])
-#     if flag == "-length":
-#         processed_data['length'] = argument[0]
-#     if flag == "-macs":
-#         processed_data['macs'] = argument[0]
-#     if flag == "-I":
-#         processed_data["I"] = [int(s.strip()) for s in argument[1:] if s]
-#     if flag == "-macsswig":
-#         processed_data['macsswig'] = argument[0]
-#
-#     return processed_data
-#
 
 def scale_argument(flag, argument_raw, ne):
     """
@@ -288,29 +232,6 @@ def scale_argument(flag, argument_raw, ne):
     return scaled_param, index
 
 
-def define_non_timed_prior(model_param):
-    """
-
-    :param model_param:
-    :return:
-    """
-    # Quickly return value if it is timed
-    if model_param[-2:].lower() == "_t":
-        return model_param
-
-    # if it's not in the dictionary, also return
-    # if model_param not in model_params_dict.keys():
-    #     # TODO: This might need to throw some assert, or error
-    #     return model_param
-
-    if ":" in model_param:
-        # This means you want range
-        unscaled_param_value = prior_to_param_value(model_param)
-    else:
-        unscaled_param_value = str(sci_to_float(model_param))
-    return unscaled_param_value
-
-
 def define_non_time_priors(model_params_dict_raw):
     """
 
@@ -326,7 +247,7 @@ def define_non_time_priors(model_params_dict_raw):
             model_params_dict[param_raw_value] = model_params_dict_raw[param_raw_value]
             continue
         # TODO: check to make sure value is stripped before here
-        prior =  model_params_dict_raw[param_raw_value]
+        prior = model_params_dict_raw[param_raw_value]
         if ":" in prior:
             # This means you want range
             unscaled_param_value = prior_to_param_value(prior)
@@ -366,11 +287,12 @@ def define_time_priors(model_params_dict_raw, model_data_raw):
         time_data_raw = arg_split[1]
         if timed_flags:
             last_time_value = timed_flags[-1].split(',')[1]
-            time_data = process_time_data_copy(flag, last_time_value, model_params_dict_raw, time_data_raw)
+            time_data = process_time_data(flag, last_time_value, model_params_dict_raw, time_data_raw)
         else:
             time_data = get_param_value_un_bounded(model_params_dict_raw, time_data_raw)
 
         # find time variable
+        tmp = ""
         for tmp in arg_split:
             if tmp.lower().endswith("_t"):
                 break
@@ -450,75 +372,6 @@ def gather_pop_names(model_data_raw):
     return names
 
 
-def process_input_files(param_file, model_file, args):
-    """
-    This is the function that takes links to two files and outputs a dictionary (processedData)
-    With all the (useful) data in the two files
-    """
-    debugPrint(2, "Starting processInputFiles")
-
-    model_data_raw = read_model_file(model_file)
-    debugPrint(2, "Finished reading " + str(model_file))
-    debugPrint(3, "Raw input data into make_args", model_data_raw)
-
-    model_params_dict_raw = read_params_file(param_file)
-    debugPrint(2, "Finished reading " + str(param_file))
-    debugPrint(3, "Raw Output for modelParamsDict", model_params_dict_raw)
-
-    # defining and replacing the variables from the param file
-    model_params_variables = define_priors(model_params_dict_raw, model_data_raw)
-    model_data = substitute_variables(model_params_variables, model_data_raw)
-
-    flags = populate_flags(model_data)
-
-    macs_args = generate_macs_args(flags)
-
-    # find and add sizes to macs_args
-    sizes = populate_sizes(flags)
-
-    total = float(sum(sizes))
-    macs_args.insert(1, str(total))
-    sizes_str = map(str, sizes)
-    if sys.version_info > (3, 0):
-        sizes_str = list(sizes_str)
-    macs_args.extend(sizes_str)
-
-    # seasons is all the time based events
-    seasons = []
-
-    processed_data = process_flags(flags, macs_args, model_params_dict_raw, seasons)
-
-    pop_names = gather_pop_names(model_data_raw)
-    processed_data['name'] = pop_names
-
-    if not processed_data.get('discovery') or not processed_data.get('sample') or not processed_data.get('daf'):
-        if not processed_data.get('discovery') and not processed_data.get('sample') and not processed_data.get('daf'):
-            debugPrint(2, "discovery, sample, and daf are all missing")
-        else:
-            print("discovery, sample, or daf is missing")
-            quit()
-            
-    debugPrint(2, "Adding events data back to flag pool")
-    for i in range(len(seasons)):
-        seasons[i][1] = float(seasons[i][1])
-    seasons = sorted(seasons, key=itemgetter(1))
-    for i in range(len(seasons)):
-        seasons[i][1] = str(seasons[i][1])
-    for season in seasons:
-        macs_args.extend(season)
-
-    processed_data["macs_args"] = macs_args
-
-    debugPrint(3, "printing model_params_variables:", model_params_variables)
-
-    processed_data['param_dict'] = model_params_variables
-
-    if args['genetic map']:
-        processed_data['macs_args'].extend(['-R', args['genetic map']])
-
-    return processed_data
-
-
 def populate_sizes(flags):
     sizes = map(int, flags["-I"][0][1:])
     if sys.version_info > (3, 0):
@@ -569,8 +422,6 @@ def remove_ignored_flags(flags_bloated):
                      "-random_discovery",
                      "-pedmap"]
 
-    # if flag in ignored_flags:
-    #     continue
     for flag in flags_bloated:
         if flag not in ignored_flags:
             flags[flag] = flags_bloated[flag]
@@ -578,6 +429,7 @@ def remove_ignored_flags(flags_bloated):
 
 
 def process_type1_flags(flags):
+    # TODO Don't loop through this, instead pull out type1, ignoring the rest
 
     processed_data = {}
     for flag in flags.keys():
@@ -618,71 +470,190 @@ def filter_out_type1(flags_raw):
     return flags
 
 
-def process_flags(flags, macs_args, model_params_dict_raw, seasons):
+# TODO: Make this code simpler
+def scale_flags(flags_raw):
+
+    # find scale value
+    ne = find_scale_value(flags_raw)
+
+    flags = {}
+
+    for flag in flags_raw.keys():
+        # Looping through every key
+        debugPrint(3, "FLAG:  {}: {}".format(flag, flags_raw[flag]))
+        arguments = []
+        for argument_raw in flags_raw[flag]:
+            type2_flags = [
+                "-em", "-eM", "-g", "-eN", "-n", "-en",
+                "-eg", "-es", "-m", "-t", "-r", "-G"
+            ]
+
+            argument = []
+            if flag.startswith('-e'):
+                # all <t>'s are scaled
+                scaled_time = str(round(float(argument_raw[0])) / (4 * ne))
+                argument.append(scaled_time)
+
+            if flag in type2_flags:
+                scaled_param, index = scale_argument(flag, argument_raw, ne)
+                for i, param in enumerate(argument_raw):
+                    if i != index:
+                        if flag.startswith('-e') and i == 0:
+                            # TODO: figure out how to "not" this correctly
+                            pass
+                        else:
+                            argument.append(param)
+
+                    else:
+                        argument.append(scaled_param)
+
+            # These scales are difference since they scale all possible values in list
+            # TODO: I really don't think ema and ma flags work, get a test to test them
+            if flag == "-ema":
+                scaled_params = argument_raw[:1]
+                for i in range(2, len(argument_raw)):
+                    param = argument_raw[i]
+                    scaled_params.append(str(float(4 * (float(param) * ne))))
+
+            elif flag == "-ma":
+                scaled_params = argument_raw[0]
+                for i in range(len(argument_raw)):
+                    param = argument_raw[i]
+                    scaled_params.append(str(float(4 * (float(param) * ne))))
+
+            if not argument:
+                for param in argument_raw:
+                    argument.append(param)
+
+            if len(argument) == 1 and flag.startswith("-e"):
+                for param in argument_raw[1:]:
+                    argument.append(param)
+            arguments.append(argument)
+        flags[flag] = arguments
+
+    return flags
+
+
+def add_events_to_seasons(flags):
+    seasons = []
+    for flag in flags.keys():
+        # Looping through every key
+        for argument_raw in flags[flag]:
+            if flag.startswith('-e'):
+                seasons.append([flag] + argument_raw)
+    return seasons
+
+
+def filter_out_events(flags_raw):
+    flags = {}
+    for flag in flags_raw:
+        if not flag.startswith('-e'):
+            flags[flag] = flags_raw[flag]
+    return flags
+
+
+def populate_macs_args(macs_args, scaled_flags):
+    for flag in scaled_flags.keys():
+        # Looping through every key
+        debugPrint(3, "FLAG:  {}: {}".format(flag, scaled_flags[flag]))
+        for argument_raw in scaled_flags[flag]:
+            # Looping through every argumentRaw
+            try:
+                debugPrint(3, flag + ": " + str(argument_raw))
+
+                macs_args.append(flag.strip())
+                for sub_line in argument_raw:
+                    macs_args.append(sub_line.strip())
+            except IndexError:
+                print("There was an index error!\nThis most likely means your input file has a malformed flag.")
+                print("Try running with -vv argument for last flag ran")
+                sys.exit()
+
+
+def process_input_files(param_file, model_file, args):
+    """
+    This is the function that takes links to two files and outputs a dictionary (processedData)
+    With all the (useful) data in the two files
+    """
+    debugPrint(2, "Starting processInputFiles")
+
+    model_data_raw = read_model_file(model_file)
+    debugPrint(2, "Finished reading " + str(model_file))
+    debugPrint(3, "Raw input data into make_args", model_data_raw)
+
+    model_params_dict_raw = read_params_file(param_file)
+    debugPrint(2, "Finished reading " + str(param_file))
+    debugPrint(3, "Raw Output for modelParamsDict", model_params_dict_raw)
+
+    # defining and replacing the variables from the param file
+    model_params_variables = define_priors(model_params_dict_raw, model_data_raw)
+    model_data = substitute_variables(model_params_variables, model_data_raw)
+
+    flags = populate_flags(model_data)
+
+    macs_args = generate_macs_args(flags)
+
+    # find and add sizes to macs_args
+    sizes = populate_sizes(flags)
+
+    total = float(sum(sizes))
+    macs_args.insert(1, str(total))
+    sizes_str = map(str, sizes)
+    if sys.version_info > (3, 0):
+        sizes_str = list(sizes_str)
+    macs_args.extend(sizes_str)
+
     debugPrint(3, "Processing flags in for macs_args")
 
     # take out ignored flags
     flags = remove_ignored_flags(flags)
-
-    # find scale value
-    ne = find_scale_value(flags)
 
     # take out process data )type 1
     processed_data = process_type1_flags(flags)
     flags = filter_out_type1(flags)
 
     # scale values if needed
+    scaled_flags = scale_flags(flags)
 
-    # add events to seasons
+    # pull out seed
+    seed = scaled_flags.get("-s", None)
+    if seed:
+        processed_data['seed'] = seed
+
+    # seasons is all the time based events
+    seasons = add_events_to_seasons(scaled_flags)
+    macs_args_flags = filter_out_events(scaled_flags)
 
     # add to macs_args
+    # TODO: This needs to be done explictily
+    populate_macs_args(macs_args, macs_args_flags)
 
-    for flag in flags.keys():
-        # Looping through every key
-        debugPrint(3, "FLAG:  {}: {}".format(flag, flags[flag]))
-        for argument_raw in flags[flag]:
-            # Looping through every argumentRaw
-            try:
-                debugPrint(3, flag + ": " + str(argument_raw))
+    pop_names = gather_pop_names(model_data_raw)
+    processed_data['name'] = pop_names
 
-                # Seed is a special case.
-                if flag == "-s":
-                    processed_data['seed'] = argument_raw[0]
+    if not processed_data.get('discovery') or not processed_data.get('sample') or not processed_data.get('daf'):
+        if not processed_data.get('discovery') and not processed_data.get('sample') and not processed_data.get('daf'):
+            debugPrint(2, "discovery, sample, and daf are all missing")
+        else:
+            print("discovery, sample, or daf is missing")
+            quit()
 
-                type2_flags = [
-                    "-em", "-eM", "-g", "-eN", "-n", "-en",
-                    "-eg", "-es", "-m", "-t",  "-r", "-G"
-                ]
+    debugPrint(2, "Adding events data back to flag pool")
+    for i in range(len(seasons)):
+        seasons[i][1] = float(seasons[i][1])
+    seasons = sorted(seasons, key=itemgetter(1))
+    for i in range(len(seasons)):
+        seasons[i][1] = str(seasons[i][1])
+    for season in seasons:
+        macs_args.extend(season)
 
-                if flag in type2_flags:
-                    scaled_param, index = scale_argument(flag, argument_raw, ne)
-                    argument_raw[index] = scaled_param
+    processed_data["macs_args"] = macs_args
 
-                # These scales are difference since they scale all possible values in list
-                if flag == "-ema":
-                    scaled_params = argument_raw[:1]
-                    for i in range(2, len(argument_raw)):
-                        param = argument_raw[i]
-                        scaled_params.append(str(float(4 * (float(param) * ne))))
+    debugPrint(3, "printing model_params_variables:", model_params_variables)
 
-                elif flag == "-ma":
-                    scaled_params = argument_raw[0]
-                    for i in range(len(argument_raw)):
-                        param = argument_raw[i]
-                        scaled_params.append(str(float(4 * (float(param) * ne))))
+    processed_data['param_dict'] = model_params_variables
 
-                if flag.startswith('-e'):
-                    # all <t>'s are scaled
-                    argument_raw[0] = get_param_value_un_bounded(model_params_dict_raw, argument_raw[0])
-                    argument_raw[0] = str(round(float(argument_raw[0])) / (4 * ne))
-                    seasons.append([flag] + argument_raw)
+    if args['genetic map']:
+        processed_data['macs_args'].extend(['-R', args['genetic map']])
 
-                else:
-                    macs_args.append(flag.strip())
-                    for sub_line in argument_raw:
-                        macs_args.append(sub_line.strip())
-            except IndexError:
-                print("There was an index error!\nThis most likely means your input file has a malformed flag.")
-                print("Try running with -vv argument for last flag ran")
-                sys.exit()
     return processed_data
