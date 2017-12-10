@@ -157,7 +157,7 @@ def process_time_data(flag, last_time, model_params_dict_raw, time_data_raw):
             # There is a low time bound on the random range
             low_time = True
     else:
-        # There is no time constrant
+        # There is no time constraint
         low_time = False
 
     if "inst" in time_data_raw:
@@ -179,16 +179,10 @@ def process_time_data_copy(flag, last_time, model_params_dict_raw, time_data_raw
     This is a helper function that takes the raw time data from the model
     file and replaces it with the correct value in the params file.
     """
-    if "_" not in flag:
+    low_time_used = False
+    if "_" in flag and int(flag.split("_")[1]) == 1:
         # There is no time constraint
-        low_time_used = False
-    else:
-        if int(flag.split("_")[1]) == 1:
-            # First time through, no bounds outside of given in param Value
-            low_time_used = False
-        else:
-            # There is a low time bound on the random range
-            low_time_used = True
+        low_time_used = True
 
     if "inst" in time_data_raw:
         temp_time = str(float(last_time) + 1)
@@ -317,6 +311,7 @@ def scale_argument(flag, argument_raw, ne, model_params_dict_raw):
 
     return scaled_param, index
 
+
 def define_non_timed_prior(model_param):
     """
 
@@ -340,14 +335,13 @@ def define_non_timed_prior(model_param):
     return unscaled_param_value
 
 
-def define_non_timed_priors(model_params_dict_raw):
+def define_non_time_priors(model_params_dict_raw):
     """
 
     :param model_params_dict_raw:
     :return:
     :TODO: This is the section of code where variables can relate to each other, issue #8
     """
-    # model_params_dict = map(define_non_timed_prior, model_params_dict_raw)
 
     model_params_dict = {}
     for param_raw_value in model_params_dict_raw:
@@ -368,7 +362,7 @@ def define_non_timed_priors(model_params_dict_raw):
     return model_params_dict
 
 
-def filterOutTimedParams(model_params_dict_raw):
+def filter_out_timed_params(model_params_dict_raw):
     model_params_dict = {}
     for param in model_params_dict_raw:
         if not param.endswith("_t"):
@@ -379,11 +373,12 @@ def filterOutTimedParams(model_params_dict_raw):
 def define_timed_priors(model_params_dict_raw, model_data_raw):
     """
 
-    :param model_params_dict:
+    :param model_params_dict_raw:
+    :param model_data_raw:
     :return:
     """
     timed_flags = []
-    model_params_dict = filterOutTimedParams(model_params_dict_raw)
+    model_params_dict = filter_out_timed_params(model_params_dict_raw)
     for i, argument in enumerate(model_data_raw):
         arg_split = argument.split(',')
         flag = arg_split[0]
@@ -403,8 +398,7 @@ def define_timed_priors(model_params_dict_raw, model_data_raw):
         for tmp in arg_split:
             if tmp.lower().endswith("_t"):
                 break
-        print(tmp)
-        if tmp in model_params_dict_raw:
+        if tmp in model_params_dict_raw and tmp.endswith("_t"):
             model_params_dict[tmp] = time_data
         tmp = [argument.split(",")[0],time_data]
         tmp.extend(argument.split(",")[2:])
@@ -414,8 +408,6 @@ def define_timed_priors(model_params_dict_raw, model_data_raw):
     return model_params_dict
 
 
-
-
 def define_priors(model_params_dict_raw, model_data_raw):
     """
     :param model_params_dict_raw:
@@ -423,17 +415,47 @@ def define_priors(model_params_dict_raw, model_data_raw):
     :return:
     """
 
-    model_params_dict = define_non_timed_priors(model_params_dict_raw)
+    model_params_dict = define_non_time_priors(model_params_dict_raw)
 
     model_params_dict = define_timed_priors(model_params_dict, model_data_raw)
 
     return model_params_dict
 
 
+def substitute_variables(model_params_variables, model_data_raw):
+    """
 
+    :param model_params_variables:
+    :param model_data_raw:
+    :return:
+    """
 
+    model_data_list = []
+    for argument_raw in model_data_raw:
+        argument_split_raw = argument_raw.split(",")
+        argument_split = []
+        for i, parameter_raw in enumerate(argument_split_raw):
+            if not parameter_raw:
+                continue
+            parameter = parameter_raw.strip()
+            if parameter in model_params_variables:
+                argument_split.append(model_params_variables[parameter])
+            else:
+                if "inst" in parameter:
+                    last_time_str = model_data_list[-1][1]
+                    last_time = float(last_time_str)
+                    new_time = last_time + 1
+                    new_time_str = str(new_time)
+                    argument_split.append(new_time_str)
+                else:
+                    argument_split.append(parameter)
+        model_data_list.append(argument_split)
 
+    model_data = []
+    for argument in model_data_list:
+        model_data.append(",".join(argument))
 
+    return model_data
 
 
 def process_input_files(param_file, model_file, args):
@@ -453,7 +475,9 @@ def process_input_files(param_file, model_file, args):
 
     model_params_variables = define_priors(model_params_dict_raw, model_data_raw)
 
-    flags, model_params_dict, model_data = populate_flags(model_params_variables, model_data_raw)
+    model_data = substitute_variables(model_params_variables, model_data_raw)
+
+    flags, model_params_dict, model_data = populate_flags(model_params_variables, model_data)
     ne = find_scale_value(flags, model_params_dict_raw)
 
     macs_args = generate_macs_args(flags)
