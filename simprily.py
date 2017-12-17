@@ -20,6 +20,7 @@ from summary_statistics.germline_tools import run_germline, process_germline_fil
 
 verbos = 0
 
+
 def main(args):
 
     chr_number = 1
