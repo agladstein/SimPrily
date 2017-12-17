@@ -7,7 +7,7 @@
 # Header
 ##############################
 BootStrap: docker
-FROM python:2.7
+From: python:2.7
 
 ##############################
 # Sections
@@ -29,4 +29,3 @@ FROM python:2.7
     # Make executable
     chmod +x /app/simprily.py
 
-    
