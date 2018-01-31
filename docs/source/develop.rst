@@ -49,7 +49,7 @@ For Mac or Windows see Docker documentation.
 **1. Create Dockerfile**
 In the directory with the necessary code and requirements.txt
 
-`Dockerfile <https://hub.docker.com/r/agladstein/simprily_autobuild/~/dockerfile/>`_
+`Dockerfile <https://github.com/agladstein/SimPrily/blob/master/Dockerfile>`_
 ::
 
     # Use an official Python runtime as a parent image

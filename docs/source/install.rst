@@ -9,12 +9,12 @@ Install and Environment Set up
 Docker
 ******
 A Docker Image built with Python 2.7.13, the requirements, and the SimPrily code can be found on Docker Hub
-https://hub.docker.com/r/agladstein/simprily_autobuild/
+https://hub.docker.com/r/agladstein/simprily/
 
 cd to the directory you want to work in and then pull the Docker image.
 ::
 
- docker pull agladstein/simprily_autobuild
+ docker pull agladstein/simprily
 
 Singularity
 ***********
