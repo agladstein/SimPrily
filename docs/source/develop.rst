@@ -149,6 +149,102 @@ http://codeblog.dotsandbrackets.com/persistent-data-docker-volumes/
 
 Singularity
 -----------
+*These are preliminary notes, not specific to a SimPrily Singularity container.*
+
+**Installing Singularity**
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To install Singularity:
+::
+
+    git clone https://github.com/singularityware/singularity.git
+    cd singularity
+    sudo apt-get install libtool
+    sudo apt-get install autotools-dev
+    sudo apt-get install automake
+    ./autogen.sh
+    ./configure --prefix=/usr/local
+    make
+    sudo make install
+
+**Create empty image**
+^^^^^^^^^^^^^^^^^^^^^^
+
+To create an empty Singularity image:
+::
+
+    create --size 2048 simprily-little.img
+
+**Make or pull a container**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**1. Make container by dumping docker layers into empty image:**
+::
+
+    import simprily-little.img docker://agladstein/simprily-little
+
+or
+
+**2. Pull container**
+::
+
+    singularity pull docker://centos:latest
+
+or
+
+**3. Bootstrap**
+
+Create Singularity specification file.
+
+For example:
+::
+
+    Bootstrap: docker
+    From: ubuntu:latest
+
+    %runscript
+
+        echo "I can put here whatever I want to happen when the user runs my container!"
+        exec echo "Hello Monsoir Meatball" "$@" #The $@ is where arguments go
+
+    %post
+
+       echo "Here we are installing software and other dependencies for the container!"
+       apt-get update
+       apt-get install -y git
+
+Then build image from Singularity file:
+::
+
+    sudo singularity bootstrap analysis.img Singularity
+
+**Run container**
+^^^^^^^^^^^^^^^^^
+
+**1. from Singularity Hub**
+::
+
+    singularity run shub://vsoch/hello-world
+
+or
+
+**2. from local container with input arguement**
+::
+
+    singularity run analysis.img Ariella
+
+**Shell into a container**
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+    singularity shell centos7.img
+
+**Resources**
+^^^^^^^^^^^^^
+- http://singularity.lbl.gov/quickstart
+- http://singularity.lbl.gov/singularity-tutorial
+- https://singularity-hub.org/faq
 
 ***********
 Other Notes
