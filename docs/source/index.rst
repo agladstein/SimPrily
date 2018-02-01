@@ -15,6 +15,7 @@ Welcome to SimPrily's documentation!
    usage
    htc
    real
+   tutorial_docker
    develop
 
 
