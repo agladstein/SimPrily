@@ -107,11 +107,12 @@ Run program:
 
     docker run -t -i --mount type=bind,src=/home/agladstein/docker_test/SimPrily,dst=/app agladstein/simprily_autobuild:version1 python /app/simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
 
+*try running with port ``-p``*
+
 or Run Docker container interactively to poke around
 ::
 
     docker run --rm -it --entrypoint=/bin/bash agladstein/simprily_autobuild:version1
-
 
 **Cheat sheet**
 ^^^^^^^^^^^^^^^
