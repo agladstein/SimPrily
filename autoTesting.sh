@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
  total=0
  bad=0
- i=6
+ i=3
  while true;
  do
  	total=$((total+1))

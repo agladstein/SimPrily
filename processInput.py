@@ -316,6 +316,9 @@ def substitute_variables(model_params_variables, model_data_raw):
                     new_time = last_time + 1
                     new_time_str = str(new_time)
                     argument_split.append(new_time_str)
+                elif parameter.startswith("-e") and "_" in parameter:
+                    flag = parameter.split("_")[0]
+                    argument_split.append(flag)
                 else:
                     argument_split.append(parameter)
         model_data_list.append(argument_split)
