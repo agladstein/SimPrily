@@ -84,10 +84,13 @@ def process_args(arguments):
 
 def set_seed(seed_option):
     seed_option = int(seed_option)
+
     if seed_option == 0:
-        random.seed()
+        tmp_seed = random.randint(1, 32000)
     if seed_option > int(0):
-        random.seed(seed_option)
+        tmp_seed = seed_option
+    print("Current Seed: {}".format(tmp_seed))
+    random.seed(tmp_seed)
 
 def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")

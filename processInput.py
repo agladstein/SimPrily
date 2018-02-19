@@ -31,13 +31,15 @@ def read_model_file(in_file):
     """
     fl = open(in_file, "r")
     info = []
+    tmp_seed = 0
     for line in fl:
         if line.startswith("-"):
             temp = str(line).strip()
             info.append(temp)
         if line.split(",")[0] == "-s":
             temp = str(line).strip()
-            set_seed(temp.split(",")[1])
+            tmp_seed = temp.split(",")[1]
+    set_seed(tmp_seed)
     return info
 
 
@@ -428,11 +430,11 @@ def process_type1_flags(flags):
 
     macs = flags.get("-macs", None)
     if macs:
-        processed_data['macs'] = float(macs[0][0])
+        processed_data['macs'] = macs[0][0]
 
     macsswig = flags.get("-macsswig", None)
     if macsswig:
-        processed_data['macsswig'] = float(macsswig[0][0])
+        processed_data['macsswig'] = macsswig[0][0]
 
     return processed_data
 
