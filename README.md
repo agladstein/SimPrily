@@ -28,39 +28,20 @@ git clone https://github.com/agladstein/SimPrily.git
 #### Environment Set up
 If using Vagrant (this is recommended if running on non-Linux OS):
 
+Start Vagrant, ssh into Vagrant, cd to SimPrily directory:
 ```bash
 vagrant up
 vagrant ssh
-``` 
-
-```bash
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install python-virtualenv git python-dev
-sudo easy_install -U distribute
-cd ~
-virtualenv simprily_env
-source ~/simprily_env/bin/activate
-pip install --upgrade pip
-pip install pip-tools
 cd /vagrant
-pip-sync
-~/simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+``` 
+Install the virtual environment and install the requirements.
+```bash
+./setup/setup_env_vbox_2.7.sh
 ```
 
-If not using Vagrant:
+If not using Vagrant, just install the virtual environment and install the requirements:
 ```bash
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get install python-virtualenv git python-dev
-sudo easy_install -U distribute
-virtualenv simprily_env
-source simprily_env/bin/activate
-cd SimPrily
-pip install --upgrade pip
-pip install pip-tools
-pip-sync
-simprily_env/bin/python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+./setup/setup_env_2.7.sh
 ```
 
 
@@ -150,7 +131,7 @@ where `user-name` is specific to the user, and `id` is the workflow id.
 ## Links
 
 * [Main SimPrily GitHub Repository](https://agladstein.github.io/SimPrily/)
-  * [SimPrily Wiki](https://github.com/agladstein/SimPrily/wiki)
+  * [SimPrily Read the Docs](http://simprily.readthedocs.io/en/latest/index.html)
   * [SimPrily Code](https://github.com/agladstein/SimPrily)
 * [CyVerse Discovery Environment SimPrily Workflow]()
   1. SimPrily HT File Setup App
@@ -172,9 +153,8 @@ where `user-name` is specific to the user, and `id` is the workflow id.
     * [SimPrily Benchmarking Data](https://de.cyverse.org/de/?type=data&folder=/iplant/home/shared/iplantcollaborative/example_data/SimPrily_version1)
 * SimPrily Pegasus Documentation
   1. [SimPrily Pegasus Workflow Quick Start](https://agladstein.github.io/SimPrily/#open-science-grid)
-  2. [Detailed Pegasus Workflow Documentation](https://github.com/agladstein/SimPrily/wiki#pegasus-workflow-on-the-open-science-grid)
+  2. [Detailed Pegasus Workflow Documentation](http://simprily.readthedocs.io/en/latest/htc.html#submit-a-pegasus-workflow)
 
 ## Known Issues
-* Seed with macsswig is unstable. 
 * If exponential growth is large, macs simulation will not finish. (This is a macs bug).
 * If the same id is used with the same output dir as a previous run, the .map file will be appended to.
