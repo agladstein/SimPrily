@@ -351,7 +351,7 @@ class TestFns(unittest.TestCase):
         pos = [1.02, 1.03, 1.04, 1.05]
         snps = [12, 13 ,15]
         check = pseudo_array_bits(asc_panel_bits, daf, pos, snps)
-        self.assertEquals(check,  (([1, 2, 3], 3, [0, 1, 2, 3], [1.02, 1.03, 1.04, 1.05])))
+        self.assertEquals(check,   ([1, 2, 3], 3, [0, 1, 2, 3], [1.02, 1.03, 1.04, 1.05]))
 
         #tests negative numbers in pos parameter
         asc_panel_bits = bitarray('1001100110011001')

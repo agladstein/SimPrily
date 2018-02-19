@@ -1,6 +1,6 @@
 -macs,./bin/macs,
 -length,100000,
--s,1231414,
+-s,2433,
 -t,2.5e-8,
 -r,1e-8,
 -h,1e5,
@@ -14,13 +14,13 @@
 -eg_1,0,6,rA,
 -eg_1,inst,4,rMJ,
 -eg_1,inst,5,rMJ,
--em_2,Tm,6,3,m,
+-em_2,Tm_t,6,3,m,
 -em_2,inst,6,3,0,
--ej_3,TA,6,4,
--ej_4,TMJ,5,4,
--ej_5,TEM,4,3,
--ej_6,Teu_as,3,2,
--ej_7,Taf,2,1,
+-ej_3,TA_t,6,4,
+-ej_4,TMJ_t,5,4,
+-ej_5,TEM_t,4,3,
+-ej_6,Teu_as_t,3,2,
+-ej_7,Taf_t,2,1,
 -en,Tgrowth,1,NANC
 -discovery,1,2,3
 -sample,4,5,6

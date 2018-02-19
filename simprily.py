@@ -20,6 +20,7 @@ from summary_statistics.germline_tools import run_germline, process_germline_fil
 
 verbos = 0
 
+
 def main(args):
 
     chr_number = 1
@@ -57,7 +58,6 @@ def main(args):
     total = sum([seq.tot for seq in sequences])
     debugPrint(1, 'total samples: {}'.format(sum([seq.genotyped for seq in sequences if seq.type=='discovery'] + [seq.tot for seq in sequences if seq.type=='sample'])))
 
-
     ### Define simulation size
     length = processedData['length']
     debugPrint(1, 'Perform simulation and get sequences')
@@ -91,7 +91,6 @@ def main(args):
             profile(prof_option, path, job, "end_set_seq_bits")
 
             if using_pseudo_array:
-
                 ## get position of the simulated sites and scale it to the "real" position in the SNP chip
                 sim_positions = []
                 for i in xrange(nbss):
@@ -127,6 +126,8 @@ def main(args):
         profile(prof_option, path, job, "end_set_discovery_bits")
 
         debugPrint(1, 'Number of sites in simulation: {}'.format(nbss))
+
+        assert nbss > 10, "Number of sites is less than 10: {}".format(nbss)
 
         ##########################################################################
         ### Create pseudo array according to ascertainment scheme and template ###
