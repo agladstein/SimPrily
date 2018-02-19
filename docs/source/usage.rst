@@ -83,6 +83,8 @@ param_file.txt
 Examples of param_file.txt can be found in examples.
 The param_file.txt must define the parameters of the demographic model and the minimum derived allele frequency to be used to create the pseudo array, if a pseudo array is to be created.
 
+All time parameters must end in ``_t``.
+
 All parameter values should be given in pre-coalescent scaled units.
 That is, Ne should be given in units of chromosomes, and time should be given in units of generations.
 The code will scale to the appropriate coalescent units for the simulation.
@@ -92,7 +94,7 @@ The definition can be hard-coded parameter values, such as:
 
     A = 1000
     B = 1000
-    T1 = 100
+    T1_t = 100
 
 
 The definition can be a prior, such as:
@@ -100,7 +102,7 @@ The definition can be a prior, such as:
 
     A = (1e3.0:1e4.0)
     B = (1e3.0:1e4.0)
-    T1 = (10:500)
+    T1_t = (10:500)
 
 Log base 10 can be used for the parameter definitions by using ``1eX`` or ``1Ex``.
 This is recommended when using a prior with a very large range (See ABCtoolbox manual).
@@ -110,7 +112,7 @@ If pseudo arrays are to be created, the derived allele frequency must be defined
 
     A = (1e3.0:1e4.0)
     B = (1e3.0:1e4.0)
-    T1 = (10:500)
+    T1_t = (10:500)
     daf = (0.01:0.1)
 
 

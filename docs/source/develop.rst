@@ -247,6 +247,29 @@ or
 - http://singularity.lbl.gov/singularity-tutorial
 - https://singularity-hub.org/faq
 
+*************
+Documentation
+*************
+
+- Install Sphinx:
+::
+
+    pip install Sphinx
+
+- To edit the Read The Docs, edit the Sphinx .rst files in ``SimPrily/docs``.
+- Build the html from restructured text:
+::
+
+    ~/simprily_env/bin/sphinx-build -b html source build
+
+
+Resources
+---------
+- http://www.sphinx-doc.org/en/stable/tutorial.html
+- https://github.com/ralsina/rst-cheatsheet/blob/master/rst-cheatsheet.rst
+- https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html#headings
+- http://rest-sphinx-memo.readthedocs.io/en/latest/ReST.html
+
 ***********
 Other Notes
 ***********
