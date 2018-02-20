@@ -59,7 +59,7 @@ def main(args):
         using_pseudo_array = False
 
     ### Create a list of Sequence class instances. These will contain the bulk of all sequence-based data
-    sequences = create_sequences(processedData, args)
+    sequences = create_sequences(processedData)
     names = [seq.name for seq in sequences]
 
     n_d = sum([1 for seq in sequences if seq.type == 'discovery'])

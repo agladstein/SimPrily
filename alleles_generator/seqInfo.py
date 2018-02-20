@@ -1,6 +1,5 @@
 from bitarray import bitarray
 
-from main_tools.my_random import MY_RANDOM as random
 from main_tools.housekeeping import debugPrint
 
 
@@ -23,7 +22,7 @@ class SeqInfo():
         return self.name
 
 
-def create_sequences(processedData, args):
+def create_sequences(processedData):
     '''
     Parameters: args is a dictionary that maps the SNP file to 
     array_template

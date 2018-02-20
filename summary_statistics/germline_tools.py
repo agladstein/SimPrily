@@ -1,7 +1,6 @@
 from subprocess import Popen
 
 def run_germline(ped_name, map_name, out_name, min_m):
-    print("THIS IS THE ")
     print( 'Running Germline on ' + ped_name + ' ' + map_name)
 
     bash_command = 'bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  {0} {1} {2} "-bits 10 -min_m {3}"'.format(
