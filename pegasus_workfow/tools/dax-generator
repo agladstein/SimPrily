@@ -109,7 +109,7 @@ if map_file:
 current_outputs = []
 input_id = 0
 for job_id in range(1,job_num + 1):
-    # the real work
+    # the real work - sets up simulations and parameters to run simulations
     sim_job = Job(name="run-sim.sh")
     sim_job.uses(param_file, link=Link.INPUT) #transfers file so they are available for the job
     sim_job.uses(model_file, link=Link.INPUT)

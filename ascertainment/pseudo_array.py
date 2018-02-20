@@ -35,7 +35,7 @@ def find2(a, x):
         elif d1==d2:
             return i
 
-def add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps):
+def add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc):
     ''''
     This function is called 199 times when the program is 
     ran. 
@@ -149,7 +149,7 @@ def pseudo_array(asc_panel, daf, pos, snps):
             diff = int(len(snps) - len(pos_asc))
             for m in range(1, diff + 1):
                 pos_asc2 = []
-                pos_asc2 = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps)
+                pos_asc2 = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc)
                 pos_asc = pos_asc2
                 nbss_asc = len(pos_asc)
                 if nbss_asc == len(snps):
@@ -266,7 +266,7 @@ def pseudo_array_bits(asc_panel_bits, daf, pos, snps):
             diff = int(len(snps) - len(pos_asc))
             for m in range(1, diff + 1):
                 pos_asc2 = []
-                pos_asc2 = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc, nb_array_snps)
+                pos_asc2 = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_asc)
                 pos_asc = pos_asc2
                 nbss_asc = len(pos_asc)
                 if nbss_asc == len(snps):

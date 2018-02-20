@@ -4,22 +4,19 @@ from main_tools.housekeeping import debugPrint
 
 
 def run_macs(macs_args, sequences):
-    '''
-    Parameters: sequences and macs_args
-    macs_args:
-    ['./bin/macs', '166.0', '1000000', '-I', '2', '26', '140',
+    """
+    :param macs_args:     ['./bin/macs', '166.0', '1000000', '-I', '2', '26', '140',
      '-t', '0.00444997180488', '-s', '1231', '-r', '0.00177998872195', 
      '-h', '1e5', '-n', '1', '1.0', '-n', '2', '0.899072251249', '-en',
     '0.0118708617304', '1', '0.224720524949', '-ej', '0.0143090794261',
      '2', '1', '-R', 'genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs']
-
-    sequences: [A, B], which is a sequence type
-
-    Returns: sequences, which is a list of two instance types stored as 
+    :param sequences: [A, B], which is a sequence type
+    :return: sequences, which is a list of two instance types stored as 
     [A, B]
     position: list of floats cast as strings, length: 10752
     the floaty strings increase from '0.000178136752' to '     0.99995896'
-    '''
+    """
+
     debugPrint(2,"running macs simulation:")
     position = []
     null = open(os.devnull, 'w')
@@ -42,8 +39,5 @@ def run_macs(macs_args, sequences):
             #     debugPrint(3,line)
         else:
             break
-   # print("THIS IS SEQUENCES zero: " + str(sequences[0].__dict__))
-   # print("THIS IS SEQUENCES one: " + str(sequences[1].__dict__))
-   # print("THIS IS position:  " + str(position))
  #   debugPrint(2,"Finished macs simulation")
     return [sequences,position]

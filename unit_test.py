@@ -274,7 +274,7 @@ class TestFns(unittest.TestCase):
         pos_asc = [3000, 3000, 3000]
         nbss_acs  = 198
         nb_array_snps = 200
-        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs)
         self.assertEquals(check, [3000, 3000, 3000])
 
         avail_sites = [1.0, 2.0]
@@ -282,7 +282,7 @@ class TestFns(unittest.TestCase):
         pos_asc = [12, 12, 12]
         nbss_acs = 23
         nb_array_snps = 200
-        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs)
         self.assertEquals(check, [12, 12 ,12])
 
         avail_sites = [21313211242134]
@@ -290,7 +290,7 @@ class TestFns(unittest.TestCase):
         pos_asc = [-1, -1, 3000]
         nbss_acs  = 23
         nb_array_snps = 200
-        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs)
         self.assertEquals(check, [-1, -1, 3000])
 
         # this one is defined
@@ -299,7 +299,7 @@ class TestFns(unittest.TestCase):
         pos_asc = [12, -1, 2]
         nbss_acs  = 23
         nb_array_snps = 200
-        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs)
         self.assertEquals(check, [12, -1, 2, 3])
 
         # defined, even though nbss_acs is negative and a float
@@ -308,7 +308,7 @@ class TestFns(unittest.TestCase):
         pos_asc = [12, -1, 2]
         nbss_acs  = -1
         nb_array_snps = 200
-        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs)
         self.assertEquals(check, [12, -1, 2, 3])
 
         # not defined
@@ -317,7 +317,7 @@ class TestFns(unittest.TestCase):
         pos_asc = [12, 8000001, 2]
         nbss_acs  = -1
         nb_array_snps = 200
-        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs, nb_array_snps)
+        check = add_snps(avail_sites, nb_avail_sites, pos_asc, nbss_acs)
         self.assertEquals(check, [12, 8000001, 2])
 
         '''
