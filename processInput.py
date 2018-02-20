@@ -50,7 +50,7 @@ def read_params_file(in_file):
     :return: a list with each line as a single string object
     """
     fl = open(in_file, "r")
-    model_params_dict = {}
+    model_params_dict = OrderedDict()
     for line in fl:
         if "=" in line:
             model_params_dict[line.split("=")[0].strip()] = line.split("=")[1].strip()
@@ -208,7 +208,7 @@ def define_non_time_priors(model_params_dict_raw):
     :TODO: This is the section of code where variables can relate to each other, issue #8
     """
 
-    model_params_dict = {}
+    model_params_dict = OrderedDict()
     for param_raw_value in model_params_dict_raw:
         # if it has _t in it, ignore for now
         if param_raw_value[-2:].lower() == "_t":
@@ -228,7 +228,7 @@ def define_non_time_priors(model_params_dict_raw):
 
 
 def filter_out_timed_params(model_params_dict_raw):
-    model_params_dict = {}
+    model_params_dict = OrderedDict()
     for param in model_params_dict_raw:
         if not param.endswith("_t"):
             model_params_dict[param] = model_params_dict_raw[param]
