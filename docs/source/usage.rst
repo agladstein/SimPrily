@@ -2,6 +2,13 @@
 Usage
 #####
 
+``simprily.py`` takes 4 required arguments and 2 optional arguments, and help, verbose, and profile options.
+
+::
+
+    python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] [--profile]
+
+
 For quick help:
 ::
 
@@ -21,12 +28,23 @@ e.g. One simulation (genetic map, no pseudo array):
 
 ______________________________________
 
-``simprily.py`` takes 4 required arguments and 2 optional arguments, and help, verbose, and profile options.
 
-Run as
+***************************
+How to run with a Container
+***************************
+
+Docker
+------
 ::
 
-    python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] [--profile]
+    docker run -t -i --mount type=bind,src="$(pwd)",dst=/app agladstein/simprily python /app/simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] [--profile]
+
+
+Singularity
+-----------
+::
+
+    singularity exec simprily.simg python /app/simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] [--profile]
 
 **************
 Required Input

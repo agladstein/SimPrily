@@ -4,31 +4,43 @@ Install and Environment Set up
 
 * Python 2.7.6, 2.7.11, or 2.7.13 is required to run the code, with the requirements installed from requirements.txt.
   *Environments for Python 3 will soon be available*.
-* We highly recommend running SimPrily with the provided Docker image or virtual environment.
+* We highly recommend running SimPrily with the provided Docker, Singularity, or virtual environment.
+
+Container
+*********
 
 Docker
-******
+------
 A Docker Image built with Python 2.7.13, the requirements, and the SimPrily code can be found on Docker Hub
 https://hub.docker.com/r/agladstein/simprily/
 
 cd to the directory you want to work in and then pull the Docker image.
+To pull the Docker container:
 ::
 
  docker pull agladstein/simprily
 
-Singularity
-***********
-A Singularity Image, built from the Docker Image, is used for the Open Science Grid workflow.
-The Singularity Image on OSG Connect is available from ``/cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest``.
-The Singularity Image is NOT currently available through Singularity Hub.
-*A Singularity Image for use outside of OSG will soon be available*.
 
+Singularity
+-----------
+The Docker image can be pulled as a Singularity container.
+
+To pull the Singularity container:
+::
+
+    singularity pull docker://agladstein/simprily
+
+Open Science Grid Connect
+=========================
+
+A prebuilt Singularity Image from the Docker Image is used for the Open Science Grid workflow.
+The Singularity Image on OSG Connect is available from ``/cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest``.
 
 Virtual environment
 *******************
 
 Linux OS
------------------------------
+--------
 cd to the directory you want to work in and then download the repository,
 ::
 
