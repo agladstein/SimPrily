@@ -247,9 +247,24 @@ or
 - http://singularity.lbl.gov/singularity-tutorial
 - https://singularity-hub.org/faq
 
-*************
-Documentation
-*************
+*******
+Testing
+*******
+
+The shell script ``autoTesting.sh`` is included for quick automated testing of included examples.
+
+It is run as:
+::
+
+    ./autoTesting.sh PYTHON [EXAMPLE_INT]
+
+| Where,
+| ``PYTHON`` is the python to use
+| ``EXAMPLE_INT`` is the specific example number to test (optional). If it is not specified, it will test all of the examples.
+
+**********************
+Creating Documentation
+**********************
 
 - Install Sphinx:
 ::
