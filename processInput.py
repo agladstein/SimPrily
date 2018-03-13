@@ -293,6 +293,11 @@ def define_priors(model_params_dict_raw, model_data_raw):
     return model_params_dict
 
 
+def get_length(model_data_raw):
+
+
+    return length
+
 def substitute_variables(model_params_variables, model_data_raw):
     """
 
@@ -361,7 +366,7 @@ def populate_sizes(flags):
     return sizes
 
 
-def generate_macs_args(flags):
+def generate_macs_args(flags, chr_number):
     """
     This is a helper function that takes the sim options and outputs the start the macs_args
 
@@ -370,11 +375,11 @@ def generate_macs_args(flags):
     """
     macs_args = None
     if '-macs_file' in flags:
-        macs_args = [flags['-macs_file'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        macs_args = [flags['-macs_file'][0][0], flags['-length'][0][chr_number-1], "-I", flags['-I'][0][0]]
     elif '-macsswig' in flags:
-        macs_args = [flags['-macsswig'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        macs_args = [flags['-macsswig'][0][0], flags['-length'][0][chr_number-1], "-I", flags['-I'][0][0]]
     elif '-macs' in flags:
-        macs_args = [flags['-macs'][0][0], flags['-length'][0][0], "-I", flags['-I'][0][0]]
+        macs_args = [flags['-macs'][0][0], flags['-length'][0][chr_number-1], "-I", flags['-I'][0][0]]
     else:
         # This option should never be reached since it errors out in housekeeping
         print("There is no sim option given. Check your model file.")
@@ -632,73 +637,81 @@ def process_input_files(param_file, model_file, args):
 
     # defining and replacing the variables from the param file
     model_params_variables = define_priors(model_params_dict_raw, model_data_raw)
+
+#####MAYBE GET LENGTH ARRAY HERE FOR FOR LOOP OF MULTIPLE LOCI
     model_data = substitute_variables(model_params_variables, model_data_raw)
 
     flags = populate_flags(model_data)
 
-    macs_args = generate_macs_args(flags)
+    macs_args_list = []
+    chr_lengths = [30000, 20000, 10000]
+    for chr_number, length in enumerate(chr_lengths, 1):
+        macs_args = generate_macs_args(flags, chr_number)
 
-    # find and add sizes to macs_args
-    sizes = populate_sizes(flags)
+        # find and add sizes to macs_args
+        sizes = populate_sizes(flags)
 
-    total = float(sum(sizes))
-    macs_args.insert(1, str(total))
-    sizes_str = map(str, sizes)
-    if sys.version_info > (3, 0):
-        sizes_str = list(sizes_str)
-    macs_args.extend(sizes_str)
+        total = float(sum(sizes))
+        macs_args.insert(1, str(total))
+        sizes_str = map(str, sizes)
+        if sys.version_info > (3, 0):
+            sizes_str = list(sizes_str)
+        macs_args.extend(sizes_str)
 
-    debugPrint(3, "Processing flags in for macs_args")
+        debugPrint(3, "Processing flags in for macs_args")
 
-    # take out ignored flags
-    flags = remove_ignored_flags(flags)
+        # take out ignored flags
+        flags_remove = remove_ignored_flags(flags)
 
-    # take out process data )type 1
-    processed_data = process_type1_flags(flags)
-    flags = filter_out_type1(flags)
+        # take out process data )type 1
+        processed_data = process_type1_flags(flags_remove)
+        flags_remove = filter_out_type1(flags_remove)
 
-    # scale values if needed
-    scaled_flags = scale_flags(flags)
+        # scale values if needed
+        scaled_flags = scale_flags(flags_remove)
 
-    # pull out seed
-    seed = scaled_flags.get("-s", None)
-    if seed:
-        processed_data['seed'] = seed
+        # pull out seed
+        seed = scaled_flags.get("-s", None)
+        if seed:
+            processed_data['seed'] = seed
 
-    # seasons is all the time based events
-    seasons = add_events_to_seasons(scaled_flags)
-    macs_args_flags = filter_out_events(scaled_flags)
+        # seasons is all the time based events
+        seasons = add_events_to_seasons(scaled_flags)
+        macs_args_flags = filter_out_events(scaled_flags)
 
-    # add to macs_args
-    # TODO: This needs to be done explictily
-    populate_macs_args(macs_args, macs_args_flags)
+        # add to macs_args
+        # TODO: This needs to be done explictily
+        populate_macs_args(macs_args, macs_args_flags)
 
-    pop_names = gather_pop_names(model_data_raw)
-    processed_data['name'] = pop_names
+        pop_names = gather_pop_names(model_data_raw)
+        processed_data['name'] = pop_names
 
-    if not processed_data.get('discovery') or not processed_data.get('sample') or not processed_data.get('daf'):
-        if not processed_data.get('discovery') and not processed_data.get('sample') and not processed_data.get('daf'):
-            debugPrint(2, "discovery, sample, and daf are all missing")
-        else:
-            print("discovery, sample, or daf is missing")
-            quit()
+        if not processed_data.get('discovery') or not processed_data.get('sample') or not processed_data.get('daf'):
+            if not processed_data.get('discovery') and not processed_data.get('sample') and not processed_data.get('daf'):
+                debugPrint(2, "discovery, sample, and daf are all missing")
+            else:
+                print("discovery, sample, or daf is missing")
+                quit()
 
-    debugPrint(2, "Adding events data back to flag pool")
-    for i in range(len(seasons)):
-        seasons[i][1] = float(seasons[i][1])
-    seasons = sorted(seasons, key=itemgetter(1))
-    for i in range(len(seasons)):
-        seasons[i][1] = str(seasons[i][1])
-    for season in seasons:
-        macs_args.extend(season)
+        debugPrint(2, "Adding events data back to flag pool")
+        for i in range(len(seasons)):
+            seasons[i][1] = float(seasons[i][1])
+        seasons = sorted(seasons, key=itemgetter(1))
+        for i in range(len(seasons)):
+            seasons[i][1] = str(seasons[i][1])
+        for season in seasons:
+            macs_args.extend(season)
 
-    processed_data["macs_args"] = macs_args
+        macs_args_list.append(macs_args)
+
+    processed_data["macs_args_list"] = macs_args_list
 
     debugPrint(3, "printing model_params_variables:", model_params_variables)
 
     processed_data['param_dict'] = model_params_variables
 
     if args['genetic map']:
-        processed_data['macs_args'].extend(['-R', args['genetic map']])
+        for i in range(len(chr_lengths)):
+            processed_data['macs_args_list'][i].extend(['-R', args['genetic map']])
 
     return processed_data
