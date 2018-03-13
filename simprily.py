@@ -35,7 +35,7 @@ def main(args):
     path = args['path']
     [sim_data_dir, germline_out_dir, sim_results_dir] = create_sim_directories(path)
 
-    processedData =  process_input_files(args['param file'], args['model file'], args)
+    processedData = process_input_files(args['param file'], args['model file'], args)
 
     using_pseudo_array = True
     if not processedData.get('discovery') and not processedData.get('sample') and not processedData.get('daf'):
@@ -86,7 +86,6 @@ def main(args):
                 ## get position of the simulated sites and scale it to the "real" position in the SNP chip
                 sim_positions = get_sim_positions(position, nbss, length)
 
-
         elif sim_option == 'macs_file':
             ### Using a static sim output rather than generating from seed
             seq_alleles = AllelesMacsFile('tests/test_data/sites1000000.txt')
@@ -119,7 +118,6 @@ def main(args):
             profile(prof_option, path, job, "end_set_panel_bits")
             debugPrint(1,'Number of chromosomes in asc_panel: {}'.format(asc_panel_bits.length()/nbss))
 
-
             ### Get pseudo array sites
             debugPrint(2,'Making pseudo array')
             profile(prof_option, path, job, "start_pseudo_array_bits")
@@ -132,18 +130,16 @@ def main(args):
             SNPs = []
             SNPs_exceed_available_sites = False
 
-
     if using_pseudo_array:
         profile(prof_option, path, job, "start_set_asc_bits")
         set_asc_bits(sequences, nbss_asc, pos_asc, avail_site_indices)
         profile(prof_option, path, job, "end_set_asc_bits")
 
-
     debugPrint(1, 'Calculating summary statistics')
     ##########################################################################
     ###################### Calculate summary statistics ######################
     ##########################################################################
-    res, head  = [], []
+    res, head = [], []
 
     ### Calculate summary stats from genomes
     if nbss > 0:   # Simulations must contain at least one segregating site
@@ -211,15 +207,7 @@ def main(args):
 
         debugPrint(1,'finished calculating ss')
 
-
-    #Previously used for separate files
-    '''
-    write_results_file(results_sims_dir, job, res, head)
-    write_sim_file(sim_values_dir, job, processedData['param_dict'])
-    '''
-    #Combined file
     write_sim_results_file(sim_results_dir, job, processedData['param_dict'], res, head)
-    
 
     print('')
     print('#########################')
