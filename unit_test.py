@@ -8,7 +8,6 @@ from simulation.run_sim import run_macs
 from alleles_generator.macs_file import AllelesMacsFile
 from alleles_generator.seq import create_seq
 from alleles_generator.real_file import AllelesReal
-from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 from bitarray import bitarray
 import random
 

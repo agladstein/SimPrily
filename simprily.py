@@ -6,7 +6,6 @@ import os
 
 from alleles_generator.bit_structure import set_seq_bits, set_discovery_bits, set_panel_bits
 from alleles_generator.macs_file import AllelesMacsFile
-from alleles_generator.macs_swig_alleles import AllelesMacsSwig
 from alleles_generator.seqInfo import create_sequences
 from ascertainment.asc_tools import set_asc_bits, make_ped_file, make_map_file, get_SNP_sites
 from ascertainment.pseudo_array import pseudo_array_bits
@@ -76,30 +75,7 @@ def main(args):
         macs_args = []
         macs_args = processedData['macs_args']
 
-        if sim_option == 'macsswig':
-            print('Run macsswig simulation')
-            profile(prof_option, path, job, "start_run_macsswig")
-            sim = macsSwig.swigMain(len(macs_args), processedData['macs_args'])
-            profile(prof_option, path, job, "end_run_macsswig")
-            print('Finished macsswig simulation')
-            nbss = sim.getNumSites()
-
-            ### Get data from the simulations
-            profile(prof_option, path, job, "start_set_seq_bits")
-            seq_alleles = AllelesMacsSwig(nbss, sim, total) 
-            set_seq_bits(sequences, seq_alleles)
-            profile(prof_option, path, job, "end_set_seq_bits")
-
-            if using_pseudo_array:
-                ## get position of the simulated sites and scale it to the "real" position in the SNP chip
-                sim_positions = []
-                for i in xrange(nbss):
-                    position = round(sim.getPosition(i) * float(length))
-                    sim_positions.append(position)
-
-            del sim
-
-        elif sim_option == 'macs':
+        if sim_option == 'macs':
             ### Run macs and make bitarray
             profile(prof_option, path, job, "start_run_macs")
             [sequences,position] = run_macs(macs_args, sequences)
