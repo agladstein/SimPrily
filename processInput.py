@@ -293,11 +293,6 @@ def define_priors(model_params_dict_raw, model_data_raw):
     return model_params_dict
 
 
-def get_length(model_data_raw):
-
-
-    return length
-
 def substitute_variables(model_params_variables, model_data_raw):
     """
 
@@ -431,10 +426,6 @@ def process_type1_flags(flags):
     daf = flags.get("-daf", None)
     if daf:
         processed_data['daf'] = float(daf[0][0])
-
-    length = flags.get("-length", None)
-    if length:
-        processed_data['length'] = float(length[0][0])
 
     macs = flags.get("-macs", None)
     if macs:
@@ -638,13 +629,12 @@ def process_input_files(param_file, model_file, args):
     # defining and replacing the variables from the param file
     model_params_variables = define_priors(model_params_dict_raw, model_data_raw)
 
-#####MAYBE GET LENGTH ARRAY HERE FOR FOR LOOP OF MULTIPLE LOCI
     model_data = substitute_variables(model_params_variables, model_data_raw)
 
     flags = populate_flags(model_data)
 
     macs_args_list = []
-    chr_lengths = [30000, 20000, 10000]
+    chr_lengths = flags['-length'][0]
     for chr_number, length in enumerate(chr_lengths, 1):
         macs_args = generate_macs_args(flags, chr_number)
 
@@ -661,14 +651,15 @@ def process_input_files(param_file, model_file, args):
         debugPrint(3, "Processing flags in for macs_args")
 
         # take out ignored flags
-        flags_remove = remove_ignored_flags(flags)
+        flags_removed = remove_ignored_flags(flags)
 
         # take out process data )type 1
-        processed_data = process_type1_flags(flags_remove)
-        flags_remove = filter_out_type1(flags_remove)
+        processed_data = process_type1_flags(flags_removed)
+        processed_data['chr_lengths'] = chr_lengths
+        flags_removed = filter_out_type1(flags_removed)
 
         # scale values if needed
-        scaled_flags = scale_flags(flags_remove)
+        scaled_flags = scale_flags(flags_removed)
 
         # pull out seed
         seed = scaled_flags.get("-s", None)

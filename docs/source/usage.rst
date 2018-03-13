@@ -203,6 +203,12 @@ Following the ``-macs`` and ``-macs_file`` flags there should be a path to eithe
 ``-length``
     The number base pairs you want to simulate. Must be included.
 
+    Multiple chromosomes can be simulated iteratively by including a list of lengths.
+    For example:
+    ::
+
+        -length,30000,20000,10000
+
 ``-s``
     random seed.
     Must be an integer.
