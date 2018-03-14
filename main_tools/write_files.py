@@ -21,7 +21,7 @@ def create_sim_directories(path_name):
     return dir_list
 
 
-def write_sim_results_file(dir, job, param_dict, res_list, header):
+def write_sim_results_file(dir, job, param_dict, res_list, header, chr_number):
     """
     
     :param dir: output_dir/results
@@ -33,19 +33,34 @@ def write_sim_results_file(dir, job, param_dict, res_list, header):
     :return: 
     """
 
-    result = '{}/results_{}.txt'.format(dir, job)
-    out_file = open(result, 'w')
-
     params = []
     vals = []
     for param, val in param_dict.items():
         params.append(param)
         vals.append(str(val))
-    header = '\t'.join(header)+'\n'
-    out = '\t'.join([str(r) for r in res_list]) + '\n'
 
-    out_file.write('\t'.join(params) + '\t' + header)
-    out_file.write('\t'.join(vals) + '\t' + out)
+    result = '{}/results_{}.txt'.format(dir, job)
+    header_chr = []
+    for string in header:
+        header_chr.append('{}_chr{}'.format(string, chr_number))
+
+    if chr_number > 1:
+        with open(result) as f:
+            first_line = f.readline()
+            second_line = f.readline()
+        header_chr_str = '\t'.join(header_chr)
+        out = '\t'.join([str(r) for r in res_list])
+        out_file = open(result, 'w')
+        out_file.write(first_line.strip('\n') + '\t' + header_chr_str + '\n')
+        out_file.write(second_line.strip('\n') + '\t' + out + '\n')
+        out_file.close()
+    else:
+        out_file = open(result, 'w')
+        header_chr_str = '\t'.join(header_chr)
+        out = '\t'.join([str(r) for r in res_list])
+        out_file.write('\t'.join(params) + '\t' + header_chr_str + '\n')
+        out_file.write('\t'.join(vals) + '\t' + out + '\n')
+        out_file.close()
 
 
 def write_stats_file(res_dir, job, res_list, header):

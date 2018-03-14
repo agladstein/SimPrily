@@ -37,8 +37,8 @@ def main(args):
     processedData = process_input_files(args['param file'], args['model file'], args)
 
     for chr_number, length in enumerate(processedData['chr_lengths'], 1):
-        print('chr_number: {}'.format(chr_number))
-        print('length: {}'.format(length))
+        debugPrint(1, 'chr_number: {}'.format(chr_number))
+        debugPrint(1, 'length: {}'.format(length))
 
         processedData['macs_args'] = processedData['macs_args_list'][chr_number-1]
         processedData['length'] = length
@@ -213,7 +213,8 @@ def main(args):
 
             debugPrint(1,'finished calculating ss')
 
-        write_sim_results_file(sim_results_dir, job, processedData['param_dict'], res, head)
+        write_sim_results_file(sim_results_dir, job, processedData['param_dict'], res, head, chr_number)
+        print('')
 
     print('')
     print('#########################')
