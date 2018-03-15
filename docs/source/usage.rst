@@ -84,7 +84,7 @@ Additional information on input arguments
 *****************************************
 
 ID
---
+-----
 This is a unique identifier for the job. It is used in the names of the output files.
 For example, the output file with parameter values and summary statistics is named ``results_{IDid}.txt``.
 
@@ -386,3 +386,14 @@ If GERMLINE does not run, try rebuilding it on the machine you are trying to run
 **pedmap**
 ^^^^^^^^^^
 The option ``-pedmap`` can be included in the model_file to print a ped and map file of the pseudo array data.
+
+Genetic Map
+-----------
+To use different genetic maps for each chromosome, each genetic map should have the same name, with the exception of the
+chromosome number.
+When indicating multiple genetic maps as arguments to simprily.py the chromosome number should be replaced with ``{}``.
+
+For example:
+::
+
+    -g genetic_map_b37/genetic_map_GRCh37_chr{}.txt.macshs

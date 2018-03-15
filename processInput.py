@@ -604,6 +604,18 @@ def populate_macs_args(macs_args, scaled_flags):
                 sys.exit()
 
 
+def rename_genetic_map(chr_lengths, args):
+
+    genetic_map_list = []
+    for i in range(len(chr_lengths)):
+        if '{}' in args['genetic map']:
+            genetic_map = args['genetic map'].replace('{}', str(i+1))
+        else:
+            genetic_map = args['genetic map']
+        genetic_map_list.append(genetic_map)
+    return genetic_map_list
+
+
 def process_input_files(param_file, model_file, args):
     """
 
@@ -702,7 +714,8 @@ def process_input_files(param_file, model_file, args):
     processed_data['param_dict'] = model_params_variables
 
     if args['genetic map']:
-        for i in range(len(chr_lengths)):
-            processed_data['macs_args_list'][i].extend(['-R', args['genetic map']])
+        genetic_map_list = rename_genetic_map(chr_lengths, args)
+        for i, genetic_map in enumerate(genetic_map_list):
+            processed_data['macs_args_list'][i].extend(['-R', genetic_map])
 
     return processed_data
