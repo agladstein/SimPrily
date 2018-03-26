@@ -40,10 +40,10 @@ def get_chromosome_length_for_column_name(lengths, column_name):
       File "<module>", in get_chromosome_length_for_column_name
         assert 1 <= chromosome_number <= 22, 'Invalid chromosome number: %d' % chromosome_number
     AssertionError: Invalid chromosome number: 23
-    >>> get_chromosome_length_for_column_name(lengths, 'TajD_D_CGI_sum')
+    >>> get_chromosome_length_for_column_name(lengths, 'TajD_D_CGI_sum_chrs')
     Traceback (most recent call last):
       ...
-    ValueError: ('Column name does not end in `_chr[1-22]`: %s', 'TajD_D_CGI_sum')
+    ValueError: ('Column name does not end in `_chr[1-22]`: %s', 'TajD_D_CGI_sum_chrs')
 
     :param lengths: The chromosome lengths
     :type lengths: list(int)
@@ -90,8 +90,6 @@ def relative_sum_chrs(lengths, columns):
     return result
 
 
-# Any column with ‘TajD’, ‘FST’, ‘Pi’ is `relative_sum_chrs` and any column with ‘Seg’, ‘Sing’, ‘Dupl’ is `sum_chrs`
-
 CALCULATION_META_CONFIG = [
     {
         'input_columns_prefixes': ['TajD', 'FST', 'Pi'],
@@ -101,12 +99,13 @@ CALCULATION_META_CONFIG = [
     {
         'input_columns_prefixes': ['Seg', 'Sing', 'Dupl'],
         'function': sum_chrs,
-        'output_column_postfix': '_sum'
+        'output_column_postfix': '_sum_chrs'
     }
 ]
 
 
-def main(genome_results_file):
+def main():
+    genome_results_file = sys.argv[1]
     logging.debug('genome_results_file = %s', genome_results_file)
     calculation_config = generate_calculation_config(CALCULATION_META_CONFIG)
     partial_calculation_function = functools.partial(apply_all_calculations_to_row, calculation_config, LENGTHS)
@@ -144,7 +143,7 @@ def generate_calculation_config(calculation_meta_config):
     ...     {
     ...         'input_columns_prefixes': ['Seg', 'Sing', 'Dupl'],
     ...         'function': sum_chrs,
-    ...         'output_column_postfix': '_sum'
+    ...         'output_column_postfix': '_sum_chrs'
     ...     }
     ... ]
     >>> calculation_config = generate_calculation_config(CALCULATION_META_CONFIG)
@@ -153,9 +152,9 @@ def generate_calculation_config(calculation_meta_config):
     CalculationConfigItem(input_column_prefix='TajD', function=<function relative_sum_chrs at 0x...>, output_column_postfix='_relative_sum_chrs')
     CalculationConfigItem(input_column_prefix='FST', function=<function relative_sum_chrs at 0x...>, output_column_postfix='_relative_sum_chrs')
     CalculationConfigItem(input_column_prefix='Pi', function=<function relative_sum_chrs at 0x...>, output_column_postfix='_relative_sum_chrs')
-    CalculationConfigItem(input_column_prefix='Seg', function=<function sum_chrs at 0x...>, output_column_postfix='_sum')
-    CalculationConfigItem(input_column_prefix='Sing', function=<function sum_chrs at 0x...>, output_column_postfix='_sum')
-    CalculationConfigItem(input_column_prefix='Dupl', function=<function sum_chrs at 0x...>, output_column_postfix='_sum')
+    CalculationConfigItem(input_column_prefix='Seg', function=<function sum_chrs at 0x...>, output_column_postfix='_sum_chrs')
+    CalculationConfigItem(input_column_prefix='Sing', function=<function sum_chrs at 0x...>, output_column_postfix='_sum_chrs')
+    CalculationConfigItem(input_column_prefix='Dupl', function=<function sum_chrs at 0x...>, output_column_postfix='_sum_chrs')
 
     :param calculation_meta_config: A list of dicts
     :type calculation_meta_config: list<dict>
@@ -363,5 +362,5 @@ if __name__ == '__main__':
     logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO'), format=LOGGING_FORMAT)
     logging.debug('START')
     # TODO: Pass in the file name as a command-line argument, and/or read from `stdin`
-    main('head_final_results.tsv')
+    main()
     logging.debug('END')
