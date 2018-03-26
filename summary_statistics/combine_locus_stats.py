@@ -270,6 +270,54 @@ def summary_stat_matches_column_prefixes(column_prefixes, column_name):
 
 
 def group_columns_by_summary_stats(columns):
+    """Group all chromosome columns by the summary statistic name
+
+    >>> columns = [
+    ... ('SegS_A_CGI_chr1', 11),
+    ... ('SegS_A_CGI_chr2', 12),
+    ... ('SegS_A_CGI_chr3', 13),
+    ... ('Sing_A_CGI_chr1', 21),
+    ... ('Sing_A_CGI_chr2', 22),
+    ... ('Sing_A_CGI_chr3', 23),
+    ... ('Dupl_A_CGI_chr1', 31),
+    ... ('Dupl_A_CGI_chr2', 32),
+    ... ('Dupl_A_CGI_chr3', 33)
+    ... ]
+    >>> column_groups = group_columns_by_summary_stats(columns)
+    >>> for cg in column_groups:
+    ...     print(cg)
+    ('SegS_A_CGI', [('SegS_A_CGI_chr1', 11), ('SegS_A_CGI_chr2', 12), ('SegS_A_CGI_chr3', 13)])
+    ('Sing_A_CGI', [('Sing_A_CGI_chr1', 21), ('Sing_A_CGI_chr2', 22), ('Sing_A_CGI_chr3', 23)])
+    ('Dupl_A_CGI', [('Dupl_A_CGI_chr1', 31), ('Dupl_A_CGI_chr2', 32), ('Dupl_A_CGI_chr3', 33)])
+
+    Note that you they have to be sorted first:
+    https://docs.python.org/3/library/itertools.html#itertools.groupby
+    ...otherwise you get this situation below:
+
+    >>> columns = [
+    ... ('SegS_A_CGI_chr1', 11),
+    ... ('Sing_A_CGI_chr1', 21),
+    ... ('Dupl_A_CGI_chr1', 31),
+    ... ('SegS_A_CGI_chr2', 12),
+    ... ('Sing_A_CGI_chr2', 22),
+    ... ('Dupl_A_CGI_chr2', 32),
+    ... ('SegS_A_CGI_chr3', 13),
+    ... ('Sing_A_CGI_chr3', 23),
+    ... ('Dupl_A_CGI_chr3', 33)
+    ... ]
+    >>> column_groups = group_columns_by_summary_stats(columns)
+    >>> for cg in column_groups:
+    ...     print(cg)
+    ('SegS_A_CGI', [('SegS_A_CGI_chr1', 11)])
+    ('Sing_A_CGI', [('Sing_A_CGI_chr1', 21)])
+    ('Dupl_A_CGI', [('Dupl_A_CGI_chr1', 31)])
+    ('SegS_A_CGI', [('SegS_A_CGI_chr2', 12)])
+    ('Sing_A_CGI', [('Sing_A_CGI_chr2', 22)])
+    ('Dupl_A_CGI', [('Dupl_A_CGI_chr2', 32)])
+    ('SegS_A_CGI', [('SegS_A_CGI_chr3', 13)])
+    ('Sing_A_CGI', [('Sing_A_CGI_chr3', 23)])
+    ('Dupl_A_CGI', [('Dupl_A_CGI_chr3', 33)])
+    """
     logging.debug('columns: %s', columns)
     input_columns_grouped = ((key, list(group)) for key, group in itertools.groupby(columns, summary_stat_prefix))
     return input_columns_grouped
