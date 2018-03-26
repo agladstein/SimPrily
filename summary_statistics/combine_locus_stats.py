@@ -11,9 +11,9 @@ from collections import OrderedDict, namedtuple
 
 logger = logging.getLogger(__name__)
 
-LENGTHS = [249163442, 243078003, 197813415, 191015739, 180695227, 170959304, 159091448, 146137372, 141069069,
-           135430928, 134747460, 133630123, 96085774, 87668527, 82491127, 90079543, 81032226, 78003657, 58843222,
-           62887650, 37234222, 35178458]
+LENGTHS = [249163.442, 243078.003, 197813.415, 191015.739, 180695.227, 170959.304, 159091.448, 146137.372, 141069.069, \
+    135430.928, 134747.460, 133630.123, 96085.774, 87668.527, 82491.127, 90079.543, 81032.226, 78003.657, 58843.222, 62887.650, \
+    37234.222, 35178.458]
 
 
 def sum_chrs(lengths, columns):
@@ -27,13 +27,13 @@ def sum_chrs(lengths, columns):
 
 def get_chromosome_length_for_column_name(lengths, column_name):
     """Get the chromosome length for a column name
-    >>> lengths = [249163442, 243078003, 197813415, 191015739, 180695227, 170959304, 159091448, 146137372, 141069069, \
-    135430928, 134747460, 133630123, 96085774, 87668527, 82491127, 90079543, 81032226, 78003657, 58843222, 62887650, \
-    37234222, 35178458]
+    >>> lengths = [249163.442, 243078.003, 197813.415, 191015.739, 180695.227, 170959.304, 159091.448, 146137.372, 141069.069, \
+    135430.928, 134747.460, 133630.123, 96085.774, 87668.527, 82491.127, 90079.543, 81032.226, 78003.657, 58843.222, 62887.650, \
+    37234.222, 35178.458]
     >>> get_chromosome_length_for_column_name(lengths, 'TajD_C_CGI_chr1')
-    249163442
+    249163.442
     >>> get_chromosome_length_for_column_name(lengths, 'TajD_C_CGI_chr2')
-    243078003
+    243078.003
     >>> get_chromosome_length_for_column_name(lengths, 'TajD_C_CGI_chr23')
     Traceback (most recent call last):
       ...
@@ -46,11 +46,11 @@ def get_chromosome_length_for_column_name(lengths, column_name):
     ValueError: ('Column name does not end in `_chr[1-22]`: %s', 'TajD_D_CGI_sum_chrs')
 
     :param lengths: The chromosome lengths
-    :type lengths: list(int)
+    :type lengths: list(float)
     :param column_name: Name of a column, something like 'TajD_C_CGI_chr1'
     :type column_name: str
     :return: A chromosome length
-    :rtype: int
+    :rtype: float
     """
     assert isinstance(column_name, str)
     pattern = re.compile(r'^.+_chr(\d+)$')
@@ -62,7 +62,7 @@ def get_chromosome_length_for_column_name(lengths, column_name):
     chromosome_number = int(chromosome_string)
     assert 1 <= chromosome_number <= 22, 'Invalid chromosome number: %d' % chromosome_number
     chromosome_length = lengths[chromosome_number - 1]
-    assert isinstance(chromosome_length, int)
+    assert isinstance(chromosome_length, float)
     return chromosome_length
 
 
@@ -75,6 +75,7 @@ def relative_value_chr(lengths, genome_length, column):
     chromosome_length = get_chromosome_length_for_column_name(lengths, column_name)
     logging.debug('chromosome_length: %s', chromosome_length)
     relative_value = column_value * float(chromosome_length) / genome_length
+    assert isinstance(relative_value, float)
     return relative_value
 
 
@@ -82,6 +83,7 @@ def relative_sum_chrs(lengths, columns):
     logging.debug('lengths: %s', lengths)
     logging.debug('columns: %s', columns)
     genome_length = sum(lengths)
+    assert isinstance(genome_length, float)
     logging.debug('genome_length: %s', genome_length)
     relative_value_chr_partial = functools.partial(relative_value_chr, lengths, genome_length)
     relative_values = map(relative_value_chr_partial, columns)
@@ -106,6 +108,8 @@ CALCULATION_META_CONFIG = [
 
 def main():
     genome_results_file = sys.argv[1]
+    base_name = '.'.join(genome_results_file.split('.')[:-1])
+    outfile_name = '{}_sum_chrs.txt'.format(base_name)
     logging.debug('genome_results_file = %s', genome_results_file)
     calculation_config = generate_calculation_config(CALCULATION_META_CONFIG)
     partial_calculation_function = functools.partial(apply_all_calculations_to_row, calculation_config, LENGTHS)
@@ -121,10 +125,11 @@ def main():
         assert isinstance(first_output_row, OrderedDict)
         output_field_names = first_output_row.keys()
         logging.debug('output_field_names = %s', output_field_names)
-        writer = csv.DictWriter(sys.stdout, output_field_names, dialect=csv.excel_tab)
-        writer.writeheader()
-        writer.writerow(first_output_row)
-        writer.writerows(output_rows)
+        with open(outfile_name, 'w') as outfile:
+            writer = csv.DictWriter(outfile, output_field_names, dialect=csv.excel_tab)
+            writer.writeheader()
+            writer.writerow(first_output_row)
+            writer.writerows(output_rows)
 
 
 CalculationConfigItem = namedtuple('CalculationConfigItem',
@@ -328,7 +333,7 @@ def apply_all_calculations_to_row(calculation_config, lengths, input_row):
     :param calculation_config: List of CalculationConfigItem objects
     :type calculation_config: list(CalculationConfigItem)
     :param lengths: Lengths of the chromosomes
-    :type lengths: list(int)
+    :type lengths: list(float)
     :param input_row: A row from the summary stats file
     :type input_row: collections.OrderedDict
     :return: The input row with the calculated columns added
