@@ -2,12 +2,11 @@ import csv
 import functools
 import itertools
 import logging
-
 import os
 import re
-
 import sys
 from collections import OrderedDict, namedtuple
+from multiprocessing import Pool
 
 logger = logging.getLogger(__name__)
 
@@ -166,17 +165,19 @@ def main():
         reader = csv.DictReader(csvfile, delimiter='\t')
         logging.debug('reader = %s', reader)
         assert isinstance(reader, csv.DictReader)
-        output_rows = filter(lambda row: row is not None, map(partial_calculation_function, reader))
+        with Pool() as pool:
+            raw_output_rows = pool.imap(partial_calculation_function, reader, chunksize=200)
+            output_rows = filter(lambda row: row is not None, raw_output_rows)
 
-        first_output_row = next(output_rows)
-        assert isinstance(first_output_row, OrderedDict)
-        output_field_names = first_output_row.keys()
-        logging.debug('output_field_names = %s', output_field_names)
-        with open(outfile_name, 'w') as outfile:
-            writer = csv.DictWriter(outfile, output_field_names, dialect=csv.excel_tab)
-            writer.writeheader()
-            writer.writerow(first_output_row)
-            writer.writerows(output_rows)
+            first_output_row = next(output_rows)
+            assert isinstance(first_output_row, OrderedDict)
+            output_field_names = first_output_row.keys()
+            logging.debug('output_field_names = %s', output_field_names)
+            with open(outfile_name, 'w') as outfile:
+                writer = csv.DictWriter(outfile, output_field_names, dialect=csv.excel_tab)
+                writer.writeheader()
+                writer.writerow(first_output_row)
+                writer.writerows(output_rows)
 
 
 CalculationConfigItem = namedtuple('CalculationConfigItem',
