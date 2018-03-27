@@ -17,6 +17,16 @@ LENGTHS = [249163.442, 243078.003, 197813.415, 191015.739, 180695.227, 170959.30
 
 
 def sum_chrs(lengths, columns):
+    """
+    >>> lengths = [249163442, 243078003, 197813415]
+    >>> columns = [
+    ... ('SegS_A_CGI_chr1', 11),
+    ... ('SegS_A_CGI_chr2', 12),
+    ... ('SegS_A_CGI_chr3', 13)
+    ... ]
+    >>> sum_chrs(lengths, columns)
+    36.0
+    """
     logging.debug('lengths: %s', lengths)
     logging.debug('columns: %s', columns)
     column_values = [float(column[1]) for column in columns]
@@ -67,6 +77,25 @@ def get_chromosome_length_for_column_name(lengths, column_name):
 
 
 def relative_value_chr(lengths, genome_length, column):
+    """
+    >>> lengths = [100.0, 100.0, 100.0]
+    >>> genome_length = sum(lengths)
+    >>> column = ('SegS_A_CGI_chr1', 30)
+    >>> relative_value_chr(lengths, genome_length, column)
+    10.0
+
+    >>> lengths = [10.0, 10.0, 10.0]
+    >>> genome_length = sum(lengths)
+    >>> column = ('SegS_A_CGI_chr1', 30)
+    >>> relative_value_chr(lengths, genome_length, column)
+    10.0
+
+    >>> lengths = [10.0, 20.0, 30.0]
+    >>> genome_length = sum(lengths)
+    >>> column = ('SegS_A_CGI_chr1', 30)
+    >>> relative_value_chr(lengths, genome_length, column)
+    5.0
+    """
     logging.debug('lengths: %s', lengths)
     logging.debug('column: %s', column)
     logging.debug('genome_length: %s', genome_length)
@@ -80,6 +109,25 @@ def relative_value_chr(lengths, genome_length, column):
 
 
 def relative_sum_chrs(lengths, columns):
+    """
+    >>> lengths = [100.0, 100.0, 100.0]
+    >>> columns = [
+    ... ('SegS_A_CGI_chr1', 30),
+    ... ('SegS_A_CGI_chr2', 30),
+    ... ('SegS_A_CGI_chr3', 30)
+    ... ]
+    >>> relative_sum_chrs(lengths, columns)
+    30.0
+
+    >>> lengths = [10.0, 20.0, 30.0]
+    >>> columns = [
+    ... ('SegS_A_CGI_chr1', 10),
+    ... ('SegS_A_CGI_chr2', 20),
+    ... ('SegS_A_CGI_chr3', 30)
+    ... ]
+    >>> relative_sum_chrs(lengths, columns)
+    23.333333333333336
+    """
     logging.debug('lengths: %s', lengths)
     logging.debug('columns: %s', columns)
     genome_length = sum(lengths)
@@ -87,7 +135,6 @@ def relative_sum_chrs(lengths, columns):
     logging.debug('genome_length: %s', genome_length)
     relative_value_chr_partial = functools.partial(relative_value_chr, lengths, genome_length)
     relative_values = map(relative_value_chr_partial, columns)
-    logging.debug('relative_values: %s', [rv for rv in relative_values])
     result = sum(relative_values)
     return result
 
@@ -357,7 +404,12 @@ def apply_all_calculations_to_row(calculation_config, lengths, input_row):
     calculations = map(partial_single_calculation_function, input_column_groups)
     output_row = input_row
     assert isinstance(output_row, OrderedDict)
-    output_row.update(calculations)
+    try:
+        output_row.update(calculations)
+    except ValueError as e:
+        logging.warning('Problem on row: %s - %s', input_row, e)
+        # Skip whole row
+        return
     logging.debug('output_row: %s', output_row)
     return output_row
 
