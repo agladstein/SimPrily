@@ -404,7 +404,12 @@ def apply_all_calculations_to_row(calculation_config, lengths, input_row):
     calculations = map(partial_single_calculation_function, input_column_groups)
     output_row = input_row
     assert isinstance(output_row, OrderedDict)
-    output_row.update(calculations)
+    try:
+        output_row.update(calculations)
+    except ValueError as e:
+        logging.warning('Problem on row: %s - %s', input_row, e)
+        # Skip whole row
+        return
     logging.debug('output_row: %s', output_row)
     return output_row
 
