@@ -401,12 +401,13 @@ def apply_all_calculations_to_row(calculation_config, lengths, input_row):
 
     partial_single_calculation_function = functools.partial(apply_single_calculation_to_column_group, lengths,
                                                             calculation_config)
+
     calculations = map(partial_single_calculation_function, input_column_groups)
     output_row = input_row
     assert isinstance(output_row, OrderedDict)
     try:
         output_row.update(calculations)
-    except ValueError as e:
+    except (ValueError, TypeError) as e:
         logging.warning('Problem on row: %s - %s', input_row, e)
         # Skip whole row
         return
