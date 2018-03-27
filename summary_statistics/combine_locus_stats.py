@@ -166,7 +166,7 @@ def main():
         reader = csv.DictReader(csvfile, delimiter='\t')
         logging.debug('reader = %s', reader)
         assert isinstance(reader, csv.DictReader)
-        output_rows = map(partial_calculation_function, reader)
+        output_rows = filter(lambda row: row is not None, map(partial_calculation_function, reader))
 
         first_output_row = next(output_rows)
         assert isinstance(first_output_row, OrderedDict)
