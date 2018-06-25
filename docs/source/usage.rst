@@ -36,6 +36,55 @@ or
 --map MAP      The location of the genetic map file
 --array ARRAY  The location of the array template file, in `bed format <http://bedtools.readthedocs.io/en/latest/content/general-usage.html>`_. The third column is used as the physical positions of the SNP for the pseudo array.
 
+****************************
+Command line argument to run
+****************************
+
+``simprily.py`` takes 4 required arguments and 2 optional arguments, and help, verbose, and profile options.
+
+::
+
+    python simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] [--profile]
+
+
+For quick help:
+::
+
+    python simprily.py --help
+
+
+How to run with a Container
+---------------------------
+
+**Docker**
+::
+
+    docker run -t -i --mount type=bind,src="$(pwd)",dst=/app agladstein/simprily python /app/simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] [--profile]
+
+
+**Singularity**
+::
+
+    singularity exec simprily.simg python /app/simprily.py [-h] -p PARAM -m MODEL -i ID -o OUT [-g MAP] [-a ARRAY] [-v] [--profile]
+
+
+Examples
+--------
+One simulation (with pseudo array and genetic map):
+::
+
+    python simprily.py -p examples/eg1/param_file_eg1_asc.txt -m examples/eg1/model_file_eg1_asc.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -a array_template/ill_650_test.bed -i 1 -o output_dir -v
+
+
+One simulation (genetic map, no pseudo array):
+::
+
+    python simprily.py -p examples/eg1/param_file_eg1.txt -m examples/eg1/model_file_eg1.csv -g genetic_map_b37/genetic_map_GRCh37_chr1.txt.macshs -i 1 -o output_dir -v
+
+
+______________________________________
+
+
 *****************************************
 Additional information on input arguments
 *****************************************
