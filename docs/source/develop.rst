@@ -2,19 +2,20 @@
 For Developers
 ##############
 
-##############################
+******************************
 Install and Environment Set up
-##############################
+******************************
+
 
 * Python 2.7.6, 2.7.11, or 2.7.13 is required to run the code, with the requirements installed from requirements.txt.
   *Environments for Python 3 will soon be available*.
 * We highly recommend running SimPrily with the provided Docker, Singularity, or virtual environment.
 
 Container
-*********
+---------
 
-Docker
-------
+**Docker**
+
 A Docker Image built with Python 2.7.13, the requirements, and the SimPrily code can be found on Docker Hub
 https://hub.docker.com/r/agladstein/simprily/
 
@@ -33,8 +34,8 @@ How to run SimPrily with the Docker container
 
 
 
-Singularity
------------
+**Singularity**
+
 The Docker image can be pulled as a Singularity container.
 
 To pull the Singularity container:
@@ -50,16 +51,16 @@ How to run SimPrily with the Singularity container
 
 
 Open Science Grid Connect
-=========================
+-------------------------
 
 A prebuilt Singularity Image from the Docker Image is used for the Open Science Grid workflow.
 The Singularity Image on OSG Connect is available from ``/cvmfs/singularity.opensciencegrid.org/agladstein/simprily\:latest``.
 
 Virtual environment
-*******************
+-------------------
 
-Linux OS
---------
+**Linux OS**
+
 cd to the directory you want to work in and then download the repository,
 ::
 
@@ -85,8 +86,8 @@ For quick help:
 
     python simprily.py --help
 
-Virtual Machine for non-Linux
------------------------------
+**Virtual Machine for non-Linux**
+
 
 If you are running on a non-Linux OS, we recommend using the virtual machine, Vagrant (can be used on Mac or PC). In order to run Vagrant, you will also need VirtualBox.
 
@@ -125,7 +126,7 @@ For quick help:
     python simprily.py --help
 
 Local installation
-******************
+------------------
 *We do not recommend this method*
 
 cd to the directory you want to work in and then download the repository,

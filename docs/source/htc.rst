@@ -112,4 +112,7 @@ It also defines how to handle output files.
 Recommendations for other HTC workflows
 ***************************************
 
-*coming soon*
+*Coming soon!*
+
+*In the meantime see this example of running SimPrily on an HPC cluster with PBS*
+https://github.com/agladstein/ECOL-346-HPC-demo

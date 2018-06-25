@@ -15,4 +15,4 @@ or
     singularity pull docker://agladstein/simprily
 
 
-For more information see the developers documentation.
+For more information see the `developers documentation <http://simprily.readthedocs.io/en/latest/develop.html>`_.
