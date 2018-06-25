@@ -15,6 +15,8 @@ Welcome to SimPrily's documentation!
    usage
    htc
    real
+   resources
+   benchmark
    tutorial_docker
    develop
 
