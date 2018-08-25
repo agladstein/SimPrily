@@ -11,6 +11,7 @@ Welcome to SimPrily's documentation!
    :caption: Contents:
 
    intro
+   usecase
    install
    usage
    htc
