@@ -373,6 +373,7 @@ Runs GERMLINE as:
 
     bash ./bin/phasing_pipeline/gline.sh ./bin/germline-1-5-1/germline  ped_name map_name out_name "-bits 10 -min_m min_m"
 
+where ``min_m`` = 300bp (this is so GERMLINE should also produce output on very small SNP data for testing purposes).
 
 If GERMLINE does not run, try rebuilding it on the machine you are trying to run on:
 ::
