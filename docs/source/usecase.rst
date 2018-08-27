@@ -56,3 +56,6 @@ Is SimPrily right for your research?
 |                         +-----------------------------+-----------------------+-----------------------------------------------------------------------------------------+
 |                         |Python                       |  yes                  | Not necessary, but can add own functions and make pull requests                         |
 +-------------------------+-----------------------------+-----------------------+-----------------------------------------------------------------------------------------+
+
+If you still are not sure if SimPrily is right for your research check out other simulators at
+https://popmodels.cancercontrol.cancer.gov/gsr
