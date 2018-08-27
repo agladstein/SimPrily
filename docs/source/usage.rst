@@ -365,7 +365,6 @@ In this case, the population split will technically be simulated slightly after 
 
 **germline**
 ^^^^^^^^^^^^
-*currently has a bug*
 
 The option ``-germline`` can be included in the model_file to use `GERMLINE <https://github.com/sgusev/GERMLINE>`_ to find shared IBD segments between all simulated individuals from pseudo array.
 Does not use the genetic map to run GERMLINE.
