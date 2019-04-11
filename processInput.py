@@ -215,7 +215,7 @@ def define_non_time_priors(model_params_dict_raw):
             model_params_dict[param_raw_value[:-2]+"_t"] = model_params_dict_raw[param_raw_value]
             continue
         # TODO: check to make sure value is stripped before here
-        prior = model_params_dict_raw[param_raw_value]
+        prior = model_params_dict_raw[param_raw_value].strip()
         if ":" in prior:
             # This means you want range
             unscaled_param_value = prior_to_param_value(prior)
@@ -245,7 +245,7 @@ def define_time_priors(model_params_dict_raw, model_data_raw):
     timed_flags = []
     model_params_dict = filter_out_timed_params(model_params_dict_raw)
     for argument in filter(lambda x: x.startswith("-e"), model_data_raw):
-        arg_split = argument.split(',')
+        arg_split = [x.strip() for x in argument.split(',')]
         flag = arg_split[0]
 
         time_data_raw = arg_split[1]
