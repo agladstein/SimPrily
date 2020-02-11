@@ -48,6 +48,10 @@ class AllelesReal(object):
         seq_bits = bitarray()
         for line in real_file:
             columns = line.strip().split(' ')
+            assert n_m+4 <= len(columns), "Error: Samples go from column {} to column {}. " \
+                                          "But, there are only {} columns in the .tped file. " \
+                                          "Verify that your samples sizes are correct in -I argument " \
+                                          "in the -m model file.".format(n_0+4, n_m+4, len(columns))
             for i in range(n_0+4, n_m+4):
                 if columns[i] not in ('0', '1'):
                     columns[i] = '0'
