@@ -698,7 +698,7 @@ def process_input_files(param_file, model_file, args):
 
     processed_data['param_dict'] = model_params_variables
 
-    if args['genetic map']:
+    if 'genetic_map' in args.keys() and args['genetic map']:
         processed_data['macs_args'].extend(['-R', args['genetic map']])
 
     return processed_data
