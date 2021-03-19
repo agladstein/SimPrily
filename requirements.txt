@@ -4,15 +4,29 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-argparse==1.4.0           # via -r requirements.in
-bitarray==0.8.1           # via -r requirements.in
-j2cli==0.3.1.post0        # via -r requirements.in
-jinja2==2.9.5             # via j2cli
-markupsafe==1.0           # via jinja2
-memory-profiler==0.45     # via -r requirements.in
-numpy==1.12.0             # via -r requirements.in, pandas
-pandas==0.19.2            # via -r requirements.in
-psutil==5.6.6             # via -r requirements.in
-python-dateutil==2.6.0    # via pandas
-pytz==2017.2              # via pandas
-six==1.10.0               # via python-dateutil
+argparse==1.4.0
+    # via -r requirements.in
+bitarray==0.8.1
+    # via -r requirements.in
+j2cli==0.3.1.post0
+    # via -r requirements.in
+jinja2==2.11.3
+    # via j2cli
+markupsafe==1.0
+    # via jinja2
+memory-profiler==0.45
+    # via -r requirements.in
+numpy==1.12.0
+    # via
+    #   -r requirements.in
+    #   pandas
+pandas==0.19.2
+    # via -r requirements.in
+psutil==5.6.6
+    # via -r requirements.in
+python-dateutil==2.6.0
+    # via pandas
+pytz==2017.2
+    # via pandas
+six==1.10.0
+    # via python-dateutil
